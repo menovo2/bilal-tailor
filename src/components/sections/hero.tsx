@@ -13,9 +13,9 @@ export function Hero() {
   }, []);
 
   return (
-    <section className="relative flex min-h-[100svh] items-center overflow-hidden">
+    <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden">
       <div
-        className="absolute inset-0 -z-10"
+        className="absolute inset-0 z-0"
         style={{ transform: `translate3d(0, ${offset * 0.25}px, 0)` }}
         aria-hidden="true"
       >
@@ -25,10 +25,11 @@ export function Hero() {
           className="animate-hero-zoom h-[115%] w-full object-cover"
         />
         <div className="absolute inset-0" style={{ background: "var(--gradient-veil)" }} />
-        <div className="absolute inset-0 bg-background/45" />
+        <div className="absolute inset-0 bg-background/35" />
       </div>
 
-      <div className="mx-auto w-full max-w-7xl px-5 pt-32 pb-24 sm:px-8">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pt-32 pb-24 sm:px-8">
+
         <div className="max-w-3xl">
           <p className="eyebrow animate-fade-in">{site.tagline}</p>
           <h1 className="animate-fade-in mt-6 text-4xl leading-[1.05] sm:text-6xl lg:text-7xl">
