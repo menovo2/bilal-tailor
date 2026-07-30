@@ -77,23 +77,45 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "BILAL TAILOR — Tolid Raaxo iyo Heer Sare" },
+      {
+        name: "description",
+        content:
+          "BILAL TAILOR — tolid heer sare ah oo ragga casriga ah: suit, safari, qamiis, surwaal iyo shaar oo qiyaas gaar ah lagu tolay.",
+      },
+      { name: "author", content: "BILAL TAILOR" },
+      { property: "og:site_name", content: "BILAL TAILOR" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
+      { name: "theme-color", content: "#111111" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Jost:wght@300;400;500;600&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "ClothingStore",
+          name: "BILAL TAILOR",
+          description:
+            "Tolid heer sare ah oo ragga: suit, safari, qamiis, surwaal iyo shaar.",
+          telephone: "+251940744442",
+          email: "Billaalyare88@gmail.com",
+          openingHours: "Sa-Th 08:00-21:00",
+        }),
+      },
     ],
   }),
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
@@ -124,3 +146,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+

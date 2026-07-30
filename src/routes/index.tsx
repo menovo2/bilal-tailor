@@ -1,24 +1,56 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { SiteLayout } from "@/components/layout/site-layout";
+import { Hero } from "@/components/sections/hero";
+import { ServicesGrid } from "@/components/sections/services-grid";
+import { GalleryShowcase } from "@/components/sections/gallery-showcase";
+import { BookingSection } from "@/components/sections/booking-section";
+import { FaqSection } from "@/components/sections/faq-section";
+import { SectionHeading } from "@/components/ui/section-heading";
+import { LuxeButton } from "@/components/ui/luxe-button";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({
+    meta: [
+      { title: "BILAL TAILOR — Luxury Tailoring for Modern Gentlemen" },
+      {
+        name: "description",
+        content:
+          "Tolid heer sare ah oo ragga casriga ah: suit, safari, qamiis, surwaal iyo shaar oo qiyaas gaar ah lagu tolay. Dalbo hadda WhatsApp.",
+      },
+      { property: "og:title", content: "BILAL TAILOR — Luxury Tailoring for Modern Gentlemen" },
+      {
+        property: "og:description",
+        content: "Suit, safari, qamiis, surwaal iyo shaar oo si gaar ah loo tolay.",
+      },
+      { property: "og:url", content: "/" },
+    ],
+    links: [{ rel: "canonical", href: "/" }],
+  }),
+  component: HomePage,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function HomePage() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
+    <SiteLayout>
+      <Hero />
+      <ServicesGrid />
+      <section className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">
+        <SectionHeading
+          eyebrow="Gallery"
+          title="Shaqadeena"
+          description="Sawirada shaqadeena dhawaan waa la soo gelinayaa. Hadda daawo qaybaha oo dalbo."
+        />
+        <div className="mt-14">
+          <GalleryShowcase />
+        </div>
+        <div className="mt-14 flex justify-center">
+          <LuxeButton asChild variant="outline" size="lg">
+            <Link to="/gallery">Daawo Gallery-ga oo Dhan</Link>
+          </LuxeButton>
+        </div>
+      </section>
+      <BookingSection />
+      <FaqSection />
+    </SiteLayout>
   );
 }
