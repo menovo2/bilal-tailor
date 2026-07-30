@@ -1,7 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { SiteLayout } from "@/components/layout/site-layout";
 import { Hero } from "@/components/sections/hero";
-import { ServicesGrid } from "@/components/sections/services-grid";
 import { GalleryShowcase } from "@/components/sections/gallery-showcase";
 import { BookingSection } from "@/components/sections/booking-section";
 import { FaqSection } from "@/components/sections/faq-section";
@@ -33,7 +32,6 @@ function HomePage() {
   return (
     <SiteLayout>
       <Hero />
-      <ServicesGrid />
       <section className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">
         <SectionHeading
           eyebrow="Gallery"

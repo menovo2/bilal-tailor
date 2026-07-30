@@ -71,7 +71,7 @@
   --ring: oklch(0.78 0.09 84 / 55%);
   --gold: oklch(0.78 0.09 84);
   --gold-soft: oklch(0.88 0.06 90);
-  --brown: oklch(0.32 0.055 52);
+  --brown: oklch(0.48 0.14 55);
 
   --gradient-gold: linear-gradient(
     120deg,
@@ -102,6 +102,7 @@
     background-color: var(--color-background);
     color: var(--color-foreground);
     font-family: var(--font-sans);
+    font-weight: 600;
     -webkit-font-smoothing: antialiased;
   }
 
@@ -110,7 +111,7 @@
   h3,
   h4 {
     font-family: var(--font-display);
-    font-weight: 300;
+    font-weight: 700;
     letter-spacing: 0.01em;
   }
 
