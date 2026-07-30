@@ -25,18 +25,18 @@ export function PageHero({
   image: string;
 }) {
   return (
-    <section className="relative flex min-h-[62vh] items-end overflow-hidden">
-      <div className="absolute inset-0 -z-10">
+    <section className="relative isolate flex min-h-[62vh] items-end overflow-hidden">
+      <div className="absolute inset-0 z-0">
         <img
           src={image}
           alt={title}
-          loading="lazy"
           className="animate-hero-zoom h-full w-full object-cover"
         />
         <div className="absolute inset-0" style={{ background: "var(--gradient-veil)" }} />
-        <div className="absolute inset-0 bg-background/55" />
+        <div className="absolute inset-0 bg-background/45" />
       </div>
-      <div className="mx-auto w-full max-w-7xl px-5 pt-36 pb-16 sm:px-8">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pt-36 pb-16 sm:px-8">
+
         <p className="eyebrow">{eyebrow}</p>
         <h1 className="mt-5 max-w-3xl text-4xl leading-tight sm:text-5xl lg:text-6xl">{title}</h1>
         {description ? (
