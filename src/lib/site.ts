@@ -4,6 +4,11 @@ import cutting from "@/assets/cutting.jpg.asset.json";
 import pinning from "@/assets/pinning.jpg.asset.json";
 import tapeDark from "@/assets/tape-dark.jpg.asset.json";
 import tapeLight from "@/assets/tape-light.jpg.asset.json";
+import heroTailor from "@/assets/tailor-measuring.png.asset.json";
+import aboutRack from "@/assets/suit-rack-about.jpg.asset.json";
+import comingSoon from "@/assets/coming-soon.png.asset.json";
+import whatsappGold from "@/assets/whatsapp-gold.png.asset.json";
+
 
 /**
  * Central site configuration.
