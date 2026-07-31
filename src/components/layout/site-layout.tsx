@@ -1,13 +1,15 @@
 import type { ReactNode } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { WhatsappFloat } from "@/components/ui/whatsapp-float";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen overflow-x-hidden bg-background">
       <Navbar />
       <main className="animate-fade-in">{children}</main>
       <Footer />
+      <WhatsappFloat />
     </div>
   );
 }
@@ -25,22 +27,23 @@ export function PageHero({
   image: string;
 }) {
   return (
-    <section className="relative isolate flex min-h-[62vh] items-end overflow-hidden">
+    <section className="relative isolate flex min-h-[52vh] items-end overflow-hidden sm:min-h-[62vh]">
       <div className="absolute inset-0 z-0">
         <img
           src={image}
           alt={title}
-          className="animate-hero-zoom h-full w-full object-cover"
+          className="animate-hero-zoom h-full w-full object-cover object-center"
         />
         <div className="absolute inset-0" style={{ background: "var(--gradient-veil)" }} />
-        <div className="absolute inset-0 bg-background/45" />
+        <div className="absolute inset-0 bg-background/55" />
       </div>
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pt-36 pb-16 sm:px-8">
-
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pt-32 pb-12 sm:px-8 sm:pt-36 sm:pb-16">
         <p className="eyebrow">{eyebrow}</p>
-        <h1 className="mt-5 max-w-3xl text-4xl leading-tight sm:text-5xl lg:text-6xl">{title}</h1>
+        <h1 className="text-shadow-luxe mt-5 max-w-3xl text-3xl leading-tight sm:text-5xl lg:text-6xl">
+          {title}
+        </h1>
         {description ? (
-          <p className="mt-6 max-w-xl text-sm leading-relaxed text-foreground/80 sm:text-base">
+          <p className="text-shadow-luxe mt-5 max-w-xl text-sm leading-relaxed text-foreground/85 sm:text-base">
             {description}
           </p>
         ) : null}

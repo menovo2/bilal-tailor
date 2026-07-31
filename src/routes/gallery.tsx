@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout, PageHero } from "@/components/layout/site-layout";
 import { GalleryShowcase } from "@/components/sections/gallery-showcase";
-import { images } from "@/lib/site";
+import { useContent } from "@/lib/content-store";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -25,15 +25,16 @@ export const Route = createFileRoute("/gallery")({
 });
 
 function GalleryPage() {
+  const { content } = useContent();
   return (
     <SiteLayout>
       <PageHero
         eyebrow="Gallery"
-        title="Shaqadeena iyo Naqshadeena"
-        description="Sawirada rasmiga ah dhawaan waa la soo gelinayaa. Dooro qayb oo dalbo hadda."
-        image={images.measureLight}
+        title={content.galleryTitle}
+        description={content.galleryText}
+        image={content.galleryImage}
       />
-      <section className="mx-auto max-w-7xl px-5 py-20 sm:px-8 lg:py-28">
+      <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:py-28">
         <GalleryShowcase withFilter />
       </section>
     </SiteLayout>

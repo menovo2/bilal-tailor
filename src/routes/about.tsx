@@ -4,6 +4,7 @@ import { SiteLayout, PageHero } from "@/components/layout/site-layout";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/ui/reveal";
 import { images, services } from "@/lib/site";
+import { useContent } from "@/lib/content-store";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -60,14 +61,16 @@ const values = [
 ];
 
 function AboutPage() {
+  const { content } = useContent();
   return (
     <SiteLayout>
       <PageHero
         eyebrow="Ku Saabsan"
-        title="Sheekada BILAL TAILOR"
-        description="Dukaan tolid oo lagu dhisay tayo, khibrad iyo ixtiraam macmiil."
-        image={images.workshop}
+        title={content.aboutTitle}
+        description={content.aboutText}
+        image={content.aboutImage}
       />
+
 
       <section className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">
         <div className="grid items-center gap-14 lg:grid-cols-2">

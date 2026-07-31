@@ -3,40 +3,34 @@ import { useMemo, useState } from "react";
 import {
   BarChart3,
   CalendarCheck,
-  Github,
+  Eye,
+  EyeOff,
   HelpCircle,
   Home,
   Image as ImageIcon,
   Info,
   LogOut,
   MessageSquare,
-  Pencil,
   Plus,
+  RotateCcw,
   Scissors,
   Search,
   Trash2,
-  Upload,
 } from "lucide-react";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { cn } from "@/lib/utils";
 import { images, faqs as siteFaqs, services, site } from "@/lib/site";
-import {
-  mockBookings,
-  mockGallery,
-  mockMessages,
-  mockStats,
-  type AdminRecord,
-  type Booking,
-} from "@/lib/admin-data";
+import { useContent, type SiteContent } from "@/lib/content-store";
+import { mockBookings, mockMessages, type Booking } from "@/lib/admin-data";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
       { title: "Admin — BILAL TAILOR" },
-      { name: "description", content: "Maamulka mock-ka ah ee BILAL TAILOR." },
+      { name: "description", content: "Maamulka websaydka BILAL TAILOR." },
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Admin — BILAL TAILOR" },
-      { property: "og:description", content: "Maamulka mock-ka ah ee BILAL TAILOR." },
+      { property: "og:description", content: "Maamulka websaydka BILAL TAILOR." },
       { property: "og:url", content: "/admin" },
     ],
     links: [{ rel: "canonical", href: "/admin" }],
@@ -48,8 +42,8 @@ const sections = [
   { key: "dashboard", label: "Dashboard", icon: BarChart3 },
   { key: "home", label: "Home Page", icon: Home },
   { key: "about", label: "About", icon: Info },
-  { key: "services", label: "Services", icon: Scissors },
   { key: "gallery", label: "Gallery", icon: ImageIcon },
+  { key: "contact", label: "Contact", icon: Scissors },
   { key: "faq", label: "FAQ", icon: HelpCircle },
   { key: "bookings", label: "Bookings", icon: CalendarCheck },
   { key: "messages", label: "Messages", icon: MessageSquare },
@@ -58,12 +52,16 @@ const sections = [
 type SectionKey = (typeof sections)[number]["key"];
 
 const inputClass =
-  "mt-2 w-full rounded-lg border border-input bg-background/60 px-4 py-3 text-sm outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-gold";
+  "mt-2 w-full rounded-lg border border-input bg-background/60 px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-gold";
 const labelClass = "text-[0.64rem] tracking-[0.26em] text-gold uppercase";
 
 function AdminPage() {
   const [authed, setAuthed] = useState(false);
-  return authed ? <Dashboard onLogout={() => setAuthed(false)} /> : <Login onLogin={() => setAuthed(true)} />;
+  return authed ? (
+    <Dashboard onLogout={() => setAuthed(false)} />
+  ) : (
+    <Login onLogin={() => setAuthed(true)} />
+  );
 }
 
 function Login({ onLogin }: { onLogin: () => void }) {
@@ -74,7 +72,7 @@ function Login({ onLogin }: { onLogin: () => void }) {
           e.preventDefault();
           onLogin();
         }}
-        className="card-luxe w-full max-w-md rounded-xl p-8 sm:p-10"
+        className="card-luxe w-full max-w-md rounded-xl p-6 sm:p-10"
       >
         <img
           src={images.logo}
@@ -92,73 +90,120 @@ function Login({ onLogin }: { onLogin: () => void }) {
             <label className={labelClass} htmlFor="email">
               Email
             </label>
-            <input id="email" type="email" required defaultValue={site.email} className={inputClass} />
+            <input
+              id="email"
+              type="email"
+              required
+              defaultValue={site.email}
+              className={inputClass}
+            />
           </div>
           <div>
             <label className={labelClass} htmlFor="password">
               Password
             </label>
-            <input id="password" type="password" required defaultValue="demo1234" className={inputClass} />
+            <input
+              id="password"
+              type="password"
+              required
+              defaultValue="demo1234"
+              className={inputClass}
+            />
           </div>
         </div>
         <LuxeButton type="submit" size="lg" className="mt-8 w-full">
           Gal
         </LuxeButton>
         <p className="mt-5 text-center text-[0.68rem] text-muted-foreground">
-          Demo mock ah — ma jiro backend ama xog dhab ah.
+          Beddelada waxaa lagu kaydiyaa browser-kaaga (frontend only).
         </p>
       </form>
     </div>
   );
 }
 
+function Field({
+  label,
+  value,
+  onChange,
+  placeholder,
+  textarea,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  textarea?: boolean;
+}) {
+  return (
+    <div className="min-w-0">
+      <label className={labelClass}>{label}</label>
+      {textarea ? (
+        <textarea
+          rows={5}
+          value={value}
+          placeholder={placeholder}
+          onChange={(e) => onChange(e.target.value)}
+          className={inputClass}
+        />
+      ) : (
+        <input
+          value={value}
+          placeholder={placeholder}
+          onChange={(e) => onChange(e.target.value)}
+          className={inputClass}
+        />
+      )}
+    </div>
+  );
+}
+
 function Dashboard({ onLogout }: { onLogout: () => void }) {
+  const { content, update, updateItem, addItem, removeItem, reset } = useContent();
   const [section, setSection] = useState<SectionKey>("dashboard");
   const [query, setQuery] = useState("");
-  const [gallery, setGallery] = useState<AdminRecord[]>(mockGallery);
   const [bookings, setBookings] = useState<Booking[]>(mockBookings);
   const [filter, setFilter] = useState("Dhammaan");
 
+  const set = (key: keyof SiteContent) => (v: string) => update({ [key]: v } as Partial<SiteContent>);
+
   const filteredGallery = useMemo(
     () =>
-      gallery.filter(
+      content.gallery.filter(
         (g) =>
           (filter === "Dhammaan" || g.category === filter) &&
-          g.title.toLowerCase().includes(query.toLowerCase()),
+          g.label.toLowerCase().includes(query.toLowerCase()),
       ),
-    [gallery, query, filter],
+    [content.gallery, query, filter],
   );
 
-  const addGalleryItem = () =>
-    setGallery((prev) => [
-      {
-        id: `g${Date.now()}`,
-        title: "Sawir cusub",
-        category: services[0].key,
-        status: "Qarsoon",
-        imageUrl: "",
-        updatedAt: new Date().toISOString().slice(0, 10),
-      },
-      ...prev,
-    ]);
+  const stats = [
+    { label: "Sawirada Gallery", value: String(content.gallery.length) },
+    {
+      label: "Sawiro dhab ah",
+      value: String(content.gallery.filter((g) => g.imageUrl).length),
+    },
+    { label: "Dalabyada", value: String(bookings.length) },
+    { label: "Fariimo", value: String(mockMessages.length) },
+  ];
 
   return (
     <div className="min-h-screen bg-background lg:grid lg:grid-cols-[260px_1fr]">
       <aside className="border-b border-gold/15 bg-surface/50 lg:border-r lg:border-b-0">
-        <div className="flex items-center gap-3 px-6 py-6">
+        <div className="flex items-center gap-3 px-5 py-6 sm:px-6">
           <img
             src={images.logo}
             alt=""
             width={40}
             height={40}
-            className="h-10 w-10 rounded-full border border-gold/40 object-cover"
+            className="h-10 w-10 shrink-0 rounded-full border border-gold/40 object-cover"
           />
           <div className="min-w-0">
             <p className="truncate font-display text-base tracking-[0.2em] text-gold-soft">BILAL</p>
             <p className="text-[0.55rem] tracking-[0.38em] text-muted-foreground">ADMIN</p>
           </div>
         </div>
-        <nav className="flex gap-1 overflow-x-auto px-3 pb-4 lg:flex-col lg:overflow-visible">
+        <nav className="no-scrollbar flex gap-1 overflow-x-auto px-3 pb-4 lg:flex-col lg:overflow-visible">
           {sections.map((s) => (
             <button
               key={s.key}
@@ -189,7 +234,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               {sections.find((s) => s.key === section)?.label}
             </h1>
             <p className="mt-1 text-xs tracking-[0.18em] text-muted-foreground uppercase">
-              Maamul mock ah
+              Maamulka websaydka
             </p>
           </div>
           <div className="relative shrink-0">
@@ -199,7 +244,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Raadi..."
               aria-label="Raadi"
-              className="w-40 rounded-full border border-input bg-background/60 py-2.5 pr-4 pl-10 text-sm outline-none focus:border-gold sm:w-64"
+              className="w-36 rounded-full border border-input bg-background/60 py-2.5 pr-4 pl-10 text-sm text-foreground outline-none focus:border-gold sm:w-64"
             />
           </div>
         </header>
@@ -208,19 +253,86 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           {section === "dashboard" ? (
             <>
               <ul className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-                {mockStats.map((s) => (
+                {stats.map((s) => (
                   <li key={s.label} className="card-luxe rounded-lg p-6">
                     <p className="eyebrow">{s.label}</p>
                     <p className="mt-4 font-display text-4xl text-foreground">{s.value}</p>
-                    <p className="mt-2 text-xs text-gold">{s.delta}</p>
                   </li>
                 ))}
               </ul>
-              <div className="card-luxe mt-6 rounded-lg p-6">
+              <div className="card-luxe mt-6 rounded-lg p-5 sm:p-6">
                 <h2 className="text-xl">Dalabyada ugu dambeeyay</h2>
                 <BookingsTable bookings={bookings.slice(0, 3)} setBookings={setBookings} />
               </div>
+              <div className="card-luxe mt-6 flex flex-wrap items-center gap-4 rounded-lg p-5 sm:p-6">
+                <p className="min-w-0 text-sm text-muted-foreground">
+                  Dib u celi dhammaan qoraalada iyo sawirada sida asalka ah.
+                </p>
+                <LuxeButton variant="outline" size="sm" className="ml-auto" onClick={reset}>
+                  <RotateCcw size={13} /> Reset
+                </LuxeButton>
+              </div>
             </>
+          ) : null}
+
+          {section === "home" ? (
+            <div className="card-luxe rounded-lg p-5 sm:p-8">
+              <h2 className="text-xl">Qoraalka & Sawirka Home Page</h2>
+              <div className="mt-6 grid gap-6 lg:grid-cols-2">
+                <Field label="Eyebrow" value={content.heroEyebrow} onChange={set("heroEyebrow")} />
+                <Field label="Cinwaanka" value={content.heroTitle} onChange={set("heroTitle")} />
+                <Field
+                  label="Qeybta gold"
+                  value={content.heroHighlight}
+                  onChange={set("heroHighlight")}
+                />
+                <Field
+                  label="Sawirka background (URL)"
+                  value={content.heroImage}
+                  onChange={set("heroImage")}
+                  placeholder="https://..."
+                />
+                <div className="lg:col-span-2">
+                  <Field label="Qoraalka" value={content.heroText} onChange={set("heroText")} textarea />
+                </div>
+              </div>
+              <Preview src={content.heroImage} />
+            </div>
+          ) : null}
+
+          {section === "about" ? (
+            <div className="card-luxe rounded-lg p-5 sm:p-8">
+              <h2 className="text-xl">Qoraalka & Sawirka About</h2>
+              <div className="mt-6 grid gap-6 lg:grid-cols-2">
+                <Field label="Cinwaanka" value={content.aboutTitle} onChange={set("aboutTitle")} />
+                <Field
+                  label="Sawirka background (URL)"
+                  value={content.aboutImage}
+                  onChange={set("aboutImage")}
+                  placeholder="https://..."
+                />
+                <div className="lg:col-span-2">
+                  <Field
+                    label="Qoraalka"
+                    value={content.aboutText}
+                    onChange={set("aboutText")}
+                    textarea
+                  />
+                </div>
+              </div>
+              <Preview src={content.aboutImage} />
+            </div>
+          ) : null}
+
+          {section === "contact" ? (
+            <div className="card-luxe rounded-lg p-5 sm:p-8">
+              <h2 className="text-xl">Xiriirka</h2>
+              <div className="mt-6 grid gap-6 lg:grid-cols-2">
+                <Field label="WhatsApp (lambar)" value={content.whatsapp} onChange={set("whatsapp")} />
+                <Field label="Telefoon" value={content.phone} onChange={set("phone")} />
+                <Field label="Iimayl" value={content.email} onChange={set("email")} />
+              </div>
+            </div>
           ) : null}
 
           {section === "gallery" ? (
@@ -242,62 +354,69 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                     </button>
                   ))}
                 </div>
-                <LuxeButton size="sm" onClick={addGalleryItem}>
+                <LuxeButton
+                  size="sm"
+                  onClick={() => addItem(filter === "Dhammaan" ? services[0].key : filter)}
+                >
                   <Plus size={14} /> Ku dar
                 </LuxeButton>
               </div>
 
-              <div className="card-luxe mt-6 rounded-lg p-6">
-                <div className="flex items-center gap-3 rounded-lg border border-dashed border-gold/35 p-5">
-                  <Github size={18} className="shrink-0 text-gold" />
-                  <p className="text-xs text-muted-foreground">
-                    GitHub integration (dhawaan): halkan waxaad ka soo geli kartaa, bedeli kartaa ama
-                    tirtiri kartaa sawirada repo-ga. UI-ga waa diyaar, backend-ka lama xirin.
+              <div className="card-luxe mt-6 rounded-lg p-5 sm:p-6">
+                <div className="rounded-lg border border-dashed border-gold/35 p-4 sm:p-5">
+                  <p className="text-xs leading-relaxed text-muted-foreground">
+                    Ku dheji URL sawir kasta (tusaale: link GitHub raw ama Instagram CDN) si aad
+                    ku beddesho "Coming Soon". Haddii URL-ka banaan yahay, sawirka Coming Soon ayaa
+                    la tusayaa. Sidoo kale beddel magaca lambarka leh (Suit 1, Surwaal 4, iwm).
                   </p>
-                  <LuxeButton variant="outline" size="sm" className="ml-auto shrink-0" disabled>
-                    <Upload size={14} /> Upload
-                  </LuxeButton>
+                  <div className="mt-4">
+                    <Field
+                      label="Sawirka Coming Soon (URL)"
+                      value={content.comingSoonImage}
+                      onChange={set("comingSoonImage")}
+                    />
+                  </div>
                 </div>
 
                 <ul className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
                   {filteredGallery.map((g) => (
                     <li key={g.id} className="rounded-lg border border-gold/20 p-4">
-                      <div className="placeholder-luxe grid aspect-4/3 place-items-center rounded-md">
-                        <span className="relative z-10 font-display text-xl text-gold-soft">
-                          Coming Soon
-                        </span>
+                      <img
+                        src={g.imageUrl || content.comingSoonImage}
+                        alt={g.label}
+                        loading="lazy"
+                        className="aspect-4/3 w-full rounded-md object-cover"
+                      />
+                      <div className="mt-4 space-y-4">
+                        <Field
+                          label="Magaca"
+                          value={g.label}
+                          onChange={(v) => updateItem(g.id, { label: v })}
+                        />
+                        <Field
+                          label="Sawirka (URL)"
+                          value={g.imageUrl}
+                          onChange={(v) => updateItem(g.id, { imageUrl: v })}
+                          placeholder="https://raw.githubusercontent.com/..."
+                        />
                       </div>
-                      <p className="mt-4 truncate font-display text-lg">{g.title}</p>
-                      <p className="mt-1 text-[0.62rem] tracking-[0.22em] text-muted-foreground uppercase">
-                        {g.category} · {g.status} · {g.updatedAt}
+                      <p className="mt-3 text-[0.62rem] tracking-[0.22em] text-muted-foreground uppercase">
+                        {g.category} · {g.visible ? "Firfircoon" : "Qarsoon"}
                       </p>
-                      <div className="mt-4 flex gap-2">
+                      <div className="mt-4 flex flex-wrap gap-2">
                         <LuxeButton
                           variant="outline"
                           size="sm"
-                          onClick={() =>
-                            setGallery((prev) =>
-                              prev.map((x) =>
-                                x.id === g.id
-                                  ? {
-                                      ...x,
-                                      status: x.status === "Firfircoon" ? "Qarsoon" : "Firfircoon",
-                                    }
-                                  : x,
-                              ),
-                            )
-                          }
+                          onClick={() => updateItem(g.id, { visible: !g.visible })}
                         >
-                          <Pencil size={13} /> Edit
-                        </LuxeButton>
-                        <LuxeButton variant="dark" size="sm" disabled>
-                          <Upload size={13} /> Replace
+                          {g.visible ? <EyeOff size={13} /> : <Eye size={13} />}
+                          {g.visible ? "Qari" : "Muuji"}
                         </LuxeButton>
                         <LuxeButton
                           variant="ghost"
                           size="sm"
-                          aria-label={`Tirtir ${g.title}`}
-                          onClick={() => setGallery((prev) => prev.filter((x) => x.id !== g.id))}
+                          aria-label={`Tirtir ${g.label}`}
+                          onClick={() => removeItem(g.id)}
                         >
                           <Trash2 size={13} />
                         </LuxeButton>
@@ -313,7 +432,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           ) : null}
 
           {section === "bookings" ? (
-            <div className="card-luxe rounded-lg p-6">
+            <div className="card-luxe rounded-lg p-5 sm:p-6">
               <BookingsTable
                 bookings={bookings.filter(
                   (b) =>
@@ -332,8 +451,8 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                 .map((m) => (
                   <li key={m.id} className="card-luxe rounded-lg p-6">
                     <div className="flex items-center justify-between gap-3">
-                      <p className="font-display text-lg">{m.name}</p>
-                      <span className="rounded-full border border-gold/35 px-3 py-1 text-[0.58rem] tracking-[0.2em] text-gold uppercase">
+                      <p className="min-w-0 truncate font-display text-lg">{m.name}</p>
+                      <span className="shrink-0 rounded-full border border-gold/35 px-3 py-1 text-[0.58rem] tracking-[0.2em] text-gold uppercase">
                         {m.channel}
                       </span>
                     </div>
@@ -347,33 +466,34 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           ) : null}
 
           {section === "faq" ? (
-            <div className="card-luxe rounded-lg p-6">
+            <div className="card-luxe rounded-lg p-5 sm:p-6">
               <ul className="divide-y divide-gold/10">
                 {siteFaqs.map((f) => (
-                  <li key={f.q} className="flex items-start gap-4 py-5">
-                    <div className="min-w-0">
-                      <p className="font-display text-lg">{f.q}</p>
-                      <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
-                    </div>
-                    <div className="ml-auto flex shrink-0 gap-2">
-                      <LuxeButton variant="outline" size="sm">
-                        <Pencil size={13} /> Edit
-                      </LuxeButton>
-                      <LuxeButton variant="ghost" size="sm" aria-label="Tirtir su'aal">
-                        <Trash2 size={13} />
-                      </LuxeButton>
-                    </div>
+                  <li key={f.q} className="py-5">
+                    <p className="font-display text-lg">{f.q}</p>
+                    <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
                   </li>
                 ))}
               </ul>
             </div>
           ) : null}
-
-          {section === "home" || section === "about" || section === "services" ? (
-            <ContentEditor section={section} />
-          ) : null}
         </div>
       </div>
+    </div>
+  );
+}
+
+function Preview({ src }: { src: string }) {
+  if (!src) return null;
+  return (
+    <div className="mt-7">
+      <p className={labelClass}>Preview</p>
+      <img
+        src={src}
+        alt="Preview sawirka"
+        loading="lazy"
+        className="mt-3 max-h-72 w-full rounded-lg border border-gold/25 object-cover"
+      />
     </div>
   );
 }
@@ -427,42 +547,6 @@ function BookingsTable({
       {bookings.length === 0 ? (
         <p className="mt-4 text-sm text-muted-foreground">Wax dalab lama helin.</p>
       ) : null}
-    </div>
-  );
-}
-
-function ContentEditor({ section }: { section: "home" | "about" | "services" }) {
-  const titles = {
-    home: "Qoraalka Home Page",
-    about: "Qoraalka About Page",
-    services: "Adeegyada",
-  };
-  return (
-    <div className="card-luxe rounded-lg p-6 sm:p-8">
-      <h2 className="text-xl">{titles[section]}</h2>
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <div>
-          <label className={labelClass}>Cinwaanka</label>
-          <input className={inputClass} defaultValue="Luxury Tailoring for Modern Gentlemen" />
-        </div>
-        <div>
-          <label className={labelClass}>Sawirka (URL)</label>
-          <input className={inputClass} placeholder="https://raw.githubusercontent.com/..." />
-        </div>
-        <div className="lg:col-span-2">
-          <label className={labelClass}>Qoraalka</label>
-          <textarea rows={5} className={inputClass} defaultValue="Qoraal Soomaali ah oo la beddeli karo." />
-        </div>
-      </div>
-      <div className="mt-7 flex flex-wrap gap-3">
-        <LuxeButton size="sm">Update</LuxeButton>
-        <LuxeButton variant="outline" size="sm">
-          <Upload size={13} /> Replace Image
-        </LuxeButton>
-        <LuxeButton variant="dark" size="sm" disabled>
-          <Github size={13} /> Sync GitHub
-        </LuxeButton>
-      </div>
     </div>
   );
 }
