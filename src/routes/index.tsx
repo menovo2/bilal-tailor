@@ -19,7 +19,7 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "BILAL TAILOR — Luxury Tailoring for Modern Gentlemen" },
       {
         property: "og:description",
-        content: "Suit, safari, qamiis, surwaal iyo shaar oo si gaar ah loo tolay.",
+        content: "Tolid heer sare ah oo ragga casriga ah: suit, safari, qamiis, surwaal iyo shaar oo qiyaas gaar ah lagu tolay. Dalbo hadda WhatsApp.",
       },
       { property: "og:url", content: "/" },
     ],

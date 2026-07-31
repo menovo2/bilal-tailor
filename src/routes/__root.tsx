@@ -77,17 +77,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "BILAL TAILOR — Tolid Raaxo iyo Heer Sare" },
+      { title: "BILAL TAILOR — Luxury Tailoring for Modern Gentlemen" },
       {
         name: "description",
         content:
-          "BILAL TAILOR — tolid heer sare ah oo ragga casriga ah: suit, safari, qamiis, surwaal iyo shaar oo qiyaas gaar ah lagu tolay.",
+          "Tolid heer sare ah oo ragga casriga ah: suit, safari, qamiis, surwaal iyo shaar oo qiyaas gaar ah lagu tolay. Dalbo hadda WhatsApp.",
       },
       { name: "author", content: "BILAL TAILOR" },
       { property: "og:site_name", content: "BILAL TAILOR" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "theme-color", content: "#111111" },
+      { property: "og:title", content: "BILAL TAILOR — Luxury Tailoring for Modern Gentlemen" },
+      { name: "twitter:title", content: "BILAL TAILOR — Luxury Tailoring for Modern Gentlemen" },
+      { property: "og:description", content: "Tolid heer sare ah oo ragga casriga ah: suit, safari, qamiis, surwaal iyo shaar oo qiyaas gaar ah lagu tolay. Dalbo hadda WhatsApp." },
+      { name: "twitter:description", content: "Tolid heer sare ah oo ragga casriga ah: suit, safari, qamiis, surwaal iyo shaar oo qiyaas gaar ah lagu tolay. Dalbo hadda WhatsApp." },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/9dbd39c9-e997-4ae0-9bdd-31ef061d5243" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/9dbd39c9-e997-4ae0-9bdd-31ef061d5243" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
