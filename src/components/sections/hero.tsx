@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import { images, site, whatsappLink } from "@/lib/site";
+import { site, whatsappLink } from "@/lib/site";
+import { useContent } from "@/lib/content-store";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { Link } from "@tanstack/react-router";
 
 export function Hero() {
   const [offset, setOffset] = useState(0);
+  const { content } = useContent();
 
   useEffect(() => {
     const onScroll = () => setOffset(window.scrollY);
@@ -13,36 +15,32 @@ export function Hero() {
   }, []);
 
   return (
-    <section className="relative isolate flex min-h-[100svh] items-center overflow-hidden">
+    <section className="relative isolate flex min-h-[92svh] items-center overflow-hidden sm:min-h-[100svh]">
       <div
         className="absolute inset-0 z-0"
-        style={{ transform: `translate3d(0, ${offset * 0.25}px, 0)` }}
+        style={{ transform: `translate3d(0, ${offset * 0.2}px, 0)` }}
         aria-hidden="true"
       >
         <img
-          src={images.hero}
-          alt="Jaakadaha suit-yada oo saaran raq gudaha dukaanka tolidda BILAL TAILOR"
-          className="animate-hero-zoom h-[115%] w-full object-cover"
+          src={content.heroImage}
+          alt="Tailor-ka oo qiyaasaya jaakad suit gudaha dukaanka BILAL TAILOR"
+          className="animate-hero-zoom h-[112%] w-full object-cover object-center"
         />
         <div className="absolute inset-0" style={{ background: "var(--gradient-veil)" }} />
-        <div className="absolute inset-0 bg-background/35" />
+        <div className="absolute inset-0 bg-background/55" />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pt-32 pb-24 sm:px-8">
-
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pt-28 pb-20 sm:px-8 sm:pt-32 sm:pb-24">
         <div className="max-w-3xl">
-          <p className="eyebrow animate-fade-in">{site.tagline}</p>
-          <h1 className="animate-fade-in mt-6 text-4xl leading-[1.05] sm:text-6xl lg:text-7xl">
-            Luxury Tailoring for{" "}
-            <span className="text-gold-gradient">Modern Gentlemen</span>
+          <p className="eyebrow animate-fade-in">{content.heroEyebrow || site.tagline}</p>
+          <h1 className="animate-fade-in text-shadow-luxe mt-5 text-3xl leading-[1.08] sm:text-6xl lg:text-7xl">
+            {content.heroTitle} <span className="text-gold-gradient">{content.heroHighlight}</span>
           </h1>
-          <div className="hairline mt-8 w-32" aria-hidden="true" />
-          <p className="animate-fade-in mt-8 max-w-xl text-sm leading-relaxed text-foreground/80 sm:text-base">
-            BILAL TAILOR waa goobta ay ragga casriga ah ka helaan dhar la tolay si gaar ah — suit,
-            safari, qamiis, surwaal iyo shaar. Qiyaas sax ah, maro tayada ugu sarreysa, iyo tolid
-            gacan farsamo leh oo sharaf iyo kalsooni kuu soo kordhisa.
+          <div className="hairline mt-7 w-32" aria-hidden="true" />
+          <p className="animate-fade-in text-shadow-luxe mt-7 max-w-xl text-sm leading-relaxed text-foreground/85 sm:text-base">
+            {content.heroText}
           </p>
-          <div className="mt-11 flex flex-wrap items-center gap-4">
+          <div className="mt-10 flex flex-wrap items-center gap-3 sm:gap-4">
             <LuxeButton asChild size="lg">
               <a
                 href={whatsappLink("Salaan, waxaan rabaa inaan dalbado adeeg tolid.")}
