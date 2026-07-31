@@ -10,11 +10,11 @@ export function BookingSection() {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const message = [
-      "ASC BILAL TAILOR, waxaan rabaa inaan dalbado:",
-      `Magacaga oo saddexan : ${form.name}`,
-      `Lambarkaga: ${form.phone}`,
-      `Nooca Dharka: ${form.type}`,
-      form.notes ? `Faahfaahi Dalabkaaga: ${form.notes}` : "",
+      "ASC BILAL TAILOR, waxaan rabaa in aan dalbado:",
+      `Magacaygu waa : ${form.name}`,
+      `Lambarkayguna waa : ${form.phone}`,
+      `Nooca Dharka : ${form.type}`,
+      form.notes ? `Faahfaahita Dalabkayga: ${form.notes}` : "",
     ]
       .filter(Boolean)
       .join("\n");
