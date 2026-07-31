@@ -10,7 +10,7 @@ import { LuxeButton } from "@/components/ui/luxe-button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "BILAL TAILOR — Luxury Tailoring for MEN" },
+      { title: "BILAL TAILOR — Luxury Tailoring for MEN." },
       {
         name: "description",
         content:
