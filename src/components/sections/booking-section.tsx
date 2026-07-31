@@ -50,7 +50,7 @@ export function BookingSection() {
                   required
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Magacaaga oo buuxa"
+                  placeholder="Tusaale:- Bilal Abdalla "
                   className={field}
                 />
               </div>
