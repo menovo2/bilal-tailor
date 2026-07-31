@@ -146,7 +146,7 @@ function AdminRoute() {
                         <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full font-medium">{item.category}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-[px] font-bold uppercase tracking-widest ${item.status === 'Published' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                        <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${item.status === 'Published' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
                           {item.status}
                         </span>
                       </td>
