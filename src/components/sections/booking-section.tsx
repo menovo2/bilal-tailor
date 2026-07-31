@@ -10,11 +10,11 @@ export function BookingSection() {
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const message = [
-      "Salaan BILAL TAILOR, waxaan rabaa inaan dalbado:",
-      `Magaca: ${form.name}`,
-      `Lambarka: ${form.phone}`,
+      "ASC BILAL TAILOR, waxaan rabaa inaan dalbado:",
+      `Magacaga oo saddexan : ${form.name}`,
+      `Lambarkaga: ${form.phone}`,
       `Nooca Dharka: ${form.type}`,
-      form.notes ? `Faahfaahin: ${form.notes}` : "",
+      form.notes ? `Faahfaahi Dalabkaaga: ${form.notes}` : "",
     ]
       .filter(Boolean)
       .join("\n");
@@ -31,19 +31,19 @@ export function BookingSection() {
         <SectionHeading
           eyebrow="Dalbo"
           title="Ballan Qabso Hadda"
-          description="Buuxi foomka oo waxaan kula soo xiriirnaa WhatsApp gudaha daqiiqado, si aan qiyaasta iyo qiimaha aan u qorsheyno."
+          description="Buuxi foomka dalabka waxan kugula soo xidhiidhaynaa wakhti kooban. "
         />
 
         <Reveal className="mx-auto mt-14 max-w-3xl" delay={120}>
           <form
             onSubmit={submit}
             className="card-luxe rounded-xl p-7 sm:p-10"
-            aria-label="Foomka ballanqaadka"
+            aria-label="Foomka ballanta"
           >
             <div className="grid gap-6 sm:grid-cols-2">
               <div>
                 <label className={label} htmlFor="name">
-                  Magaca
+                  Magacaga oo Saddexan
                 </label>
                 <input
                   id="name"
@@ -70,7 +70,7 @@ export function BookingSection() {
               </div>
               <div className="sm:col-span-2">
                 <label className={label} htmlFor="type">
-                  Nooca Dharka
+                  Dooro Nooca Dharka
                 </label>
                 <select
                   id="type"
@@ -87,7 +87,7 @@ export function BookingSection() {
               </div>
               <div className="sm:col-span-2">
                 <label className={label} htmlFor="notes">
-                  Faahfaahin Dheeraad ah
+                  Faahfaahi Dalabkaaga
                 </label>
                 <textarea
                   id="notes"
