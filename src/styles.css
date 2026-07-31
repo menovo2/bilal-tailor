@@ -137,6 +137,25 @@
   }
 }
 
+/* Keeps text legible over any photo background. */
+@utility text-shadow-luxe {
+  text-shadow: 0 2px 18px oklch(0.145 0 0 / 85%);
+}
+
+@keyframes wa-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 10px oklch(0.78 0.09 84 / 55%));
+  }
+  50% {
+    filter: drop-shadow(0 0 26px oklch(0.88 0.08 90 / 85%));
+  }
+}
+
+@utility wa-glow {
+  animation: wa-pulse 2.8s ease-in-out infinite;
+}
+
 @utility text-gold-gradient {
   background: var(--gradient-gold);
   -webkit-background-clip: text;
