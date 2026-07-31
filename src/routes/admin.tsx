@@ -1,23 +1,40 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { createFileRoute } from '@tanstack/react-router';
 import { 
   LayoutDashboard, FileText, Users, Settings, PlusCircle, 
   Search, Bell, Edit3, Trash2, ExternalLink, BarChart3, ChevronRight 
 } from 'lucide-react';
 
-export default function AdminRoute() {
+export const Route = createFileRoute('/admin')({
+  component: AdminRoute,
+  head: () => ({
+    meta: [
+      { title: 'Admin | BILAL TAILOR' },
+      { name: 'description', content: 'Maamulka nuxurka BILAL TAILOR: gallery, dalabyo iyo fariimo.' },
+      { property: 'og:title', content: 'Admin | BILAL TAILOR' },
+      { property: 'og:description', content: 'Maamulka nuxurka BILAL TAILOR: gallery, dalabyo iyo fariimo.' },
+      { property: 'og:type', content: 'website' },
+      { name: 'twitter:card', content: 'summary_large_image' },
+      { name: 'robots', content: 'noindex, nofollow' },
+    ],
+  }),
+});
+
+function AdminRoute() {
   const [activeTab, setActiveTab] = useState('posts');
 
   // Realistic mock data for display
   const [contentItems] = useState([
-    { id: title: 'Luxury Brand Launch', date: 'Jul ', status: 'Published' },
-    { id: title: 'Summer Collection Preview', date: 'Jul ', status: 'Draft' },
-    { id: title: 'date: 'Jun ', status: 'Published' },
+    { id: '1', title: 'Luxury Brand Launch', category: 'Brand', date: 'Jul 24, 2026', status: 'Published' },
+    { id: '2', title: 'Summer Collection Preview', category: 'Gallery', date: 'Jul 18, 2026', status: 'Draft' },
+    { id: '3', title: 'Tailoring Guide', category: 'Journal', date: 'Jun 30, 2026', status: 'Published' },
   ]);
 
   return (
-    <div className="flex h-screen bg-[#ffafc]">
+    <div className="flex h-screen bg-slate-50">
       {/* SIDEBAR - Dark Luxury Theme */}
-      <aside className="w-72 bg-[#fa] text-white hidden md:flex flex-col shadow-2xl">
+      <aside className="w-72 bg-slate-900 text-white hidden md:flex flex-col shadow-2xl">
+
         <div className="p-8 border-b border-slate-800">
           <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-200 to-yellow-500 bg-clip-text text-transparent flex items-center gap-2">
              Site Control
