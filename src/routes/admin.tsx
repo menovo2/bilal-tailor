@@ -1,468 +1,151 @@
-import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import {
-  BarChart3,
-  CalendarCheck,
-  Github,
-  HelpCircle,
-  Home,
-  Image as ImageIcon,
-  Info,
-  LogOut,
-  MessageSquare,
-  Pencil,
-  Plus,
-  Scissors,
-  Search,
-  Trash2,
-  Upload,
-} from "lucide-react";
-import { LuxeButton } from "@/components/ui/luxe-button";
-import { cn } from "@/lib/utils";
-import { images, faqs as siteFaqs, services, site } from "@/lib/site";
-import {
-  mockBookings,
-  mockGallery,
-  mockMessages,
-  mockStats,
-  type AdminRecord,
-  type Booking,
-} from "@/lib/admin-data";
+import React, { useState } from 'react';
+import { 
+  LayoutDashboard, FileText, Users, Settings, PlusCircle, 
+  Search, Bell, Edit3, Trash2, ExternalLink, BarChart3, ChevronRight 
+} from 'lucide-react';
 
-export const Route = createFileRoute("/admin")({
-  head: () => ({
-    meta: [
-      { title: "Admin — BILAL TAILOR" },
-      { name: "description", content: "Maamulka mock-ka ah ee BILAL TAILOR." },
-      { name: "robots", content: "noindex" },
-      { property: "og:title", content: "Admin — BILAL TAILOR" },
-      { property: "og:description", content: "Maamulka mock-ka ah ee BILAL TAILOR." },
-      { property: "og:url", content: "/admin" },
-    ],
-    links: [{ rel: "canonical", href: "/admin" }],
-  }),
-  component: AdminPage,
-});
+export default function AdminRoute() {
+  const [activeTab, setActiveTab] = useState('posts');
 
-const sections = [
-  { key: "dashboard", label: "Dashboard", icon: BarChart3 },
-  { key: "home", label: "Home Page", icon: Home },
-  { key: "about", label: "About", icon: Info },
-  { key: "services", label: "Services", icon: Scissors },
-  { key: "gallery", label: "Gallery", icon: ImageIcon },
-  { key: "faq", label: "FAQ", icon: HelpCircle },
-  { key: "bookings", label: "Bookings", icon: CalendarCheck },
-  { key: "messages", label: "Messages", icon: MessageSquare },
-] as const;
-
-type SectionKey = (typeof sections)[number]["key"];
-
-const inputClass =
-  "mt-2 w-full rounded-lg border border-input bg-background/60 px-4 py-3 text-sm outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-gold";
-const labelClass = "text-[0.64rem] tracking-[0.26em] text-gold uppercase";
-
-function AdminPage() {
-  const [authed, setAuthed] = useState(false);
-  return authed ? <Dashboard onLogout={() => setAuthed(false)} /> : <Login onLogin={() => setAuthed(true)} />;
-}
-
-function Login({ onLogin }: { onLogin: () => void }) {
-  return (
-    <div className="grid min-h-screen place-items-center bg-background px-5 py-16">
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          onLogin();
-        }}
-        className="card-luxe w-full max-w-md rounded-xl p-8 sm:p-10"
-      >
-        <img
-          src={images.logo}
-          alt={`Astaanta ${site.name}`}
-          width={64}
-          height={64}
-          className="mx-auto h-16 w-16 rounded-full border border-gold/40 object-cover"
-        />
-        <h1 className="mt-6 text-center text-3xl">Admin Panel</h1>
-        <p className="mt-3 text-center text-xs tracking-[0.2em] text-muted-foreground uppercase">
-          BILAL TAILOR
-        </p>
-        <div className="mt-8 space-y-5">
-          <div>
-            <label className={labelClass} htmlFor="email">
-              Email
-            </label>
-            <input id="email" type="email" required defaultValue={site.email} className={inputClass} />
-          </div>
-          <div>
-            <label className={labelClass} htmlFor="password">
-              Password
-            </label>
-            <input id="password" type="password" required defaultValue="demo1234" className={inputClass} />
-          </div>
-        </div>
-        <LuxeButton type="submit" size="lg" className="mt-8 w-full">
-          Gal
-        </LuxeButton>
-        <p className="mt-5 text-center text-[0.68rem] text-muted-foreground">
-          Demo mock ah — ma jiro backend ama xog dhab ah.
-        </p>
-      </form>
-    </div>
-  );
-}
-
-function Dashboard({ onLogout }: { onLogout: () => void }) {
-  const [section, setSection] = useState<SectionKey>("dashboard");
-  const [query, setQuery] = useState("");
-  const [gallery, setGallery] = useState<AdminRecord[]>(mockGallery);
-  const [bookings, setBookings] = useState<Booking[]>(mockBookings);
-  const [filter, setFilter] = useState("Dhammaan");
-
-  const filteredGallery = useMemo(
-    () =>
-      gallery.filter(
-        (g) =>
-          (filter === "Dhammaan" || g.category === filter) &&
-          g.title.toLowerCase().includes(query.toLowerCase()),
-      ),
-    [gallery, query, filter],
-  );
-
-  const addGalleryItem = () =>
-    setGallery((prev) => [
-      {
-        id: `g${Date.now()}`,
-        title: "Sawir cusub",
-        category: services[0].key,
-        status: "Qarsoon",
-        imageUrl: "",
-        updatedAt: new Date().toISOString().slice(0, 10),
-      },
-      ...prev,
-    ]);
+  // Realistic mock data for display
+  const [contentItems] = useState([
+    { id: title: 'Luxury Brand Launch', date: 'Jul ', status: 'Published' },
+    { id: title: 'Summer Collection Preview', date: 'Jul ', status: 'Draft' },
+    { id: title: 'date: 'Jun ', status: 'Published' },
+  ]);
 
   return (
-    <div className="min-h-screen bg-background lg:grid lg:grid-cols-[260px_1fr]">
-      <aside className="border-b border-gold/15 bg-surface/50 lg:border-r lg:border-b-0">
-        <div className="flex items-center gap-3 px-6 py-6">
-          <img
-            src={images.logo}
-            alt=""
-            width={40}
-            height={40}
-            className="h-10 w-10 rounded-full border border-gold/40 object-cover"
-          />
-          <div className="min-w-0">
-            <p className="truncate font-display text-base tracking-[0.2em] text-gold-soft">BILAL</p>
-            <p className="text-[0.55rem] tracking-[0.38em] text-muted-foreground">ADMIN</p>
-          </div>
+    <div className="flex h-screen bg-[#ffafc]">
+      {/* SIDEBAR - Dark Luxury Theme */}
+      <aside className="w-72 bg-[#fa] text-white hidden md:flex flex-col shadow-2xl">
+        <div className="p-8 border-b border-slate-800">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-amber-200 to-yellow-500 bg-clip-text text-transparent flex items-center gap-2">
+             Site Control
+          </h1>
         </div>
-        <nav className="flex gap-1 overflow-x-auto px-3 pb-4 lg:flex-col lg:overflow-visible">
-          {sections.map((s) => (
-            <button
-              key={s.key}
-              onClick={() => setSection(s.key)}
-              className={cn(
-                "flex shrink-0 items-center gap-3 rounded-lg px-4 py-3 text-left text-xs tracking-[0.16em] uppercase transition-colors",
-                section === s.key
-                  ? "bg-gold/12 text-gold"
-                  : "text-muted-foreground hover:bg-gold/5 hover:text-gold",
-              )}
-            >
-              <s.icon size={16} /> {s.label}
-            </button>
-          ))}
-          <button
-            onClick={onLogout}
-            className="flex shrink-0 items-center gap-3 rounded-lg px-4 py-3 text-xs tracking-[0.16em] text-muted-foreground uppercase transition-colors hover:text-destructive"
-          >
-            <LogOut size={16} /> Ka bax
+        
+        <nav className="flex-1 px-4 py-6 space-y-2">
+          <button onClick={() => setActiveTab('dash')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${activeTab === 'dash' ? 'bg-amber-500/10 text-amber-400 border-l-4 border-amber-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+            <LayoutDashboard size={20} /> Dashboard
+          </button>
+          <button onClick={() => setActiveTab('posts')} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition ${activeTab === 'posts' ? 'bg-amber-500/10 text-amber-400 border-l-4 border-amber-500' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}>
+            <FileText size={20} /> Manage Content
+          </button>
+          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+            <Users size={20} /> User Management
+          </button>
+          <div className="pt-4 pb-2 px-4 text-xs font-semibold text-slate-500 uppercase tracking-widest">Preferences</div>
+          <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition">
+            <Settings size={20} /> Global Settings
           </button>
         </nav>
       </aside>
 
-      <div className="p-5 sm:p-8">
-        <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4 sm:flex sm:justify-between">
-          <div className="min-w-0">
-            <h1 className="truncate text-2xl sm:text-3xl">
-              {sections.find((s) => s.key === section)?.label}
-            </h1>
-            <p className="mt-1 text-xs tracking-[0.18em] text-muted-foreground uppercase">
-              Maamul mock ah
-            </p>
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 flex flex-col overflow-hidden">
+        {/* HEADER */}
+        <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-8 z-10 shadow-sm">
+          <div className="relative w-96">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+            <input type="text" placeholder="Search entries, logs, or users..." className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:bg-white outline-none transition" />
           </div>
-          <div className="relative shrink-0">
-            <Search size={15} className="absolute top-1/2 left-4 -translate-y-1/2 text-gold" />
-            <input
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Raadi..."
-              aria-label="Raadi"
-              className="w-40 rounded-full border border-input bg-background/60 py-2.5 pr-4 pl-10 text-sm outline-none focus:border-gold sm:w-64"
-            />
+          <div className="flex items-center gap-6">
+            <div className="relative cursor-pointer hover:bg-slate-100 p-2 rounded-full transition">
+              <Bell size={20} className="text-slate-500" />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border-2 border-white"></span>
+            </div>
+            <div className="flex items-center gap-3 border-l pl-6 border-slate-200">
+              <div className="text-right hidden sm:block">
+                <p className="text-sm font-bold text-slate-800">Admin User</p>
+                <p className="text-xs text-slate-500">Super Administrator</p>
+              </div>
+              <div className="w-10 h-10 bg-amber-500 rounded-xl flex items-center justify-center font-bold text-white shadow-lg shadow-amber-500/30">AU</div>
+            </div>
           </div>
         </header>
 
-        <div className="mt-8">
-          {section === "dashboard" ? (
-            <>
-              <ul className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
-                {mockStats.map((s) => (
-                  <li key={s.label} className="card-luxe rounded-lg p-6">
-                    <p className="eyebrow">{s.label}</p>
-                    <p className="mt-4 font-display text-4xl text-foreground">{s.value}</p>
-                    <p className="mt-2 text-xs text-gold">{s.delta}</p>
-                  </li>
-                ))}
-              </ul>
-              <div className="card-luxe mt-6 rounded-lg p-6">
-                <h2 className="text-xl">Dalabyada ugu dambeeyay</h2>
-                <BookingsTable bookings={bookings.slice(0, 3)} setBookings={setBookings} />
-              </div>
-            </>
-          ) : null}
+        <div className="flex-1 overflow-y-auto p-8 space-y-8">
+          {/* WELCOME SECTION */}
+          <div>
+            <h2 className="text-2xl font-bold text-slate-800">Overview Dashboard</h2>
+            <p className="text-slate-500">Welcome back. Here is what's happening with your site today.</p>
+          </div>
 
-          {section === "gallery" ? (
-            <>
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex flex-wrap gap-2">
-                  {["Dhammaan", ...services.map((s) => s.key)].map((c) => (
-                    <button
-                      key={c}
-                      onClick={() => setFilter(c)}
-                      className={cn(
-                        "rounded-full border px-4 py-2 text-[0.62rem] tracking-[0.2em] uppercase transition-colors",
-                        filter === c
-                          ? "border-gold bg-gold text-primary-foreground"
-                          : "border-gold/30 text-muted-foreground hover:text-gold",
-                      )}
-                    >
-                      {c}
-                    </button>
-                  ))}
+          {/* KPI CARDS */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-slate-500 text-sm font-medium uppercase">Active Content</p>
+                  <h3 className="text-3xl font-bold mt-1 text-slate-800">1,284</h3>
+                  <p className="text-xs text-green-600 font-bold mt-2">+12% from last month</p>
                 </div>
-                <LuxeButton size="sm" onClick={addGalleryItem}>
-                  <Plus size={14} /> Ku dar
-                </LuxeButton>
+                <div className="p-3 bg-amber-50 text-amber-600 rounded-xl"><FileText size={24} /></div>
               </div>
-
-              <div className="card-luxe mt-6 rounded-lg p-6">
-                <div className="flex items-center gap-3 rounded-lg border border-dashed border-gold/35 p-5">
-                  <Github size={18} className="shrink-0 text-gold" />
-                  <p className="text-xs text-muted-foreground">
-                    GitHub integration (dhawaan): halkan waxaad ka soo geli kartaa, bedeli kartaa ama
-                    tirtiri kartaa sawirada repo-ga. UI-ga waa diyaar, backend-ka lama xirin.
-                  </p>
-                  <LuxeButton variant="outline" size="sm" className="ml-auto shrink-0" disabled>
-                    <Upload size={14} /> Upload
-                  </LuxeButton>
+            </div>
+            <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="text-slate-500 text-sm font-medium uppercase">Site Traffic</p>
+                  <h3 className="text-3xl font-bold mt-1 text-slate-800">42.5k</h3>
+                  <p className="text-xs text-blue-600 font-bold mt-2">Currently 412 active now</p>
                 </div>
+                <div className="p-3 bg-blue-50 text-blue-600 rounded-xl"><BarChart3 size={24} /></div>
+              </div>
+            </div>
+            <div className="bg-white p-6 rounded-2xl border border-dashed border-amber-300 bg-amber-50/30 flex items-center justify-center group cursor-pointer">
+              <div className="text-center">
+                <PlusCircle size={32} className="mx-auto text-amber-600 group-hover:scale-110 transition" />
+                <p className="mt-2 font-bold text-amber-800 uppercase text-xs tracking-widest">Create New Post</p>
+              </div>
+            </div>
+          </div>
 
-                <ul className="mt-6 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                  {filteredGallery.map((g) => (
-                    <li key={g.id} className="rounded-lg border border-gold/20 p-4">
-                      <div className="placeholder-luxe grid aspect-4/3 place-items-center rounded-md">
-                        <span className="relative z-10 font-display text-xl text-gold-soft">
-                          Coming Soon
+          {/* DATA TABLE SECTION */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+              <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <FileText size={18} className="text-amber-500" /> Recent Content Publications
+              </h2>
+              <button className="text-xs text-amber-600 font-bold flex items-center gap-1 hover:underline">View All Records <ChevronRight size={14} /></button>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="bg-slate-50 border-b border-slate-200">
+                  <tr className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    <th className="px-6 py-4">Article Title</th>
+                    <th className="px-6 py-4">Date Added</th>
+                    <th className="px-6 py-4">Department</th>
+                    <th className="px-6 py-4">Visibility</th>
+                    <th className="px-6 py-4 text-right">Management</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {contentItems.map((item) => (
+                    <tr key={item.id} className="hover:bg-slate-50/80 transition group">
+                      <td className="px-6 py-4 font-semibold text-slate-800">{item.title}</td>
+                      <td className="px-6 py-4 text-slate-500 text-sm">{item.date}</td>
+                      <td className="px-6 py-4 text-sm">
+                        <span className="px-3 py-1 bg-slate-100 text-slate-600 rounded-full font-medium">{item.category}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <span className={`px-3 py-1 rounded-full text-[px] font-bold uppercase tracking-widest ${item.status === 'Published' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'}`}>
+                          {item.status}
                         </span>
-                      </div>
-                      <p className="mt-4 truncate font-display text-lg">{g.title}</p>
-                      <p className="mt-1 text-[0.62rem] tracking-[0.22em] text-muted-foreground uppercase">
-                        {g.category} · {g.status} · {g.updatedAt}
-                      </p>
-                      <div className="mt-4 flex gap-2">
-                        <LuxeButton
-                          variant="outline"
-                          size="sm"
-                          onClick={() =>
-                            setGallery((prev) =>
-                              prev.map((x) =>
-                                x.id === g.id
-                                  ? {
-                                      ...x,
-                                      status: x.status === "Firfircoon" ? "Qarsoon" : "Firfircoon",
-                                    }
-                                  : x,
-                              ),
-                            )
-                          }
-                        >
-                          <Pencil size={13} /> Edit
-                        </LuxeButton>
-                        <LuxeButton variant="dark" size="sm" disabled>
-                          <Upload size={13} /> Replace
-                        </LuxeButton>
-                        <LuxeButton
-                          variant="ghost"
-                          size="sm"
-                          aria-label={`Tirtir ${g.title}`}
-                          onClick={() => setGallery((prev) => prev.filter((x) => x.id !== g.id))}
-                        >
-                          <Trash2 size={13} />
-                        </LuxeButton>
-                      </div>
-                    </li>
+                      </td>
+                      <td className="px-6 py-4 text-right space-x-3">
+                        <button title="Edit Post" className="text-slate-400 hover:text-amber-600 transition"><Edit3 size={18} /></button>
+                        <button title="View Live" className="text-slate-400 hover:text-blue-600 transition"><ExternalLink size={18} /></button>
+                        <button title="Delete" className="text-slate-400 hover:text-red-600 transition"><Trash2 size={18} /></button>
+                      </td>
+                    </tr>
                   ))}
-                </ul>
-                {filteredGallery.length === 0 ? (
-                  <p className="mt-6 text-sm text-muted-foreground">Wax natiijo lama helin.</p>
-                ) : null}
-              </div>
-            </>
-          ) : null}
-
-          {section === "bookings" ? (
-            <div className="card-luxe rounded-lg p-6">
-              <BookingsTable
-                bookings={bookings.filter(
-                  (b) =>
-                    b.name.toLowerCase().includes(query.toLowerCase()) ||
-                    b.type.toLowerCase().includes(query.toLowerCase()),
-                )}
-                setBookings={setBookings}
-              />
+                </tbody>
+              </table>
             </div>
-          ) : null}
-
-          {section === "messages" ? (
-            <ul className="grid gap-5 sm:grid-cols-2">
-              {mockMessages
-                .filter((m) => m.text.toLowerCase().includes(query.toLowerCase()))
-                .map((m) => (
-                  <li key={m.id} className="card-luxe rounded-lg p-6">
-                    <div className="flex items-center justify-between gap-3">
-                      <p className="font-display text-lg">{m.name}</p>
-                      <span className="rounded-full border border-gold/35 px-3 py-1 text-[0.58rem] tracking-[0.2em] text-gold uppercase">
-                        {m.channel}
-                      </span>
-                    </div>
-                    <p className="mt-3 text-sm text-muted-foreground">{m.text}</p>
-                    <p className="mt-4 text-[0.62rem] tracking-[0.22em] text-muted-foreground uppercase">
-                      {m.date}
-                    </p>
-                  </li>
-                ))}
-            </ul>
-          ) : null}
-
-          {section === "faq" ? (
-            <div className="card-luxe rounded-lg p-6">
-              <ul className="divide-y divide-gold/10">
-                {siteFaqs.map((f) => (
-                  <li key={f.q} className="flex items-start gap-4 py-5">
-                    <div className="min-w-0">
-                      <p className="font-display text-lg">{f.q}</p>
-                      <p className="mt-2 text-sm text-muted-foreground">{f.a}</p>
-                    </div>
-                    <div className="ml-auto flex shrink-0 gap-2">
-                      <LuxeButton variant="outline" size="sm">
-                        <Pencil size={13} /> Edit
-                      </LuxeButton>
-                      <LuxeButton variant="ghost" size="sm" aria-label="Tirtir su'aal">
-                        <Trash2 size={13} />
-                      </LuxeButton>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-
-          {section === "home" || section === "about" || section === "services" ? (
-            <ContentEditor section={section} />
-          ) : null}
+          </div>
         </div>
-      </div>
-    </div>
-  );
-}
-
-function BookingsTable({
-  bookings,
-  setBookings,
-}: {
-  bookings: Booking[];
-  setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
-}) {
-  return (
-    <div className="mt-5 overflow-x-auto">
-      <table className="w-full min-w-160 text-left text-sm">
-        <thead>
-          <tr className="text-[0.6rem] tracking-[0.22em] text-gold uppercase">
-            <th className="pb-4">Magaca</th>
-            <th className="pb-4">Lambar</th>
-            <th className="pb-4">Nooca</th>
-            <th className="pb-4">Xaalad</th>
-            <th className="pb-4">Taariikh</th>
-            <th className="pb-4" />
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gold/10">
-          {bookings.map((b) => (
-            <tr key={b.id} className="text-muted-foreground">
-              <td className="py-4 text-foreground">{b.name}</td>
-              <td className="py-4">{b.phone}</td>
-              <td className="py-4">{b.type}</td>
-              <td className="py-4">
-                <span className="rounded-full border border-gold/35 px-3 py-1 text-[0.58rem] tracking-[0.18em] text-gold uppercase">
-                  {b.status}
-                </span>
-              </td>
-              <td className="py-4">{b.date}</td>
-              <td className="py-4 text-right">
-                <LuxeButton
-                  variant="ghost"
-                  size="sm"
-                  aria-label={`Tirtir dalabka ${b.name}`}
-                  onClick={() => setBookings((prev) => prev.filter((x) => x.id !== b.id))}
-                >
-                  <Trash2 size={13} />
-                </LuxeButton>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {bookings.length === 0 ? (
-        <p className="mt-4 text-sm text-muted-foreground">Wax dalab lama helin.</p>
-      ) : null}
-    </div>
-  );
-}
-
-function ContentEditor({ section }: { section: "home" | "about" | "services" }) {
-  const titles = {
-    home: "Qoraalka Home Page",
-    about: "Qoraalka About Page",
-    services: "Adeegyada",
-  };
-  return (
-    <div className="card-luxe rounded-lg p-6 sm:p-8">
-      <h2 className="text-xl">{titles[section]}</h2>
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <div>
-          <label className={labelClass}>Cinwaanka</label>
-          <input className={inputClass} defaultValue="Luxury Tailoring for Modern Gentlemen" />
-        </div>
-        <div>
-          <label className={labelClass}>Sawirka (URL)</label>
-          <input className={inputClass} placeholder="https://raw.githubusercontent.com/..." />
-        </div>
-        <div className="lg:col-span-2">
-          <label className={labelClass}>Qoraalka</label>
-          <textarea rows={5} className={inputClass} defaultValue="Qoraal Soomaali ah oo la beddeli karo." />
-        </div>
-      </div>
-      <div className="mt-7 flex flex-wrap gap-3">
-        <LuxeButton size="sm">Update</LuxeButton>
-        <LuxeButton variant="outline" size="sm">
-          <Upload size={13} /> Replace Image
-        </LuxeButton>
-        <LuxeButton variant="dark" size="sm" disabled>
-          <Github size={13} /> Sync GitHub
-        </LuxeButton>
-      </div>
+      </main>
     </div>
   );
 }
