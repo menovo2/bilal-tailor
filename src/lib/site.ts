@@ -34,6 +34,10 @@ export const images = {
   detail: pinning.url,
   measure: tapeDark.url,
   measureLight: tapeLight.url,
+  heroTailor: heroTailor.url,
+  aboutRack: aboutRack.url,
+  comingSoon: comingSoon.url,
+  whatsapp: whatsappGold.url,
 } as const;
 
 export const navLinks = [
