@@ -96,6 +96,14 @@
 
   html {
     scroll-behavior: smooth;
+    scroll-padding-top: 6rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 
   body {
@@ -103,8 +111,16 @@
     color: var(--color-foreground);
     font-family: var(--font-sans);
     font-weight: 600;
+    overflow-x: hidden;
+    overscroll-behavior-y: none;
     -webkit-font-smoothing: antialiased;
   }
+
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+
 
   h1,
   h2,

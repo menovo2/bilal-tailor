@@ -1,41 +1,37 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { galleryCategories, orderMessage, whatsappLink } from "@/lib/site";
+import { useContent, type GalleryItem } from "@/lib/content-store";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { cn } from "@/lib/utils";
 
-const SLIDES_PER_CATEGORY = 6;
-
-type Slide = { id: string; category: string; index: number };
-
-function buildSlides(category: string): Slide[] {
-  return Array.from({ length: SLIDES_PER_CATEGORY }, (_, i) => ({
-    id: `${category}-${i}`,
-    category,
-    index: i + 1,
-  }));
-}
-
-/** Luxury "Coming Soon" placeholder card. Swap the inner div for an <img> once photos exist. */
-function GalleryCard({ slide, onOpen }: { slide: Slide; onOpen: () => void }) {
+/** One gallery card — real photo when set, otherwise the numbered "Coming Soon" photo. */
+function GalleryCard({
+  item,
+  fallback,
+  onOpen,
+}: {
+  item: GalleryItem;
+  fallback: string;
+  onOpen: () => void;
+}) {
+  const src = item.imageUrl || fallback;
   return (
     <button
       type="button"
       onClick={onOpen}
-      aria-label={`Fur sawirka ${slide.category} ${slide.index}`}
-      className="group relative w-[76vw] shrink-0 overflow-hidden rounded-xl border border-gold/25 shadow-luxe transition-all duration-500 hover:border-gold hover:shadow-[0_0_44px_-14px_var(--gold)] sm:w-[340px]"
+      aria-label={`Fur sawirka ${item.label}`}
+      className="group relative w-[78vw] shrink-0 overflow-hidden rounded-xl border border-gold/25 shadow-luxe transition-all duration-500 hover:border-gold hover:shadow-[0_0_44px_-14px_var(--gold)] sm:w-[300px] lg:w-[340px]"
     >
-      <div className="placeholder-luxe flex aspect-3/4 items-center justify-center transition-transform duration-700 group-hover:scale-[1.06]">
-        <span className="relative z-10 text-center">
-          <span className="block font-display text-3xl text-gold-soft">Coming Soon</span>
-          <span className="mt-3 block text-[0.6rem] tracking-[0.4em] text-muted-foreground uppercase">
-            {slide.category}
-          </span>
-        </span>
-      </div>
-      <span className="absolute inset-x-0 bottom-0 flex items-center justify-between bg-linear-to-t from-background to-transparent p-5 text-left">
-        <span className="font-display text-lg text-foreground">{slide.category}</span>
-        <span className="text-[0.6rem] tracking-[0.3em] text-gold uppercase">Daawo</span>
+      <img
+        src={src}
+        alt={item.label}
+        loading="lazy"
+        className="aspect-3/4 w-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
+      />
+      <span className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-3 bg-linear-to-t from-background via-background/80 to-transparent p-4 text-left sm:p-5">
+        <span className="min-w-0 truncate font-display text-lg text-foreground">{item.label}</span>
+        <span className="shrink-0 text-[0.6rem] tracking-[0.3em] text-gold uppercase">Daawo</span>
       </span>
     </button>
   );
@@ -43,13 +39,17 @@ function GalleryCard({ slide, onOpen }: { slide: Slide; onOpen: () => void }) {
 
 function CategorySlider({
   category,
+  items,
+  fallback,
   onOpen,
 }: {
   category: string;
-  onOpen: (category: string) => void;
+  items: GalleryItem[];
+  fallback: string;
+  onOpen: (item: GalleryItem) => void;
 }) {
   const trackRef = useRef<HTMLDivElement | null>(null);
-  const slides = [...buildSlides(category), ...buildSlides(category)];
+  const slides = [...items, ...items];
   const dragging = useRef(false);
   const startX = useRef(0);
   const startScroll = useRef(0);
@@ -74,7 +74,6 @@ function CategorySlider({
     return () => el.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Auto scroll
   useEffect(() => {
     if (paused) return;
     const id = window.setInterval(() => {
@@ -85,6 +84,8 @@ function CategorySlider({
     return () => window.clearInterval(id);
   }, [paused]);
 
+  if (items.length === 0) return null;
+
   return (
     <div
       className="mt-8"
@@ -93,8 +94,10 @@ function CategorySlider({
       onTouchStart={() => setPaused(true)}
       onTouchEnd={() => setPaused(false)}
     >
-      <div className="flex items-end justify-between gap-4">
-        <h3 className="font-display text-2xl text-foreground sm:text-3xl">{category}</h3>
+      <div className="grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4">
+        <h3 className="min-w-0 truncate font-display text-2xl text-foreground sm:text-3xl">
+          {category}
+        </h3>
         <div className="flex shrink-0 gap-2">
           <button
             type="button"
@@ -119,7 +122,7 @@ function CategorySlider({
         ref={trackRef}
         role="region"
         aria-label={`Sawirada ${category}`}
-        className="no-scrollbar mt-6 flex cursor-grab gap-5 overflow-x-auto pb-2 active:cursor-grabbing"
+        className="no-scrollbar mt-6 flex cursor-grab gap-4 overflow-x-auto pb-2 active:cursor-grabbing sm:gap-5"
         onPointerDown={(e) => {
           dragging.current = true;
           startX.current = e.clientX;
@@ -132,8 +135,13 @@ function CategorySlider({
         onPointerUp={() => (dragging.current = false)}
         onPointerLeave={() => (dragging.current = false)}
       >
-        {slides.map((slide, i) => (
-          <GalleryCard key={`${slide.id}-${i}`} slide={slide} onOpen={() => onOpen(category)} />
+        {slides.map((item, i) => (
+          <GalleryCard
+            key={`${item.id}-${i}`}
+            item={item}
+            fallback={fallback}
+            onOpen={() => onOpen(item)}
+          />
         ))}
       </div>
     </div>
@@ -141,13 +149,21 @@ function CategorySlider({
 }
 
 export function GalleryShowcase({ withFilter = false }: { withFilter?: boolean }) {
+  const { content } = useContent();
   const [active, setActive] = useState<string>("Dhammaan");
-  const [modal, setModal] = useState<string | null>(null);
+  const [modal, setModal] = useState<GalleryItem | null>(null);
 
-  const shown =
-    !withFilter || active === "Dhammaan"
-      ? galleryCategories
-      : galleryCategories.filter((c) => c === active);
+  const shown = useMemo(
+    () =>
+      (!withFilter || active === "Dhammaan"
+        ? galleryCategories
+        : galleryCategories.filter((c) => c === active)
+      ).map((category) => ({
+        category,
+        items: content.gallery.filter((g) => g.category === category && g.visible),
+      })),
+    [withFilter, active, content.gallery],
+  );
 
   useEffect(() => {
     if (!modal) return;
@@ -163,14 +179,14 @@ export function GalleryShowcase({ withFilter = false }: { withFilter?: boolean }
   return (
     <>
       {withFilter ? (
-        <div className="flex flex-wrap justify-center gap-3">
+        <div className="flex flex-wrap justify-center gap-2 sm:gap-3">
           {["Dhammaan", ...galleryCategories].map((c) => (
             <button
               key={c}
               type="button"
               onClick={() => setActive(c)}
               className={cn(
-                "rounded-full border px-6 py-2.5 text-[0.66rem] tracking-[0.24em] uppercase transition-all duration-400",
+                "rounded-full border px-4 py-2 text-[0.62rem] tracking-[0.22em] uppercase transition-all duration-400 sm:px-6 sm:py-2.5 sm:text-[0.66rem]",
                 active === c
                   ? "border-gold bg-gold text-primary-foreground"
                   : "border-gold/30 text-muted-foreground hover:border-gold hover:text-gold",
@@ -182,9 +198,15 @@ export function GalleryShowcase({ withFilter = false }: { withFilter?: boolean }
         </div>
       ) : null}
 
-      <div className="mt-6 space-y-16">
-        {shown.map((category) => (
-          <CategorySlider key={category} category={category} onOpen={setModal} />
+      <div className="mt-6 space-y-14 sm:space-y-16">
+        {shown.map(({ category, items }) => (
+          <CategorySlider
+            key={category}
+            category={category}
+            items={items}
+            fallback={content.comingSoonImage}
+            onOpen={setModal}
+          />
         ))}
       </div>
 
@@ -192,40 +214,34 @@ export function GalleryShowcase({ withFilter = false }: { withFilter?: boolean }
         <div
           role="dialog"
           aria-modal="true"
-          aria-label={`Sawirka ${modal}`}
-          className="animate-fade-in fixed inset-0 z-100 flex items-center justify-center bg-background/95 p-4 backdrop-blur-md sm:p-8"
+          aria-label={`Sawirka ${modal.label}`}
+          className="animate-fade-in fixed inset-0 z-100 flex items-center justify-center overflow-y-auto bg-background/95 p-4 backdrop-blur-md sm:p-8"
           onClick={() => setModal(null)}
         >
           <div
-            className="animate-scale-in relative w-full max-w-3xl rounded-xl border border-gold/30 bg-surface p-5 shadow-luxe sm:p-8"
+            className="animate-scale-in relative my-auto w-full max-w-3xl rounded-xl border border-gold/30 bg-surface p-4 shadow-luxe sm:p-8"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               type="button"
               onClick={() => setModal(null)}
               aria-label="Xir"
-              className="absolute top-4 right-4 z-10 grid h-11 w-11 place-items-center rounded-full border border-gold/40 text-gold transition-colors hover:bg-gold hover:text-primary-foreground"
+              className="absolute top-4 right-4 z-10 grid h-11 w-11 place-items-center rounded-full border border-gold/40 bg-background/70 text-gold transition-colors hover:bg-gold hover:text-primary-foreground"
             >
               <X size={18} />
             </button>
-            <div className="placeholder-luxe grid aspect-4/3 place-items-center rounded-lg border border-gold/20">
-              <span className="relative z-10 text-center">
-                <span className="block font-display text-4xl text-gold-soft sm:text-5xl">
-                  Coming Soon
-                </span>
-                <span className="mt-4 block text-[0.6rem] tracking-[0.42em] text-muted-foreground uppercase">
-                  {modal}
-                </span>
-              </span>
-            </div>
-            <div className="mt-7 flex flex-col items-center gap-5 text-center">
-              <h3 className="font-display text-3xl">{modal}</h3>
+            <img
+              src={modal.imageUrl || content.comingSoonImage}
+              alt={modal.label}
+              className="max-h-[60vh] w-full rounded-lg border border-gold/20 object-cover"
+            />
+            <div className="mt-6 flex flex-col items-center gap-4 text-center sm:mt-7 sm:gap-5">
+              <h3 className="font-display text-2xl sm:text-3xl">{modal.label}</h3>
               <p className="max-w-md text-sm text-muted-foreground">
-                Sawirada shaqadeena ugu dambeeyay dhawaan waa la soo gelinayaa. Hadda dalbo oo naga
-                hel qiimo iyo talo bilaash ah.
+                Noo soo dir fariin WhatsApp oo hel qiimo iyo talo bilaash ah.
               </p>
               <LuxeButton asChild size="lg">
-                <a href={whatsappLink(orderMessage(modal))} target="_blank" rel="noreferrer">
+                <a href={whatsappLink(orderMessage(modal.label))} target="_blank" rel="noreferrer">
                   Hadda Dalbo
                 </a>
               </LuxeButton>
