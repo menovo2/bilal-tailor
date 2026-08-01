@@ -79,10 +79,11 @@ function Login({ onLogin }: { onLogin: () => void }) {
         <img
           src={images.logo}
           alt={`Astaanta ${site.name}`}
-          width={64}
-          height={64}
-          className="mx-auto h-16 w-16 rounded-full border border-gold/40 object-cover"
+          width={88}
+          height={88}
+          className="mx-auto h-20 w-20 rounded-full border border-gold/40 bg-white object-contain p-0.5"
         />
+
         <h1 className="mt-6 text-center text-3xl">Admin Panel</h1>
         <p className="mt-3 text-center text-xs tracking-[0.2em] text-muted-foreground uppercase">
           BILAL TAILOR
@@ -162,7 +163,7 @@ function LogoManager({
             <img
               src={current}
               alt="Astaanta hadda"
-              className="mt-3 h-24 w-24 rounded-full border border-gold/40 object-cover"
+              className="mt-3 h-24 w-24 rounded-full border border-gold/40 bg-white object-contain p-1"
             />
           </div>
           <div className="text-center">
@@ -170,7 +171,7 @@ function LogoManager({
             <img
               src={preview}
               alt="Horudhaca astaanta cusub"
-              className="mt-3 h-24 w-24 rounded-full border border-gold/40 object-cover"
+              className="mt-3 h-24 w-24 rounded-full border border-gold/40 bg-white object-contain p-1"
             />
           </div>
         </div>
@@ -300,10 +301,11 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           <img
             src={content.logoImage || images.logo}
             alt=""
-            width={40}
-            height={40}
-            className="h-10 w-10 shrink-0 rounded-full border border-gold/40 object-cover"
+            width={48}
+            height={48}
+            className="h-12 w-12 shrink-0 rounded-full border border-gold/40 bg-white object-contain p-0.5"
           />
+
           <div className="min-w-0">
             <p className="truncate font-display text-base tracking-[0.2em] text-gold-soft">BILAL</p>
             <p className="text-[0.55rem] tracking-[0.38em] text-muted-foreground">ADMIN</p>
