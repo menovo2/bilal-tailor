@@ -163,7 +163,7 @@ function LogoManager({
             <img
               src={current}
               alt="Astaanta hadda"
-              className="mt-3 h-24 w-24 rounded-full border border-gold/40 object-cover"
+              className="mt-3 h-24 w-24 rounded-full border border-gold/40 bg-white object-contain p-1"
             />
           </div>
           <div className="text-center">
@@ -171,7 +171,7 @@ function LogoManager({
             <img
               src={preview}
               alt="Horudhaca astaanta cusub"
-              className="mt-3 h-24 w-24 rounded-full border border-gold/40 object-cover"
+              className="mt-3 h-24 w-24 rounded-full border border-gold/40 bg-white object-contain p-1"
             />
           </div>
         </div>
