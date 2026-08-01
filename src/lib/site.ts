@@ -1,18 +1,7 @@
-import logoAsset from "@/assets/logo.png.asset.json";
-import suitsRack from "@/assets/suits-rack.jpg.asset.json";
-import cutting from "@/assets/cutting.jpg.asset.json";
-import pinning from "@/assets/pinning.jpg.asset.json";
-import tapeDark from "@/assets/tape-dark.jpg.asset.json";
-import tapeLight from "@/assets/tape-light.jpg.asset.json";
-import heroTailor from "@/assets/tailor-measuring.png.asset.json";
-import aboutRack from "@/assets/suit-rack-about.jpg.asset.json";
-import comingSoon from "@/assets/coming-soon.png.asset.json";
-import whatsappGold from "@/assets/whatsapp-gold.png.asset.json";
-
-
 /**
  * Central site configuration.
- * Swap any `url` below with a GitHub raw image URL later — nothing else changes.
+ * All visual assets live in `public/assets/` so they are served directly by the
+ * host (GitHub -> Netlify) with no dependency on any external asset service.
  */
 export const site = {
   name: "BILAL TAILOR",
@@ -28,17 +17,18 @@ export const site = {
 } as const;
 
 export const images = {
-  logo: logoAsset.url,
-  hero: suitsRack.url,
-  workshop: cutting.url,
-  detail: pinning.url,
-  measure: tapeDark.url,
-  measureLight: tapeLight.url,
-  heroTailor: heroTailor.url,
-  aboutRack: aboutRack.url,
-  comingSoon: comingSoon.url,
-  whatsapp: whatsappGold.url,
+  logo: "/assets/logo.png",
+  hero: "/assets/suits-rack.jpg",
+  workshop: "/assets/cutting.jpg",
+  detail: "/assets/pinning.jpg",
+  measure: "/assets/tape-dark.jpg",
+  measureLight: "/assets/tape-light.jpg",
+  heroTailor: "/assets/tailor-measuring.png",
+  aboutRack: "/assets/suit-rack-about.jpg",
+  comingSoon: "/assets/coming-soon.png",
+  whatsapp: "/assets/whatsapp-gold.png",
 } as const;
+
 
 export const navLinks = [
   { to: "/", label: "Home" },

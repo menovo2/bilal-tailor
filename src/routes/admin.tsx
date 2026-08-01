@@ -16,6 +16,7 @@ import {
   Scissors,
   Search,
   Trash2,
+  Upload,
 } from "lucide-react";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { cn } from "@/lib/utils";
@@ -40,6 +41,7 @@ export const Route = createFileRoute("/admin")({
 
 const sections = [
   { key: "dashboard", label: "Dashboard", icon: BarChart3 },
+  { key: "logo", label: "Logo", icon: Upload },
   { key: "home", label: "Home Page", icon: Home },
   { key: "about", label: "About", icon: Info },
   { key: "gallery", label: "Gallery", icon: ImageIcon },
@@ -122,7 +124,111 @@ function Login({ onLogin }: { onLogin: () => void }) {
   );
 }
 
+function LogoManager({
+  current,
+  onSave,
+  onReset,
+}: {
+  current: string;
+  onSave: (v: string) => void;
+  onReset: () => void;
+}) {
+  const [draft, setDraft] = useState("");
+  const [saved, setSaved] = useState(false);
+  const preview = draft || current;
+
+  const onFile = (file: File | undefined) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      setDraft(String(reader.result));
+      setSaved(false);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="card-luxe rounded-lg p-5 sm:p-8">
+      <h2 className="text-xl">Astaanta websaydka (Logo)</h2>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Beddel astaanta — waxay isbeddeshaa navbar-ka, footer-ka iyo meel walba oo logo-ga ka
+        muuqdo.
+      </p>
+
+      <div className="mt-8 grid gap-8 lg:grid-cols-[auto_1fr] lg:items-start">
+        <div className="flex items-center gap-6">
+          <div className="text-center">
+            <p className={labelClass}>Hadda</p>
+            <img
+              src={current}
+              alt="Astaanta hadda"
+              className="mt-3 h-24 w-24 rounded-full border border-gold/40 object-cover"
+            />
+          </div>
+          <div className="text-center">
+            <p className={labelClass}>Horudhac</p>
+            <img
+              src={preview}
+              alt="Horudhaca astaanta cusub"
+              className="mt-3 h-24 w-24 rounded-full border border-gold/40 object-cover"
+            />
+          </div>
+        </div>
+
+        <div className="min-w-0 space-y-6">
+          <div>
+            <label className={labelClass}>Soo geli fayl (upload)</label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => onFile(e.target.files?.[0])}
+              className={cn(inputClass, "file:mr-4 file:rounded file:border-0 file:bg-gold/15 file:px-3 file:py-1.5 file:text-xs file:text-gold")}
+            />
+          </div>
+          <Field
+            label="Ama isticmaal URL / path"
+            value={draft}
+            onChange={(v) => {
+              setDraft(v);
+              setSaved(false);
+            }}
+            placeholder="/assets/logo.png"
+          />
+          <div className="flex flex-wrap items-center gap-3">
+            <LuxeButton
+              size="sm"
+              onClick={() => {
+                if (!draft) return;
+                onSave(draft);
+                setSaved(true);
+              }}
+            >
+              <Upload size={13} /> Kaydi astaanta
+            </LuxeButton>
+            <LuxeButton variant="outline" size="sm" onClick={() => setDraft("")}>
+              Jooji
+            </LuxeButton>
+            <LuxeButton
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                onReset();
+                setDraft("");
+                setSaved(false);
+              }}
+            >
+              <RotateCcw size={13} /> Astaanta asalka
+            </LuxeButton>
+            {saved ? <span className="text-xs text-gold">Waa la kaydiyay ✓</span> : null}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function Field({
+
   label,
   value,
   onChange,
@@ -192,7 +298,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
       <aside className="border-b border-gold/15 bg-surface/50 lg:border-r lg:border-b-0">
         <div className="flex items-center gap-3 px-5 py-6 sm:px-6">
           <img
-            src={images.logo}
+            src={content.logoImage || images.logo}
             alt=""
             width={40}
             height={40}
@@ -274,6 +380,16 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               </div>
             </>
           ) : null}
+
+          {section === "logo" ? (
+            <LogoManager
+              current={content.logoImage || images.logo}
+              onSave={(v) => update({ logoImage: v })}
+              onReset={() => update({ logoImage: images.logo })}
+            />
+          ) : null}
+
+
 
           {section === "home" ? (
             <div className="card-luxe rounded-lg p-5 sm:p-8">

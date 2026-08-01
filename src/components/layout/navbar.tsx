@@ -5,11 +5,14 @@ import { images, navLinks, site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { whatsappLink } from "@/lib/site";
+import { useContent } from "@/lib/content-store";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const { content } = useContent();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -32,7 +35,7 @@ export function Navbar() {
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-5 sm:px-8">
         <Link to="/" className="flex min-w-0 items-center gap-3" aria-label={site.name}>
           <img
-            src={images.logo}
+            src={content.logoImage || images.logo}
             alt={`Astaanta ${site.name}`}
             width={48}
             height={48}
