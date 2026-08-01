@@ -41,6 +41,7 @@ export const Route = createFileRoute("/admin")({
 
 const sections = [
   { key: "dashboard", label: "Dashboard", icon: BarChart3 },
+  { key: "logo", label: "Logo", icon: Upload },
   { key: "home", label: "Home Page", icon: Home },
   { key: "about", label: "About", icon: Info },
   { key: "gallery", label: "Gallery", icon: ImageIcon },
