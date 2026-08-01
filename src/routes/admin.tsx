@@ -277,6 +277,16 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             </>
           ) : null}
 
+          {section === "logo" ? (
+            <LogoManager
+              current={content.logoImage || images.logo}
+              onSave={(v) => update({ logoImage: v })}
+              onReset={() => update({ logoImage: images.logo })}
+            />
+          ) : null}
+
+
+
           {section === "home" ? (
             <div className="card-luxe rounded-lg p-5 sm:p-8">
               <h2 className="text-xl">Qoraalka & Sawirka Home Page</h2>
