@@ -5,11 +5,14 @@ import { images, navLinks, site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { whatsappLink } from "@/lib/site";
+import { useContent } from "@/lib/content-store";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
+  const { content } = useContent();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
