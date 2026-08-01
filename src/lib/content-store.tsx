@@ -59,7 +59,9 @@ function seedGallery(): GalleryItem[] {
 }
 
 export const defaultContent: SiteContent = {
+  logoImage: images.logo,
   heroEyebrow: "Tailored to Perfection",
+
   heroTitle: "Luxury Tailoring for",
   heroHighlight: "Modern Gentlemen",
   heroText:
