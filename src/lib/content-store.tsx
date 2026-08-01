@@ -24,8 +24,9 @@ export type GalleryItem = {
 };
 
 export type SiteContent = {
+  logoImage: string;
   heroEyebrow: string;
-  heroTitle: string;
+
   heroHighlight: string;
   heroText: string;
   heroImage: string;
