@@ -12,13 +12,13 @@ export function Footer() {
           <div className="flex items-center gap-3">
             <img
               src={content.logoImage || images.logo}
-
               alt={`Astaanta ${site.name}`}
               loading="lazy"
-              width={56}
-              height={56}
-              className="h-14 w-14 rounded-full border border-gold/40 object-cover"
+              width={72}
+              height={72}
+              className="h-16 w-16 rounded-full border border-gold/40 bg-white object-contain p-0.5"
             />
+
             <div>
               <p className="font-display text-xl tracking-[0.2em] text-gold-soft">BILAL</p>
               <p className="text-[0.55rem] tracking-[0.42em] text-muted-foreground">TAILOR</p>
