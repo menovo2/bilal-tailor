@@ -1,15 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Mail, MessageCircle, Phone } from "lucide-react";
 import { images, navLinks, site, whatsappLink } from "@/lib/site";
+import { useContent } from "@/lib/content-store";
 
 export function Footer() {
+  const { content } = useContent();
   return (
     <footer className="border-t border-gold/20 bg-surface/40">
       <div className="mx-auto grid max-w-7xl gap-12 px-5 py-16 sm:px-8 md:grid-cols-2 lg:grid-cols-4">
         <div>
           <div className="flex items-center gap-3">
             <img
-              src={images.logo}
+              src={content.logoImage || images.logo}
+
               alt={`Astaanta ${site.name}`}
               loading="lazy"
               width={56}
