@@ -16,6 +16,7 @@ import {
   Scissors,
   Search,
   Trash2,
+  Upload,
 } from "lucide-react";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { cn } from "@/lib/utils";
