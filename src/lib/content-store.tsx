@@ -117,10 +117,6 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     } catch {
       /* ignore corrupt storage */
     }
-
-    } catch {
-      /* ignore corrupt storage */
-    }
   }, []);
 
   const persist = useCallback((next: SiteContent) => {
