@@ -37,10 +37,11 @@ export function Navbar() {
           <img
             src={content.logoImage || images.logo}
             alt={`Astaanta ${site.name}`}
-            width={48}
-            height={48}
-            className="h-11 w-11 shrink-0 rounded-full border border-gold/40 object-cover"
+            width={64}
+            height={64}
+            className="h-14 w-14 shrink-0 rounded-full border border-gold/40 bg-white object-contain p-0.5"
           />
+
           <span className="min-w-0">
             <span className="block truncate font-display text-lg tracking-[0.22em] text-gold-soft">
               BILAL
