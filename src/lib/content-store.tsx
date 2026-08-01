@@ -100,7 +100,24 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setContent({ ...defaultContent, ...JSON.parse(raw) });
+      if (!raw) return;
+      const saved = JSON.parse(raw) as Partial<SiteContent>;
+      // Drop any legacy preview-only asset URLs so images resolve from /assets in production.
+      for (const [k, v] of Object.entries(saved)) {
+        if (typeof v === "string" && v.includes("/__l5e/")) delete (saved as Record<string, unknown>)[k];
+      }
+      if (Array.isArray(saved.gallery)) {
+        saved.gallery = saved.gallery.map((g) =>
+          typeof g?.imageUrl === "string" && g.imageUrl.includes("/__l5e/")
+            ? { ...g, imageUrl: "" }
+            : g,
+        );
+      }
+      setContent({ ...defaultContent, ...saved });
+    } catch {
+      /* ignore corrupt storage */
+    }
+
     } catch {
       /* ignore corrupt storage */
     }
