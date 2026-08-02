@@ -115,8 +115,12 @@ type Ctx = {
   updateItem: (id: string, patch: Partial<GalleryItem>) => void;
   addItem: (category: string) => void;
   removeItem: (id: string) => void;
+  addAdmin: (email: string, password: string) => void;
+  updateAdmin: (id: string, patch: Partial<Omit<AdminUser, "id">>) => void;
+  removeAdmin: (id: string) => void;
   reset: () => void;
 };
+
 
 const ContentContext = createContext<Ctx | null>(null);
 
