@@ -42,7 +42,7 @@ function ContactPage() {
         eyebrow="Xiriir"
         title="Nala Soo Xiriir"
         description="Waxaan diyaar u nahay inaan kaa caawinno qiyaas, qiimo iyo talo naqshad."
-        image={images.detail}
+        image={content.contactImage || images.detail}
       />
 
       <section className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">

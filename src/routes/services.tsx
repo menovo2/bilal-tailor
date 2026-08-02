@@ -28,14 +28,14 @@ export const Route = createFileRoute("/services")({
 });
 
 function ServicesPage() {
-  const { waOrder } = useLinks();
+  const { waOrder, content } = useLinks();
   return (
     <SiteLayout>
       <PageHero
         eyebrow="Adeegyada"
         title="Shan adeeg, hal heer tayo"
         description="Adeeg walba wuxuu ku bilaabmaa qiyaas sax ah wuxuuna ku dhammaadaa dhar aad ku faanto."
-        image={images.measure}
+        image={content.servicesImage || images.measure}
       />
 
       <div className="mx-auto max-w-7xl space-y-24 px-5 py-24 sm:px-8 lg:space-y-32 lg:py-32">
