@@ -9,16 +9,16 @@ import { useContent } from "@/lib/content-store";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "Ku Saabsan — BILAL TAILOR" },
+      { title: "Naga Ogow — BILAL TAILOR" },
       {
         name: "description",
         content:
-          "BILAL TAILOR waa dukaan tolid heer sare ah oo ku takhasusay suit, safari, qamiis, surwaal iyo shaar. Aqoon, tayo iyo faahfaahin.",
+          "BILAL TAILOR: tolid heer sare ah, qiyaas sax ah, farsamo gacaneed. Suit, safari, qamiis iyo surwaal oo si gaar ah kuu tolan.",
       },
-      { property: "og:title", content: "Ku Saabsan — BILAL TAILOR" },
+      { property: "og:title", content: "Naga Ogow — BILAL TAILOR" },
       {
         property: "og:description",
-        content: "Sheekada BILAL TAILOR: farsamo, tayo iyo khibrad tolid heer sare ah.",
+        content: "Farsamo gacaneed, tayo aan lala tartami karin, adeeg shaqsi ah.",
       },
       { property: "og:url", content: "/about" },
     ],
@@ -30,33 +30,33 @@ export const Route = createFileRoute("/about")({
 const values = [
   {
     icon: Target,
-    title: "Himilada (Mission)",
-    text: "In nin walba oo naga soo dalbada ka helo dhar si sax ah u habboon, tayo leh, oo kalsooni iyo sharaf ku kordhiya.",
+    title: "Himilo",
+    text: "Dhar qiyaas sax ah leh oo kor u qaada kalsoonidaada.",
   },
   {
     icon: Gem,
-    title: "Aragtida (Vision)",
-    text: "Inaan noqonno magaca ugu horreeya ee lala xiriiriyo tolidda heer sare ah ee ragga gudaha gobolka iyo kaga baxsan.",
+    title: "Aragti",
+    text: "Inaan noqonno magaca ugu horreeya ee tolidda heer sare ah.",
   },
   {
     icon: Award,
-    title: "Tayada",
-    text: "Waxaan dooranaa maro tayada ugu sarreysa oo la tijaabiyay, iyo tolid adkaysi leh oo sanado socota.",
+    title: "Tayo",
+    text: "Maro la doortay, tolid adkaysi leh oo sanado socota.",
   },
   {
     icon: Scissors,
-    title: "Farsamada",
-    text: "Sanado khibrad ah oo gacan farsamo leh: qeybta walba waxaa lagu qiyaasay, la jaray, waana la tolay si taxaddar leh.",
+    title: "Farsamo",
+    text: "Gacan farsamo leh oo qiyaasaysa, jarta oo tolaysa taxaddar.",
   },
   {
     icon: Ruler,
-    title: "Faahfaahinta",
-    text: "Badhamada, tolidda, dhererka, garabka — wax yar walba waan qiimeynaa, waayo waa wixii dharka wax weyn ka dhiga.",
+    title: "Faahfaahin",
+    text: "Wax kastoo yar waa muhiim — halkaas ayaa quruxdu ka dhalataa.",
   },
   {
     icon: HeartHandshake,
-    title: "Khibrad Raaxo leh",
-    text: "Ka soo dhaweynta ilaa qiyaasta ugu dambeysa, adeegga waa mid deggan, xushmad leh oo shaqsi ah.",
+    title: "Adeeg Shaqsi Ah",
+    text: "Ka bilaabo soo dhaweynta ilaa dhammaadka, adeeg deggan oo xushmad leh.",
   },
 ];
 
@@ -76,24 +76,21 @@ function AboutPage() {
         <div className="grid items-center gap-14 lg:grid-cols-2">
           <Reveal>
             <p className="eyebrow">Naga</p>
-            <h2 className="mt-5 text-3xl sm:text-4xl">Farsamo la tolay si gacan ah</h2>
+            <h2 className="mt-5 text-3xl sm:text-4xl">Farsamo Gacmeed</h2>
             <div className="hairline mt-6 w-28" aria-hidden="true" />
             <div className="mt-7 space-y-5 text-sm leading-relaxed text-muted-foreground sm:text-base">
               <p>
-                BILAL TAILOR waa dukaan tolid heer sare ah oo si gaar ah u adeega ragga raadinaya
-                dhar la qiyaasay, qurux leh, oo muddo dheer adkaysta. Waxaan ku takhasusnay{" "}
-                {services.map((s) => s.title).join(", ")} — nooc walbana wuxuu leeyahay habka uu
-                jirka ku raaco.
+                BILAL TAILOR waa dukaan tolid heer sare ah oo u adeega ragga raadinaya dhar qiyaas
+                sax ah leh, qurux badan, oo waara. Waxaan ku takhasusnay{" "}
+                {services.map((s) => s.title).join(", ")} — mid kastaa qaab gaar ah.
               </p>
               <p>
-                Shaqadeena waxay ku bilaabataa qiyaas sax ah iyo wada-hadal aad ku sheegto sida aad
-                doonayso in dharkaagu u ekaado. Kadib waxaan dooranaa maro ku habboon, waxaanan
-                jaraa oo tolnaa iyadoo la tixgelinayo qaabka jirkaaga.
+                Waxaan ka bilownaa qiyaas sax ah iyo faham buuxa oo aragtidaada ah. Kadib waxaan
+                dooranaa maro ku habboon, waxaana si taxaddar leh u tolnaa.
               </p>
               <p>
-                Waxaan aaminsanahay in dhar wanaagsan uu yahay maalgashi, ma aha wax la iibsado
-                maalin kasta. Sidaas darteed tayada ayaan hormarinnaa marka hore, ka dibna quruxda
-                iyo raaxada.
+                Dharku waa maalgashi, mana aha alaab si degdeg ah loo iibsado. Sidaas darteed,
+                tayadu horta ayay u timaadaa.
               </p>
             </div>
           </Reveal>
@@ -101,7 +98,7 @@ function AboutPage() {
           <Reveal delay={140} className="relative">
             <img
               src={images.detail}
-              alt="Gacmo tolid tayo sare leh oo maro cad lagu qiyaasayo biinno"
+              alt="Gacmo tolid oo maro cad ku qiyaasaya"
               loading="lazy"
               className="h-full w-full rounded-xl border border-gold/25 object-cover shadow-luxe"
             />
@@ -113,8 +110,8 @@ function AboutPage() {
         <div className="mx-auto max-w-7xl px-5 sm:px-8">
           <SectionHeading
             eyebrow="Qiyamkeena"
-            title="Waxa naga dhigaya kala duwan"
-            description="Afar tiir oo shaqadeena ku dhisan tahay: tayo, farsamo, faahfaahin iyo adeeg raaxo leh."
+            title="Waxa Naga Dhigaya Kuwa Kala Duwan"
+            description="Afar tiir: tayo, farsamo, faahfaahin iyo adeeg."
           />
           <ul className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {values.map((v, i) => (
