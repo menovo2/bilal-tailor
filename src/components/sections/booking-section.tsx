@@ -1,16 +1,19 @@
 import { useState } from "react";
-import { services, site, whatsappLink } from "@/lib/site";
+import { services } from "@/lib/site";
+import { useContent, useLinks } from "@/lib/content-store";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { Reveal } from "@/components/ui/reveal";
 
 export function BookingSection() {
+  const { content } = useContent();
+  const { wa } = useLinks();
   const [form, setForm] = useState({ name: "", phone: "", type: services[0].key, notes: "" });
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     const message = [
-      "ASC BILAL TAILOR, waxaan rabaa in aan dalbado:",
+      content.bookingMessage,
       `Magacaygu waa : ${form.name}`,
       `Lambarkayguna waa : ${form.phone}`,
       `Nooca Dharka : ${form.type}`,
@@ -18,7 +21,7 @@ export function BookingSection() {
     ]
       .filter(Boolean)
       .join("\n");
-    window.open(whatsappLink(message), "_blank", "noopener");
+    window.open(wa(message), "_blank", "noopener");
   };
 
   const field =
@@ -64,7 +67,7 @@ export function BookingSection() {
                   type="tel"
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  placeholder={site.phone}
+                  placeholder={content.phone}
                   className={field}
                 />
               </div>

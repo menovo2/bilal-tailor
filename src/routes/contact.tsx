@@ -3,7 +3,8 @@ import { Clock, Facebook, Mail, MessageCircle, Phone } from "lucide-react";
 import { SiteLayout, PageHero } from "@/components/layout/site-layout";
 import { Reveal } from "@/components/ui/reveal";
 import { LuxeButton } from "@/components/ui/luxe-button";
-import { images, site, whatsappLink } from "@/lib/site";
+import { images, site } from "@/lib/site";
+import { useContent, useLinks } from "@/lib/content-store";
 
 export const Route = createFileRoute("/contact")({
   head: () => ({
@@ -26,41 +27,22 @@ export const Route = createFileRoute("/contact")({
   component: ContactPage,
 });
 
-const cards = [
-  {
-    icon: Phone,
-    label: "Taleefan",
-    value: site.phone,
-    href: `tel:${site.phone}`,
-  },
-  {
-    icon: MessageCircle,
-    label: "WhatsApp",
-    value: site.phone,
-    href: whatsappLink("Salaan, waxaan rabaa inaan dalbado adeeg tolid."),
-  },
-  {
-    icon: Mail,
-    label: "Iimayl",
-    value: site.email,
-    href: `mailto:${site.email}`,
-  },
-  {
-    icon: Facebook,
-    label: "Facebook",
-    value: "BILAL TAILOR",
-    href: site.facebook,
-  },
-];
-
 function ContactPage() {
+  const { content } = useContent();
+  const { waGeneral } = useLinks();
+  const cards = [
+    { icon: Phone, label: "Taleefan", value: content.phone, href: `tel:${content.phone}` },
+    { icon: MessageCircle, label: "WhatsApp", value: content.phone, href: waGeneral() },
+    { icon: Mail, label: "Iimayl", value: content.email, href: `mailto:${content.email}` },
+    { icon: Facebook, label: "Facebook", value: "BILAAL TAILOR", href: content.facebook },
+  ];
   return (
     <SiteLayout>
       <PageHero
         eyebrow="Xiriir"
         title="Nala Soo Xiriir"
         description="Waxaan diyaar u nahay inaan kaa caawinno qiyaas, qiimo iyo talo naqshad."
-        image={images.detail}
+        image={content.contactImage || images.detail}
       />
 
       <section className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">
@@ -113,7 +95,7 @@ function ContactPage() {
           </p>
           <LuxeButton asChild size="lg" className="mt-8">
             <a
-              href={whatsappLink("Salaan, waxaan rabaa inaan dalbado adeeg tolid.")}
+              href={waGeneral()}
               target="_blank"
               rel="noreferrer"
             >

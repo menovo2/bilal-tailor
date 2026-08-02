@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { images, navLinks, site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { LuxeButton } from "@/components/ui/luxe-button";
-import { whatsappLink } from "@/lib/site";
-import { useContent } from "@/lib/content-store";
+import { useContent, useLinks } from "@/lib/content-store";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { content } = useContent();
+  const { waGeneral } = useLinks();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
 
@@ -39,14 +39,14 @@ export function Navbar() {
             alt={`Astaanta ${site.name}`}
             width={64}
             height={64}
-            className="h-14 w-14 shrink-0 rounded-full border border-gold/40 bg-white object-contain p-0.5"
+            className="h-14 w-14 shrink-0 sm:h-16 sm:w-16 rounded-full border border-gold/40 bg-white object-contain p-0.5"
           />
 
           <span className="min-w-0">
-            <span className="block truncate font-display text-lg tracking-[0.22em] text-gold-soft">
-              BILAL
+            <span className="text-gold-gradient text-shadow-luxe block truncate font-display text-2xl font-bold tracking-[0.16em] sm:text-3xl">
+              BILAAL
             </span>
-            <span className="block truncate text-[0.55rem] tracking-[0.42em] text-muted-foreground">
+            <span className="block truncate text-[0.6rem] font-semibold tracking-[0.46em] text-gold-soft sm:text-[0.68rem]">
               TAILOR
             </span>
           </span>
@@ -69,7 +69,7 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           <LuxeButton asChild variant="outline" size="sm" className="hidden sm:inline-flex">
             <a
-              href={whatsappLink("Salaan, waxaan rabaa inaan dalbado adeeg tolid.")}
+              href={waGeneral()}
               target="_blank"
               rel="noreferrer"
             >

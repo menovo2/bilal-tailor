@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout, PageHero } from "@/components/layout/site-layout";
 import { Reveal } from "@/components/ui/reveal";
 import { LuxeButton } from "@/components/ui/luxe-button";
-import { images, orderMessage, services, whatsappLink } from "@/lib/site";
+import { images, services } from "@/lib/site";
+import { useLinks } from "@/lib/content-store";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/services")({
@@ -27,13 +28,14 @@ export const Route = createFileRoute("/services")({
 });
 
 function ServicesPage() {
+  const { waOrder, content } = useLinks();
   return (
     <SiteLayout>
       <PageHero
         eyebrow="Adeegyada"
         title="Shan adeeg, hal heer tayo"
         description="Adeeg walba wuxuu ku bilaabmaa qiyaas sax ah wuxuuna ku dhammaadaa dhar aad ku faanto."
-        image={images.measure}
+        image={content.servicesImage || images.measure}
       />
 
       <div className="mx-auto max-w-7xl space-y-24 px-5 py-24 sm:px-8 lg:space-y-32 lg:py-32">
@@ -62,7 +64,7 @@ function ServicesPage() {
                 </p>
                 <LuxeButton asChild size="lg" className="mt-9">
                   <a
-                    href={whatsappLink(orderMessage(service.key))}
+                    href={waOrder(service.key)}
                     target="_blank"
                     rel="noreferrer"
                   >

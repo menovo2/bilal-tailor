@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
-import { galleryCategories, orderMessage, whatsappLink } from "@/lib/site";
+import { galleryCategories } from "@/lib/site";
+import { useLinks } from "@/lib/content-store";
 import { useContent, type GalleryItem } from "@/lib/content-store";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { cn } from "@/lib/utils";
@@ -150,6 +151,7 @@ function CategorySlider({
 
 export function GalleryShowcase({ withFilter = false }: { withFilter?: boolean }) {
   const { content } = useContent();
+  const { waOrder } = useLinks();
   const [active, setActive] = useState<string>("Dhammaan");
   const [modal, setModal] = useState<GalleryItem | null>(null);
 
@@ -241,7 +243,7 @@ export function GalleryShowcase({ withFilter = false }: { withFilter?: boolean }
                 Noo soo dir fariin WhatsApp oo hel qiimo iyo talo bilaash ah.
               </p>
               <LuxeButton asChild size="lg">
-                <a href={whatsappLink(orderMessage(modal.label))} target="_blank" rel="noreferrer">
+                <a href={waOrder(modal.label)} target="_blank" rel="noreferrer">
                   Hadda Dalbo
                 </a>
               </LuxeButton>

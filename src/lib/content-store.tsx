@@ -23,6 +23,12 @@ export type GalleryItem = {
   visible: boolean;
 };
 
+export type AdminUser = {
+  id: string;
+  email: string;
+  password: string;
+};
+
 export type SiteContent = {
   logoImage: string;
   heroEyebrow: string;
@@ -37,12 +43,24 @@ export type SiteContent = {
   galleryTitle: string;
   galleryText: string;
   galleryImage: string;
+  servicesImage: string;
+  contactImage: string;
   comingSoonImage: string;
   whatsapp: string;
   phone: string;
   email: string;
+  facebook: string;
+  instagram: string;
+  /** Auto message used by every general "Dalbo Hadda" WhatsApp link. */
+  whatsappMessage: string;
+  /** Auto message per service/gallery item — {item} is replaced by the name. */
+  orderMessage: string;
+  /** First line of the booking form WhatsApp message. */
+  bookingMessage: string;
+  admins: AdminUser[];
   gallery: GalleryItem[];
 };
+
 
 const ITEMS_PER_CATEGORY = 6;
 
@@ -73,11 +91,20 @@ export const defaultContent: SiteContent = {
   galleryTitle: "Shaqadeena iyo Naqshadeena",
   galleryText: "Sawirada rasmiga ah dhawaan waa la soo gelinayaa. Dooro qayb oo dalbo hadda.",
   galleryImage: images.aboutRack,
+  servicesImage: images.hero,
+  contactImage: images.measureLight,
   comingSoonImage: images.comingSoon,
   whatsapp: "251940744442",
   phone: "+251940744442",
   email: "Billaalyare88@gmail.com",
+  facebook: "https://facebook.com",
+  instagram: "",
+  whatsappMessage: "Salaan, waxaan rabaa inaan dalbado adeeg tolid.",
+  orderMessage: "Salaan, waxaan rabaa inaan dalbado adeegga {item}.",
+  bookingMessage: "ASC BILAAL TAILOR, waxaan rabaa in aan dalbado:",
+  admins: [{ id: "root", email: "Billaalyare88@gmail.com", password: "secure#4" }],
   gallery: seedGallery(),
+
 };
 
 const STORAGE_KEY = "bilal-tailor-content-v1";
@@ -88,8 +115,12 @@ type Ctx = {
   updateItem: (id: string, patch: Partial<GalleryItem>) => void;
   addItem: (category: string) => void;
   removeItem: (id: string) => void;
+  addAdmin: (email: string, password: string) => void;
+  updateAdmin: (id: string, patch: Partial<Omit<AdminUser, "id">>) => void;
+  removeAdmin: (id: string) => void;
   reset: () => void;
 };
+
 
 const ContentContext = createContext<Ctx | null>(null);
 
@@ -155,7 +186,20 @@ export function ContentProvider({ children }: { children: ReactNode }) {
       },
       removeItem: (id) =>
         persist({ ...content, gallery: content.gallery.filter((g) => g.id !== id) }),
+      addAdmin: (email, password) =>
+        persist({
+          ...content,
+          admins: [...content.admins, { id: `admin-${Date.now()}`, email, password }],
+        }),
+      updateAdmin: (id, patch) =>
+        persist({
+          ...content,
+          admins: content.admins.map((a) => (a.id === id ? { ...a, ...patch } : a)),
+        }),
+      removeAdmin: (id) =>
+        persist({ ...content, admins: content.admins.filter((a) => a.id !== id) }),
       reset: () => persist(defaultContent),
+
     }),
     [content, persist],
   );
@@ -167,4 +211,17 @@ export function useContent() {
   const ctx = useContext(ContentContext);
   if (!ctx) throw new Error("useContent must be used inside <ContentProvider>");
   return ctx;
+}
+
+/** Build WhatsApp links from the admin-managed number and auto messages. */
+export function useLinks() {
+  const { content } = useContent();
+  const wa = (message: string) =>
+    `https://wa.me/${content.whatsapp.replace(/[^\d]/g, "")}?text=${encodeURIComponent(message)}`;
+  return {
+    content,
+    waGeneral: () => wa(content.whatsappMessage),
+    waOrder: (item: string) => wa((content.orderMessage || "{item}").replace(/\{item\}/g, item)),
+    wa,
+  };
 }

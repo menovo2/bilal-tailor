@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { site, whatsappLink } from "@/lib/site";
-import { useContent } from "@/lib/content-store";
+import { site } from "@/lib/site";
+import { useContent, useLinks } from "@/lib/content-store";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { Link } from "@tanstack/react-router";
 
 export function Hero() {
   const [offset, setOffset] = useState(0);
   const { content } = useContent();
+  const { waGeneral } = useLinks();
 
   useEffect(() => {
     const onScroll = () => setOffset(window.scrollY);
@@ -43,7 +44,7 @@ export function Hero() {
           <div className="mt-10 flex flex-wrap items-center gap-3 sm:gap-4">
             <LuxeButton asChild size="lg">
               <a
-                href={whatsappLink("Salaan, waxaan rabaa inaan dalbado adeeg tolid.")}
+                href={waGeneral()}
                 target="_blank"
                 rel="noreferrer"
               >
