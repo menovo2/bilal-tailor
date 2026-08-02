@@ -473,7 +473,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                   value={content.heroHighlight}
                   onChange={set("heroHighlight")}
                 />
-                <Field
+                <ImageField
                   label="Sawirka background (URL)"
                   value={content.heroImage}
                   onChange={set("heroImage")}
@@ -492,7 +492,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               <h2 className="text-xl">Qoraalka & Sawirka About</h2>
               <div className="mt-6 grid gap-6 lg:grid-cols-2">
                 <Field label="Cinwaanka" value={content.aboutTitle} onChange={set("aboutTitle")} />
-                <Field
+                <ImageField
                   label="Sawirka background (URL)"
                   value={content.aboutImage}
                   onChange={set("aboutImage")}
@@ -557,7 +557,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                     la tusayaa. Sidoo kale beddel magaca lambarka leh (Suit 1, Surwaal 4, iwm).
                   </p>
                   <div className="mt-4">
-                    <Field
+                    <ImageField
                       label="Sawirka Coming Soon (URL)"
                       value={content.comingSoonImage}
                       onChange={set("comingSoonImage")}
@@ -580,7 +580,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                           value={g.label}
                           onChange={(v) => updateItem(g.id, { label: v })}
                         />
-                        <Field
+                        <ImageField
                           label="Sawirka (URL)"
                           value={g.imageUrl}
                           onChange={(v) => updateItem(g.id, { imageUrl: v })}
