@@ -530,6 +530,68 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             </div>
           ) : null}
 
+          {section === "backgrounds" ? (
+            <div className="card-luxe rounded-lg p-5 sm:p-8">
+              <h2 className="text-xl">Sawirada Background</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Beddel sawirka background ee bog kasta — URL ama upload device-kaaga.
+              </p>
+              <div className="mt-6 grid gap-8 lg:grid-cols-2">
+                <ImageField label="Home (hero)" value={content.heroImage} onChange={set("heroImage")} />
+                <ImageField label="About" value={content.aboutImage} onChange={set("aboutImage")} />
+                <ImageField label="Services" value={content.servicesImage} onChange={set("servicesImage")} />
+                <ImageField label="Gallery" value={content.galleryImage} onChange={set("galleryImage")} />
+                <ImageField label="Contact" value={content.contactImage} onChange={set("contactImage")} />
+                <ImageField
+                  label="Coming Soon (placeholder)"
+                  value={content.comingSoonImage}
+                  onChange={set("comingSoonImage")}
+                />
+              </div>
+            </div>
+          ) : null}
+
+          {section === "links" ? (
+            <div className="card-luxe rounded-lg p-5 sm:p-8">
+              <h2 className="text-xl">Links & Fariimaha Automatic</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Beddel lambarka WhatsApp, links-yada bulshada, iyo fariimaha iska sii dira marka
+                macmiilku gujiyo.
+              </p>
+              <div className="mt-6 grid gap-6 lg:grid-cols-2">
+                <Field label="WhatsApp (lambar)" value={content.whatsapp} onChange={set("whatsapp")} placeholder="251940744442" />
+                <Field label="Telefoon" value={content.phone} onChange={set("phone")} />
+                <Field label="Iimayl" value={content.email} onChange={set("email")} />
+                <Field label="Facebook (link)" value={content.facebook} onChange={set("facebook")} placeholder="https://facebook.com/..." />
+                <Field label="Instagram (link)" value={content.instagram} onChange={set("instagram")} placeholder="https://instagram.com/..." />
+                <div className="lg:col-span-2">
+                  <Field
+                    label="Fariinta guud (Dalbo Hadda / WhatsApp button)"
+                    value={content.whatsappMessage}
+                    onChange={set("whatsappMessage")}
+                    textarea
+                  />
+                </div>
+                <div className="lg:col-span-2">
+                  <Field
+                    label="Fariinta dalabka — isticmaal {item} magaca adeegga"
+                    value={content.orderMessage}
+                    onChange={set("orderMessage")}
+                    textarea
+                  />
+                </div>
+                <div className="lg:col-span-2">
+                  <Field
+                    label="Fariinta foomka ballanta (sarbeeg)"
+                    value={content.bookingMessage}
+                    onChange={set("bookingMessage")}
+                    textarea
+                  />
+                </div>
+              </div>
+            </div>
+          ) : null}
+
           {section === "gallery" ? (
             <>
               <div className="flex flex-wrap items-center justify-between gap-4">
@@ -660,6 +722,8 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             </ul>
           ) : null}
 
+          {section === "settings" ? <SettingsPanel /> : null}
+
           {section === "faq" ? (
             <div className="card-luxe rounded-lg p-5 sm:p-6">
               <ul className="divide-y divide-gold/10">
@@ -673,6 +737,81 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             </div>
           ) : null}
         </div>
+      </div>
+    </div>
+  );
+}
+
+function SettingsPanel() {
+  const { content, addAdmin, updateAdmin, removeAdmin } = useContent();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [note, setNote] = useState("");
+
+  return (
+    <div className="space-y-6">
+      <div className="card-luxe rounded-lg p-5 sm:p-8">
+        <h2 className="text-xl">Admins</h2>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Beddel iimaylka iyo password-ka, ama ku dar admin cusub.
+        </p>
+        <ul className="mt-6 space-y-5">
+          {content.admins.map((a) => (
+            <li key={a.id} className="rounded-lg border border-gold/20 p-4 sm:p-5">
+              <div className="grid gap-5 lg:grid-cols-2">
+                <Field
+                  label="Iimayl"
+                  value={a.email}
+                  onChange={(v) => updateAdmin(a.id, { email: v })}
+                />
+                <Field
+                  label="Password"
+                  value={a.password}
+                  onChange={(v) => updateAdmin(a.id, { password: v })}
+                />
+              </div>
+              {content.admins.length > 1 ? (
+                <LuxeButton
+                  variant="ghost"
+                  size="sm"
+                  className="mt-4"
+                  onClick={() => removeAdmin(a.id)}
+                >
+                  <Trash2 size={13} /> Tirtir admin-kan
+                </LuxeButton>
+              ) : (
+                <p className="mt-3 text-[0.62rem] tracking-[0.2em] text-muted-foreground uppercase">
+                  Admin-ka ugu dambeeya lama tirtiri karo
+                </p>
+              )}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div className="card-luxe rounded-lg p-5 sm:p-8">
+        <h2 className="text-xl">Ku dar admin cusub</h2>
+        <div className="mt-6 grid gap-5 lg:grid-cols-2">
+          <Field label="Iimayl" value={email} onChange={setEmail} placeholder="admin@example.com" />
+          <Field label="Password" value={password} onChange={setPassword} placeholder="••••••" />
+        </div>
+        <LuxeButton
+          size="sm"
+          className="mt-6"
+          onClick={() => {
+            if (!email.trim() || !password.trim()) {
+              setNote("Buuxi iimaylka iyo password-ka.");
+              return;
+            }
+            addAdmin(email.trim(), password);
+            setEmail("");
+            setPassword("");
+            setNote("Admin cusub waa la daray ✓");
+          }}
+        >
+          <UserPlus size={13} /> Ku dar admin
+        </LuxeButton>
+        {note ? <p className="mt-4 text-xs text-gold">{note}</p> : null}
       </div>
     </div>
   );
