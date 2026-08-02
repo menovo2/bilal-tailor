@@ -28,6 +28,7 @@ export const Route = createFileRoute("/services")({
 });
 
 function ServicesPage() {
+  const { waOrder } = useLinks();
   return (
     <SiteLayout>
       <PageHero

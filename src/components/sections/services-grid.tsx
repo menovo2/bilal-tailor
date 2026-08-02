@@ -15,6 +15,7 @@ const icons: Record<string, ComponentType<{ size?: number; className?: string }>
 };
 
 export function ServicesGrid({ withCta = false }: { withCta?: boolean }) {
+  const { waOrder } = useLinks();
   return (
     <section id="services" className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">
       <SectionHeading

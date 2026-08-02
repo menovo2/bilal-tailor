@@ -151,6 +151,7 @@ function CategorySlider({
 
 export function GalleryShowcase({ withFilter = false }: { withFilter?: boolean }) {
   const { content } = useContent();
+  const { waOrder } = useLinks();
   const [active, setActive] = useState<string>("Dhammaan");
   const [modal, setModal] = useState<GalleryItem | null>(null);
 
