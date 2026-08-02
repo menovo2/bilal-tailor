@@ -26,15 +26,15 @@ export function BookingSection() {
   const label = "text-[0.66rem] tracking-[0.26em] text-gold uppercase";
 
   return (
-    <section id="booking" className="border-y border-gold/15 bg-surface/30 py-24 lg:py-32">
+    <section id="booking" className="border-y border-gold/15 bg-surface/30 py-12 lg:py-16">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <SectionHeading
           eyebrow="Dalbo"
           title="Ballan Qabso Hadda"
-          description="Buuxi foomka dalabka waxan kugula soo xidhiidhaynaa wakhti kooban. "
+          description="Buuxi foomka, waxaan si degdeg ah kugula soo xidhiidhaynaa."
         />
 
-        <Reveal className="mx-auto mt-14 max-w-3xl" delay={120}>
+        <Reveal className="mx-auto mt-8 max-w-3xl" delay={120}>
           <form
             onSubmit={submit}
             className="card-luxe rounded-xl p-7 sm:p-10"
