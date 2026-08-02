@@ -66,13 +66,24 @@ function AdminPage() {
   );
 }
 
+const ADMIN_EMAIL = site.email.toLowerCase();
+const ADMIN_PASSWORD = "secure#4";
+
 function Login({ onLogin }: { onLogin: () => void }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+
   return (
     <div className="grid min-h-screen place-items-center bg-background px-5 py-16">
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          onLogin();
+          if (email.trim().toLowerCase() === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+            onLogin();
+          } else {
+            setError(true);
+          }
         }}
         className="card-luxe w-full max-w-md rounded-xl p-6 sm:p-10"
       >
@@ -97,7 +108,12 @@ function Login({ onLogin }: { onLogin: () => void }) {
               id="email"
               type="email"
               required
-              defaultValue={site.email}
+              autoComplete="off"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError(false);
+              }}
               className={inputClass}
             />
           </div>
@@ -109,17 +125,24 @@ function Login({ onLogin }: { onLogin: () => void }) {
               id="password"
               type="password"
               required
-              defaultValue="demo1234"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError(false);
+              }}
               className={inputClass}
             />
           </div>
         </div>
+        {error ? (
+          <p className="mt-5 text-center text-sm text-destructive">
+            Email ama password khaldan.
+          </p>
+        ) : null}
         <LuxeButton type="submit" size="lg" className="mt-8 w-full">
           Gal
         </LuxeButton>
-        <p className="mt-5 text-center text-[0.68rem] text-muted-foreground">
-          Beddelada waxaa lagu kaydiyaa browser-kaaga (frontend only).
-        </p>
       </form>
     </div>
   );
