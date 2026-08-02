@@ -186,7 +186,20 @@ export function ContentProvider({ children }: { children: ReactNode }) {
       },
       removeItem: (id) =>
         persist({ ...content, gallery: content.gallery.filter((g) => g.id !== id) }),
+      addAdmin: (email, password) =>
+        persist({
+          ...content,
+          admins: [...content.admins, { id: `admin-${Date.now()}`, email, password }],
+        }),
+      updateAdmin: (id, patch) =>
+        persist({
+          ...content,
+          admins: content.admins.map((a) => (a.id === id ? { ...a, ...patch } : a)),
+        }),
+      removeAdmin: (id) =>
+        persist({ ...content, admins: content.admins.filter((a) => a.id !== id) }),
       reset: () => persist(defaultContent),
+
     }),
     [content, persist],
   );
