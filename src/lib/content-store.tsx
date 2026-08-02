@@ -23,6 +23,12 @@ export type GalleryItem = {
   visible: boolean;
 };
 
+export type AdminUser = {
+  id: string;
+  email: string;
+  password: string;
+};
+
 export type SiteContent = {
   logoImage: string;
   heroEyebrow: string;
@@ -37,12 +43,24 @@ export type SiteContent = {
   galleryTitle: string;
   galleryText: string;
   galleryImage: string;
+  servicesImage: string;
+  contactImage: string;
   comingSoonImage: string;
   whatsapp: string;
   phone: string;
   email: string;
+  facebook: string;
+  instagram: string;
+  /** Auto message used by every general "Dalbo Hadda" WhatsApp link. */
+  whatsappMessage: string;
+  /** Auto message per service/gallery item — {item} is replaced by the name. */
+  orderMessage: string;
+  /** First line of the booking form WhatsApp message. */
+  bookingMessage: string;
+  admins: AdminUser[];
   gallery: GalleryItem[];
 };
+
 
 const ITEMS_PER_CATEGORY = 6;
 
