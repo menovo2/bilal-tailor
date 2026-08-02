@@ -9,13 +9,13 @@ import { useContent } from "@/lib/content-store";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "Naga Ogow — BILAL TAILOR" },
+      { title: "xog kooban oo kuu saabsan BILAL TAILOR." },
       {
         name: "description",
         content:
-          "BILAL TAILOR: tolid heer sare ah, qiyaas sax ah, farsamo gacaneed. Suit, safari, qamiis iyo surwaal oo si gaar ah kuu tolan.",
+          "BILAL TAILOR: Goob tolmo oo heer sare ah, taas oo saldhig u leh tayo, khibrad iyo qadarin macmiil..",
       },
-      { property: "og:title", content: "Naga Ogow — BILAL TAILOR" },
+      { property: "og:title", content: "xog kooban oo kuu saabsan BILAL TAILOR." },
       {
         property: "og:description",
         content: "Farsamo gacaneed, tayo aan lala tartami karin, adeeg shaqsi ah.",
@@ -80,18 +80,15 @@ function AboutPage() {
             <div className="hairline mt-6 w-28" aria-hidden="true" />
             <div className="mt-7 space-y-5 text-sm leading-relaxed text-muted-foreground sm:text-base">
               <p>
-                BILAL TAILOR waa dukaan tolid heer sare ah oo u adeega ragga raadinaya dhar qiyaas
-                sax ah leh, qurux badan, oo waara. Waxaan ku takhasusnay{" "}
-                {services.map((s) => s.title).join(", ")} — mid kastaa qaab gaar ah.
-              </p>
-              <p>
-                Waxaan ka bilownaa qiyaas sax ah iyo faham buuxa oo aragtidaada ah. Kadib waxaan
-                dooranaa maro ku habboon, waxaana si taxaddar leh u tolnaa.
-              </p>
-              <p>
-                Dharku waa maalgashi, mana aha alaab si degdeg ah loo iibsado. Sidaas darteed,
-                tayadu horta ayay u timaadaa.
-              </p>
+  <strong>BILAL TAILOR</strong> waa xarun tolmo oo heer sare ah, taas oo u adeegta ragga raba dhar ku tikhan qiyaas sax ah, bilic gooni ah, iyo adkaysi waara. Waxaan ku takhasusnay{" "}
+  {services.map((s) => s.title).join(", ")} — iyadoo mid kasta loo qaabeeyo si gaar ah.
+</p>
+<p>
+  Adeegganaga waxaan ka bilownaa qiyaas suuban iyo faham mug leh oo ku saabsan rabitaankaaga. Kadib, waxaan dooranaa marada ku habboon, anagoo u tolna si hufan oo farshaxannimo leh.
+</p>
+<p>
+  Maadaama dharku yahay maalgashi ee aanu ahayn agab si kumeel-gaar ah loo iibsado, tayada sare iyo xarragu waa halbeegga koowaad ee adeegayaga.
+</p>
             </div>
           </Reveal>
 
