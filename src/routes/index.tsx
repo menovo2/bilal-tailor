@@ -10,16 +10,16 @@ import { LuxeButton } from "@/components/ui/luxe-button";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "BILAL TAILOR — Luxury Tailoring for Modern Gentlemen" },
+      { title: "BILAL TAILOR — Luxury Tailoring for MEN." },
       {
         name: "description",
         content:
-          "Tolid heer sare ah oo ragga casriga ah: suit, safari, qamiis, surwaal iyo shaar oo qiyaas gaar ah lagu tolay. Dalbo hadda WhatsApp.",
+          "Tolidda dharka Ragga : suit, safari, qamiis, surwaal iyo shaar oo qiyaas gaar ah lagu tolay. Dalbo hadda WhatsApp.",
       },
-      { property: "og:title", content: "BILAL TAILOR — Luxury Tailoring for Modern Gentlemen" },
+      { property: "og:title", content: "BILAL TAILOR — Luxury Tailoring for MEN." },
       {
         property: "og:description",
-        content: "Tolid heer sare ah oo ragga casriga ah: suit, safari, qamiis, surwaal iyo shaar oo qiyaas gaar ah lagu tolay. Dalbo hadda WhatsApp.",
+        content: "Tolidda dharka Ragga: suit, safari, qamiis, surwaal iyo shaar oo qiyaas gaar ah lagu tolay. Dalbo hadda WhatsApp.",
       },
       { property: "og:url", content: "/" },
     ],
@@ -33,13 +33,13 @@ function HomePage() {
     <SiteLayout>
       <Hero />
       <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:py-14">
-        <SectionHeading eyebrow="Gallery" title="Shaqadeena" />
+        <SectionHeading eyebrow="Sawirrada" title="Dharka" />
         <div className="mt-8">
           <GalleryShowcase />
         </div>
         <div className="mt-10 flex justify-center">
           <LuxeButton asChild variant="outline" size="lg">
-            <Link to="/gallery">Daawo Gallery-ga oo Dhan</Link>
+            <Link to="/gallery">Daawo Sawirrada Dharka oo Dhan</Link>
           </LuxeButton>
         </div>
       </section>
