@@ -10,9 +10,9 @@ import {
 
 export function FaqSection() {
   return (
-    <section id="faq" className="mx-auto max-w-4xl px-5 py-24 sm:px-8 lg:py-32">
+    <section id="faq" className="mx-auto max-w-4xl px-5 py-12 sm:px-8 lg:py-16">
       <SectionHeading eyebrow="Su'aalo" title="Su'aalaha Badanaa La Weydiiyo" />
-      <Reveal className="mt-14" delay={100}>
+      <Reveal className="mt-8" delay={100}>
         <Accordion type="single" collapsible className="space-y-4">
           {faqs.map((f, i) => (
             <AccordionItem

@@ -65,7 +65,7 @@ export const defaultContent: SiteContent = {
   heroTitle: "Luxury Tailoring for",
   heroHighlight: "Modern Gentlemen",
   heroText:
-    "BILAL TAILOR waa goobta ay ragga casriga ah ka helaan dhar la tolay si gaar ah — suit, safari, qamiis, surwaal iyo shaar. Qiyaas sax ah, maro tayada ugu sarreysa, iyo tolid gacan farsamo leh oo sharaf iyo kalsooni kuu soo kordhisa.",
+    "Suit, safari, qamiis, surwaal iyo shaar oo qiyaas sax ah lagu tolay — maro tayo sare iyo farsamo gacan.",
   heroImage: images.heroTailor,
   aboutTitle: "Sheekada BILAL TAILOR",
   aboutText: "Dukaan tolid oo lagu dhisay tayo, khibrad iyo ixtiraam macmiil.",

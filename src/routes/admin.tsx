@@ -66,13 +66,24 @@ function AdminPage() {
   );
 }
 
+const ADMIN_EMAIL = site.email.toLowerCase();
+const ADMIN_PASSWORD = "secure#4";
+
 function Login({ onLogin }: { onLogin: () => void }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState(false);
+
   return (
     <div className="grid min-h-screen place-items-center bg-background px-5 py-16">
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          onLogin();
+          if (email.trim().toLowerCase() === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+            onLogin();
+          } else {
+            setError(true);
+          }
         }}
         className="card-luxe w-full max-w-md rounded-xl p-6 sm:p-10"
       >
@@ -97,7 +108,12 @@ function Login({ onLogin }: { onLogin: () => void }) {
               id="email"
               type="email"
               required
-              defaultValue={site.email}
+              autoComplete="off"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                setError(false);
+              }}
               className={inputClass}
             />
           </div>
@@ -109,17 +125,24 @@ function Login({ onLogin }: { onLogin: () => void }) {
               id="password"
               type="password"
               required
-              defaultValue="demo1234"
+              autoComplete="current-password"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setError(false);
+              }}
               className={inputClass}
             />
           </div>
         </div>
+        {error ? (
+          <p className="mt-5 text-center text-sm text-destructive">
+            Email ama password khaldan.
+          </p>
+        ) : null}
         <LuxeButton type="submit" size="lg" className="mt-8 w-full">
           Gal
         </LuxeButton>
-        <p className="mt-5 text-center text-[0.68rem] text-muted-foreground">
-          Beddelada waxaa lagu kaydiyaa browser-kaaga (frontend only).
-        </p>
       </form>
     </div>
   );
@@ -265,6 +288,52 @@ function Field({
   );
 }
 
+/** Image input: paste a URL or upload a picture straight from the device. */
+function ImageField({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  const onFile = (file: File | undefined) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => onChange(String(reader.result));
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="min-w-0">
+      <Field label={label} value={value} onChange={onChange} placeholder={placeholder} />
+      <label className="mt-3 block">
+        <span className="text-[0.6rem] tracking-[0.22em] text-muted-foreground uppercase">
+          Ama soo geli sawir device-kaaga
+        </span>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => onFile(e.target.files?.[0])}
+          className={cn(
+            inputClass,
+            "file:mr-4 file:rounded file:border-0 file:bg-gold/15 file:px-3 file:py-1.5 file:text-xs file:text-gold",
+          )}
+        />
+      </label>
+      {value ? (
+        <LuxeButton variant="ghost" size="sm" className="mt-2" onClick={() => onChange("")}>
+          <Trash2 size={13} /> Tirtir sawirka
+        </LuxeButton>
+      ) : null}
+    </div>
+  );
+}
+
+
 function Dashboard({ onLogout }: { onLogout: () => void }) {
   const { content, update, updateItem, addItem, removeItem, reset } = useContent();
   const [section, setSection] = useState<SectionKey>("dashboard");
@@ -404,7 +473,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                   value={content.heroHighlight}
                   onChange={set("heroHighlight")}
                 />
-                <Field
+                <ImageField
                   label="Sawirka background (URL)"
                   value={content.heroImage}
                   onChange={set("heroImage")}
@@ -423,7 +492,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               <h2 className="text-xl">Qoraalka & Sawirka About</h2>
               <div className="mt-6 grid gap-6 lg:grid-cols-2">
                 <Field label="Cinwaanka" value={content.aboutTitle} onChange={set("aboutTitle")} />
-                <Field
+                <ImageField
                   label="Sawirka background (URL)"
                   value={content.aboutImage}
                   onChange={set("aboutImage")}
@@ -488,7 +557,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                     la tusayaa. Sidoo kale beddel magaca lambarka leh (Suit 1, Surwaal 4, iwm).
                   </p>
                   <div className="mt-4">
-                    <Field
+                    <ImageField
                       label="Sawirka Coming Soon (URL)"
                       value={content.comingSoonImage}
                       onChange={set("comingSoonImage")}
@@ -511,7 +580,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                           value={g.label}
                           onChange={(v) => updateItem(g.id, { label: v })}
                         />
-                        <Field
+                        <ImageField
                           label="Sawirka (URL)"
                           value={g.imageUrl}
                           onChange={(v) => updateItem(g.id, { imageUrl: v })}

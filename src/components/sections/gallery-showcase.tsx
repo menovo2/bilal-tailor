@@ -198,7 +198,7 @@ export function GalleryShowcase({ withFilter = false }: { withFilter?: boolean }
         </div>
       ) : null}
 
-      <div className="mt-6 space-y-14 sm:space-y-16">
+      <div className="mt-6 space-y-10 sm:space-y-12">
         {shown.map(({ category, items }) => (
           <CategorySlider
             key={category}

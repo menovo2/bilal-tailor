@@ -24,7 +24,7 @@ export function Hero() {
         <img
           src={content.heroImage}
           alt="Tailor-ka oo qiyaasaya jaakad suit gudaha dukaanka BILAL TAILOR"
-          className="animate-hero-zoom h-[112%] w-full object-cover object-center"
+          className="animate-hero-zoom h-full w-full object-cover object-center sm:h-[112%]"
         />
         <div className="absolute inset-0" style={{ background: "var(--gradient-veil)" }} />
         <div className="absolute inset-0 bg-background/55" />
