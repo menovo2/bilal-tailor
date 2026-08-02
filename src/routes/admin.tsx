@@ -17,6 +17,10 @@ import {
   Search,
   Trash2,
   Upload,
+  Link2,
+  Settings,
+  ImagePlus,
+  UserPlus,
 } from "lucide-react";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { cn } from "@/lib/utils";
@@ -44,11 +48,14 @@ const sections = [
   { key: "logo", label: "Logo", icon: Upload },
   { key: "home", label: "Home Page", icon: Home },
   { key: "about", label: "About", icon: Info },
+  { key: "backgrounds", label: "Backgrounds", icon: ImagePlus },
   { key: "gallery", label: "Gallery", icon: ImageIcon },
+  { key: "links", label: "Links & Messages", icon: Link2 },
   { key: "contact", label: "Contact", icon: Scissors },
   { key: "faq", label: "FAQ", icon: HelpCircle },
   { key: "bookings", label: "Bookings", icon: CalendarCheck },
   { key: "messages", label: "Messages", icon: MessageSquare },
+  { key: "settings", label: "Settings", icon: Settings },
 ] as const;
 
 type SectionKey = (typeof sections)[number]["key"];
@@ -66,10 +73,8 @@ function AdminPage() {
   );
 }
 
-const ADMIN_EMAIL = site.email.toLowerCase();
-const ADMIN_PASSWORD = "secure#4";
-
 function Login({ onLogin }: { onLogin: () => void }) {
+  const { content } = useContent();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
@@ -79,7 +84,10 @@ function Login({ onLogin }: { onLogin: () => void }) {
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          if (email.trim().toLowerCase() === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
+          const ok = content.admins.some(
+            (a) => a.email.trim().toLowerCase() === email.trim().toLowerCase() && a.password === password,
+          );
+          if (ok) {
             onLogin();
           } else {
             setError(true);
@@ -97,7 +105,7 @@ function Login({ onLogin }: { onLogin: () => void }) {
 
         <h1 className="mt-6 text-center text-3xl">Admin Panel</h1>
         <p className="mt-3 text-center text-xs tracking-[0.2em] text-muted-foreground uppercase">
-          BILAL TAILOR
+          BILAAL TAILOR
         </p>
         <div className="mt-8 space-y-5">
           <div>
