@@ -1,7 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Award, Gem, HeartHandshake, Ruler, Scissors, Target } from "lucide-react";
 import { SiteLayout, PageHero } from "@/components/layout/site-layout";
-import { SectionHeading } from "@/components/ui/section-heading";
 import { Reveal } from "@/components/ui/reveal";
 import { images, services } from "@/lib/site";
 import { useContent } from "@/lib/content-store";
@@ -26,39 +24,6 @@ export const Route = createFileRoute("/about")({
   }),
   component: AboutPage,
 });
-
-const values = [
-  {
-    icon: Target,
-    title: "Himilo",
-    text: "Dhar qiyaas sax ah leh oo kor u qaada kalsoonidaada.",
-  },
-  {
-    icon: Gem,
-    title: "Aragti",
-    text: "Inaan noqonno magaca ugu horreeya ee tolidda heer sare ah.",
-  },
-  {
-    icon: Award,
-    title: "Tayo",
-    text: "Maro la doortay, tolid adkaysi leh oo sanado socota.",
-  },
-  {
-    icon: Scissors,
-    title: "Farsamo",
-    text: "Gacan farsamo leh oo qiyaasaysa, jarta oo tolaysa taxaddar.",
-  },
-  {
-    icon: Ruler,
-    title: "Faahfaahin",
-    text: "Wax kastoo yar waa muhiim — halkaas ayaa quruxdu ka dhalataa.",
-  },
-  {
-    icon: HeartHandshake,
-    title: "Adeeg Shaqsi Ah",
-    text: "Ka bilaabo soo dhaweynta ilaa dhammaadka, adeeg deggan oo xushmad leh.",
-  },
-];
 
 function AboutPage() {
   const { content } = useContent();
@@ -100,29 +65,6 @@ function AboutPage() {
               className="h-full w-full rounded-xl border border-gold/25 object-cover shadow-luxe"
             />
           </Reveal>
-        </div>
-      </section>
-
-      <section className="border-y border-gold/15 bg-surface/30 py-24 lg:py-32">
-        <div className="mx-auto max-w-7xl px-5 sm:px-8">
-          <SectionHeading
-            eyebrow="Qiyamkeena"
-            title="Waxa Naga Dhigaya Kuwa Kala Duwan"
-            description="Afar tiir: tayo, farsamo, faahfaahin iyo adeeg."
-          />
-          <ul className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {values.map((v, i) => (
-              <Reveal as="li" key={v.title} delay={i * 80}>
-                <article className="card-luxe group h-full rounded-lg p-8">
-                  <span className="grid h-14 w-14 place-items-center rounded-full border border-gold/40 text-gold transition-all duration-500 group-hover:bg-gold group-hover:text-primary-foreground">
-                    <v.icon size={22} />
-                  </span>
-                  <h3 className="mt-7 text-2xl">{v.title}</h3>
-                  <p className="mt-4 text-sm leading-relaxed text-muted-foreground">{v.text}</p>
-                </article>
-              </Reveal>
-            ))}
-          </ul>
         </div>
       </section>
     </SiteLayout>
