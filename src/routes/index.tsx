@@ -32,21 +32,18 @@ function HomePage() {
   return (
     <SiteLayout>
       <Hero />
-      <section className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">
-        <SectionHeading
-          eyebrow="Gallery"
-          title="Shaqadeena"
-          description="Sawirada shaqadeena dhawaan waa la soo gelinayaa. Hadda daawo qaybaha oo dalbo."
-        />
-        <div className="mt-14">
+      <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:py-14">
+        <SectionHeading eyebrow="Gallery" title="Shaqadeena" />
+        <div className="mt-8">
           <GalleryShowcase />
         </div>
-        <div className="mt-14 flex justify-center">
+        <div className="mt-10 flex justify-center">
           <LuxeButton asChild variant="outline" size="lg">
             <Link to="/gallery">Daawo Gallery-ga oo Dhan</Link>
           </LuxeButton>
         </div>
       </section>
+
       <BookingSection />
       <FaqSection />
     </SiteLayout>
