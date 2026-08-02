@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout, PageHero } from "@/components/layout/site-layout";
 import { Reveal } from "@/components/ui/reveal";
 import { LuxeButton } from "@/components/ui/luxe-button";
-import { images, orderMessage, services, whatsappLink } from "@/lib/site";
+import { images, services } from "@/lib/site";
+import { useLinks } from "@/lib/content-store";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/services")({
@@ -62,7 +63,7 @@ function ServicesPage() {
                 </p>
                 <LuxeButton asChild size="lg" className="mt-9">
                   <a
-                    href={whatsappLink(orderMessage(service.key))}
+                    href={waOrder(service.key)}
                     target="_blank"
                     rel="noreferrer"
                   >

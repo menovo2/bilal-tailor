@@ -1,6 +1,7 @@
 import { Scissors, Shirt, Ruler, Sparkles, Crown } from "lucide-react";
 import type { ComponentType } from "react";
-import { services, whatsappLink, orderMessage } from "@/lib/site";
+import { services } from "@/lib/site";
+import { useLinks } from "@/lib/content-store";
 import { Reveal } from "@/components/ui/reveal";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { LuxeButton } from "@/components/ui/luxe-button";
@@ -38,7 +39,7 @@ export function ServicesGrid({ withCta = false }: { withCta?: boolean }) {
                 {withCta ? (
                   <LuxeButton asChild variant="outline" size="sm" className="mt-7">
                     <a
-                      href={whatsappLink(orderMessage(service.key))}
+                      href={waOrder(service.key)}
                       target="_blank"
                       rel="noreferrer"
                     >

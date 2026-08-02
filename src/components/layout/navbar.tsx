@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { images, navLinks, site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { LuxeButton } from "@/components/ui/luxe-button";
-import { whatsappLink } from "@/lib/site";
-import { useContent } from "@/lib/content-store";
+import { useContent, useLinks } from "@/lib/content-store";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const { content } = useContent();
+  const { waGeneral } = useLinks();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
 
@@ -69,7 +69,7 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           <LuxeButton asChild variant="outline" size="sm" className="hidden sm:inline-flex">
             <a
-              href={whatsappLink("Salaan, waxaan rabaa inaan dalbado adeeg tolid.")}
+              href={waGeneral()}
               target="_blank"
               rel="noreferrer"
             >
