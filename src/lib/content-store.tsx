@@ -91,11 +91,20 @@ export const defaultContent: SiteContent = {
   galleryTitle: "Shaqadeena iyo Naqshadeena",
   galleryText: "Sawirada rasmiga ah dhawaan waa la soo gelinayaa. Dooro qayb oo dalbo hadda.",
   galleryImage: images.aboutRack,
+  servicesImage: images.hero,
+  contactImage: images.measureLight,
   comingSoonImage: images.comingSoon,
   whatsapp: "251940744442",
   phone: "+251940744442",
   email: "Billaalyare88@gmail.com",
+  facebook: "https://facebook.com",
+  instagram: "",
+  whatsappMessage: "Salaan, waxaan rabaa inaan dalbado adeeg tolid.",
+  orderMessage: "Salaan, waxaan rabaa inaan dalbado adeegga {item}.",
+  bookingMessage: "ASC BILAAL TAILOR, waxaan rabaa in aan dalbado:",
+  admins: [{ id: "root", email: "Billaalyare88@gmail.com", password: "secure#4" }],
   gallery: seedGallery(),
+
 };
 
 const STORAGE_KEY = "bilal-tailor-content-v1";
