@@ -288,6 +288,52 @@ function Field({
   );
 }
 
+/** Image input: paste a URL or upload a picture straight from the device. */
+function ImageField({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  const onFile = (file: File | undefined) => {
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => onChange(String(reader.result));
+    reader.readAsDataURL(file);
+  };
+
+  return (
+    <div className="min-w-0">
+      <Field label={label} value={value} onChange={onChange} placeholder={placeholder} />
+      <label className="mt-3 block">
+        <span className="text-[0.6rem] tracking-[0.22em] text-muted-foreground uppercase">
+          Ama soo geli sawir device-kaaga
+        </span>
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => onFile(e.target.files?.[0])}
+          className={cn(
+            inputClass,
+            "file:mr-4 file:rounded file:border-0 file:bg-gold/15 file:px-3 file:py-1.5 file:text-xs file:text-gold",
+          )}
+        />
+      </label>
+      {value ? (
+        <LuxeButton variant="ghost" size="sm" className="mt-2" onClick={() => onChange("")}>
+          <Trash2 size={13} /> Tirtir sawirka
+        </LuxeButton>
+      ) : null}
+    </div>
+  );
+}
+
+
 function Dashboard({ onLogout }: { onLogout: () => void }) {
   const { content, update, updateItem, addItem, removeItem, reset } = useContent();
   const [section, setSection] = useState<SectionKey>("dashboard");
