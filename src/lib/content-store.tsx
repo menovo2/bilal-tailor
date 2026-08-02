@@ -212,3 +212,16 @@ export function useContent() {
   if (!ctx) throw new Error("useContent must be used inside <ContentProvider>");
   return ctx;
 }
+
+/** Build WhatsApp links from the admin-managed number and auto messages. */
+export function useLinks() {
+  const { content } = useContent();
+  const wa = (message: string) =>
+    `https://wa.me/${content.whatsapp.replace(/[^\d]/g, "")}?text=${encodeURIComponent(message)}`;
+  return {
+    content,
+    waGeneral: () => wa(content.whatsappMessage),
+    waOrder: (item: string) => wa((content.orderMessage || "{item}").replace(/\{item\}/g, item)),
+    wa,
+  };
+}
