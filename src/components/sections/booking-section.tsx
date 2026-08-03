@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { services } from "@/lib/site";
 import { useContent, useLinks } from "@/lib/content-store";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { LuxeButton } from "@/components/ui/luxe-button";
@@ -8,7 +7,12 @@ import { Reveal } from "@/components/ui/reveal";
 export function BookingSection() {
   const { content } = useContent();
   const { wa } = useLinks();
-  const [form, setForm] = useState({ name: "", phone: "", type: services[0].key, notes: "" });
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    type: content.services[0]?.key ?? "",
+    notes: "",
+  });
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,7 +20,7 @@ export function BookingSection() {
       content.bookingMessage,
       `Magacaygu waa : ${form.name}`,
       `Lambarkayguna waa : ${form.phone}`,
-      `Nooca Dharka : ${form.type}`,
+      `Nooca Dharka : ${form.type || content.services[0]?.key}`,
       form.notes ? `Faahfaahita Dalabkayga: ${form.notes}` : "",
     ]
       .filter(Boolean)
@@ -25,41 +29,40 @@ export function BookingSection() {
   };
 
   const field =
-    "mt-2 w-full rounded-lg border border-input bg-background/60 px-4 py-3.5 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-gold focus:ring-1 focus:ring-ring";
+    "mt-2 w-full rounded-lg border border-input bg-background/60 px-4 py-3 text-sm text-foreground outline-none transition-colors placeholder:text-muted-foreground/70 focus:border-gold focus:ring-1 focus:ring-ring";
   const label = "text-[0.66rem] tracking-[0.26em] text-gold uppercase";
 
   return (
-    <section id="booking" className="border-y border-gold/15 bg-surface/30 py-12 lg:py-16">
-      <div className="mx-auto max-w-7xl px-5 sm:px-8">
+    <section id="booking" className="border-y border-gold/15 bg-surface/30 py-10 lg:py-12">
+      <div className="mx-auto max-w-7xl px-4 sm:px-8">
         <SectionHeading
-          eyebrow="Dalbo"
-          title="Ballan Qabso Hadda"
-          description="Buuxi foomka, waxaan si degdeg ah kugula soo xidhiidhaynaa."
+          eyebrow={content.bookingEyebrow}
+          title={content.bookingTitle}
+          description={content.bookingText}
         />
 
-        <Reveal className="mx-auto mt-8 max-w-3xl" delay={120}>
+        <Reveal className="mx-auto mt-6 max-w-3xl" delay={100}>
           <form
             onSubmit={submit}
-            className="card-luxe rounded-xl p-7 sm:p-10"
+            className="card-luxe rounded-xl p-5 sm:p-8"
             aria-label="Foomka ballanta"
           >
-            <div className="grid gap-6 sm:grid-cols-2">
-              <div>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="min-w-0">
                 <label className={label} htmlFor="name">
-                  Magacaga oo Saddexan
+                  {content.bookingNameLabel}
                 </label>
                 <input
                   id="name"
                   required
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="Tusaale:- Bilal Abdalla "
                   className={field}
                 />
               </div>
-              <div>
+              <div className="min-w-0">
                 <label className={label} htmlFor="phone">
-                  Lambarka Taleefanka
+                  {content.bookingPhoneLabel}
                 </label>
                 <input
                   id="phone"
@@ -71,40 +74,39 @@ export function BookingSection() {
                   className={field}
                 />
               </div>
-              <div className="sm:col-span-2">
+              <div className="min-w-0 sm:col-span-2">
                 <label className={label} htmlFor="type">
-                  Dooro Nooca Dharka
+                  {content.bookingTypeLabel}
                 </label>
                 <select
                   id="type"
                   value={form.type}
-                  onChange={(e) => setForm({ ...form, type: e.target.value as typeof form.type })}
+                  onChange={(e) => setForm({ ...form, type: e.target.value })}
                   className={field}
                 >
-                  {services.map((s) => (
-                    <option key={s.key} value={s.key} className="bg-surface">
+                  {content.services.map((s) => (
+                    <option key={s.id} value={s.key} className="bg-surface">
                       {s.title}
                     </option>
                   ))}
                 </select>
               </div>
-              <div className="sm:col-span-2">
+              <div className="min-w-0 sm:col-span-2">
                 <label className={label} htmlFor="notes">
-                  Faahfaahi Dalabkaaga
+                  {content.bookingNotesLabel}
                 </label>
                 <textarea
                   id="notes"
-                  rows={4}
+                  rows={3}
                   value={form.notes}
                   onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                  placeholder="Naqshadda, midabka, waqtiga aad u baahan tahay..."
                   className={field}
                 />
               </div>
             </div>
-            <div className="mt-9 flex justify-center">
+            <div className="mt-6 flex justify-center">
               <LuxeButton type="submit" size="lg">
-                Dalbo Hada
+                {content.bookingSubmit}
               </LuxeButton>
             </div>
           </form>
