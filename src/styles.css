@@ -42,6 +42,10 @@
   --color-brown: var(--brown);
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
+  --color-navy: var(--navy);
+  --color-navy-2: var(--navy-2);
+  --color-navy-3: var(--navy-3);
+  --color-navy-line: var(--navy-line);
   --font-display: "Cormorant Garamond", Georgia, serif;
   --font-sans: "Jost", ui-sans-serif, system-ui, sans-serif;
 }
@@ -72,6 +76,11 @@
   --gold: oklch(0.78 0.09 84);
   --gold-soft: oklch(0.88 0.06 90);
   --brown: oklch(0.48 0.14 55);
+  /* Admin dashboard palette — navy blue surfaces with white text. */
+  --navy: oklch(0.24 0.06 258);
+  --navy-2: oklch(0.31 0.065 258);
+  --navy-3: oklch(0.38 0.07 258);
+  --navy-line: oklch(0.72 0.05 258 / 32%);
 
   --gradient-gold: linear-gradient(
     120deg,

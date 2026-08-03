@@ -29,12 +29,12 @@ function GalleryPage() {
   return (
     <SiteLayout>
       <PageHero
-        eyebrow="Gallery"
+        eyebrow={content.galleryEyebrow}
         title={content.galleryTitle}
         description={content.galleryText}
         image={content.galleryImage}
       />
-      <section className="mx-auto max-w-7xl px-5 py-16 sm:px-8 sm:py-20 lg:py-28">
+      <section className="mx-auto max-w-7xl px-4 py-8 sm:px-8 lg:py-10">
         <GalleryShowcase withFilter />
       </section>
     </SiteLayout>
