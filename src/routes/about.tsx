@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteLayout, PageHero } from "@/components/layout/site-layout";
 import { Reveal } from "@/components/ui/reveal";
-import { images, services } from "@/lib/site";
+import { MapSection } from "@/components/sections/map-section";
+import { images } from "@/lib/site";
 import { useContent } from "@/lib/content-store";
 
 export const Route = createFileRoute("/about")({
@@ -30,43 +31,40 @@ function AboutPage() {
   return (
     <SiteLayout>
       <PageHero
-        eyebrow="Ku Saabsan"
+        eyebrow={content.aboutEyebrow}
         title={content.aboutTitle}
         description={content.aboutText}
         image={content.aboutImage}
       />
 
-
-      <section className="mx-auto max-w-7xl px-5 py-24 sm:px-8 lg:py-32">
-        <div className="grid items-center gap-14 lg:grid-cols-2">
+      <section className="mx-auto max-w-7xl px-4 py-10 sm:px-8 lg:py-12">
+        <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-10">
           <Reveal>
-            <p className="eyebrow">Naga</p>
-            <h2 className="mt-5 text-3xl sm:text-4xl">Farsamo Gacmeed</h2>
-            <div className="hairline mt-6 w-28" aria-hidden="true" />
-            <div className="mt-7 space-y-5 text-sm leading-relaxed text-muted-foreground sm:text-base">
-              <p>
-  <strong>BILAL TAILOR</strong> waa xarun tolmo oo heer sare ah, taas oo u adeegta ragga raba dhar ku tikhan qiyaas sax ah, bilic gooni ah, iyo adkaysi waara. Waxaan ku takhasusnay{" "}
-  {services.map((s) => s.title).join(", ")} — iyadoo mid kasta loo qaabeeyo si gaar ah.
-</p>
-<p>
-  Adeegganaga waxaan ka bilownaa qiyaas suuban iyo faham mug leh oo ku saabsan rabitaankaaga. Kadib, waxaan dooranaa marada ku habboon, anagoo u tolna si hufan oo farshaxannimo leh.
-</p>
-<p>
-  Maadaama dharku yahay maalgashi ee aanu ahayn agab si kumeel-gaar ah loo iibsado, tayada sare iyo xarragu waa halbeegga koowaad ee adeegayaga.
-</p>
+            <p className="eyebrow">{content.aboutStoryEyebrow}</p>
+            <h2 className="mt-3 text-2xl sm:text-3xl">{content.aboutStoryTitle}</h2>
+            <div className="hairline mt-3 w-24" aria-hidden="true" />
+            <div className="mt-4 space-y-3 text-sm leading-relaxed text-muted-foreground sm:text-base">
+              {content.aboutStoryBody
+                .split("\n")
+                .filter(Boolean)
+                .map((p, i) => (
+                  <p key={i}>{p}</p>
+                ))}
             </div>
           </Reveal>
 
-          <Reveal delay={140} className="relative">
+          <Reveal delay={120} className="relative">
             <img
-              src={images.detail}
-              alt="Gacmo tolid oo maro cad ku qiyaasaya"
+              src={content.aboutImage || images.detail}
+              alt={content.aboutTitle}
               loading="lazy"
-              className="h-full w-full rounded-xl border border-gold/25 object-cover shadow-luxe"
+              className="h-full max-h-96 w-full rounded-xl border border-gold/25 object-cover shadow-luxe"
             />
           </Reveal>
         </div>
       </section>
+
+      <MapSection />
     </SiteLayout>
   );
 }
