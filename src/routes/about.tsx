@@ -8,13 +8,13 @@ import { useContent } from "@/lib/content-store";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "xog kooban oo kuu saabsan BILAL TAILOR." },
+      { title: "Ku Saabsan — BILAL TAILOR" },
       {
         name: "description",
         content:
           "BILAL TAILOR: Goob tolmo oo heer sare ah, taas oo saldhig u leh tayo, khibrad iyo qadarin macmiil..",
       },
-      { property: "og:title", content: "xog kooban oo kuu saabsan BILAL TAILOR." },
+      { property: "og:title", content: "Ku Saabsan — BILAL TAILOR" },
       {
         property: "og:description",
         content: "Farsamo gacaneed, tayo aan lala tartami karin, adeeg shaqsi ah.",
