@@ -1,5 +1,6 @@
+```tsx
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   BarChart3,
   CalendarCheck,
@@ -27,6 +28,7 @@ import {
   UserPlus,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
 import { images, site } from "@/lib/site";
 import {
   useContent,
@@ -73,17 +75,68 @@ type SectionKey = (typeof sections)[number]["key"];
 
 const inputClass =
   "mt-2 w-full rounded-lg border border-navy-line bg-navy px-3 py-2.5 text-sm text-white outline-none transition-colors placeholder:text-white/40 focus:border-white/70";
-const labelClass = "text-[0.62rem] tracking-[0.2em] text-white/70 uppercase";
-const cardClass = "rounded-xl border border-navy-line bg-navy-2 p-4 text-white shadow-luxe sm:p-6";
+
+const labelClass =
+  "text-[0.62rem] tracking-[0.2em] text-white/70 uppercase";
+
+const cardClass =
+  "rounded-xl border border-navy-line bg-navy-2 p-4 text-white shadow-luxe sm:p-6";
+
 const btn =
   "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-xs font-semibold tracking-[0.12em] uppercase transition-colors disabled:opacity-50";
+
 const btnPrimary = cn(btn, "bg-white text-navy hover:bg-white/85");
-const btnGhost = cn(btn, "border border-navy-line text-white hover:bg-navy-3");
+
+const btnGhost = cn(
+  btn,
+  "border border-navy-line text-white hover:bg-navy-3",
+);
 
 function AdminPage() {
   const [authed, setAuthed] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+
+    supabase.auth.getSession().then(({ data }) => {
+      if (mounted) {
+        setAuthed(!!data.session);
+        setChecking(false);
+      }
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (mounted) {
+        setAuthed(!!session);
+      }
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  if (checking) {
+    return (
+      <div className="grid min-h-screen place-items-center bg-navy text-white">
+        <p className="text-sm tracking-[0.2em] uppercase">
+          Loading...
+        </p>
+      </div>
+    );
+  }
+
   return authed ? (
-    <Dashboard onLogout={() => setAuthed(false)} />
+    <Dashboard
+      onLogout={async () => {
+        await supabase.auth.signOut();
+        setAuthed(false);
+      }}
+    />
   ) : (
     <Login onLogin={() => setAuthed(true)} />
   );
@@ -91,23 +144,46 @@ function AdminPage() {
 
 function Login({ onLogin }: { onLogin: () => void }) {
   const { content } = useContent();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    setError("");
+    setLoading(true);
+
+    try {
+      const { error: loginError } =
+        await supabase.auth.signInWithPassword({
+          email: email.trim(),
+          password,
+        });
+
+      if (loginError) {
+        console.error("Supabase login error:", loginError);
+        setError("Email ama password khaldan.");
+        return;
+      }
+
+      onLogin();
+    } catch (err) {
+      console.error("Admin login error:", err);
+      setError(
+        "Login-ku wuu fashilmay. Fadlan mar kale isku day.",
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="grid min-h-screen place-items-center bg-navy px-4 py-12">
       <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          const ok = content.admins.some(
-            (a) =>
-              a.email.trim().toLowerCase() === email.trim().toLowerCase() &&
-              a.password === password,
-          );
-          if (ok) onLogin();
-          else setError(true);
-        }}
+        onSubmit={handleLogin}
         className={cn(cardClass, "w-full max-w-md")}
       >
         <img
@@ -117,32 +193,40 @@ function Login({ onLogin }: { onLogin: () => void }) {
           height={80}
           className="mx-auto h-20 w-20 rounded-full border border-navy-line bg-white object-contain p-1"
         />
-        <h1 className="mt-5 text-center font-display text-3xl text-white">Admin Panel</h1>
+
+        <h1 className="mt-5 text-center font-display text-3xl text-white">
+          Admin Panel
+        </h1>
+
         <p className="mt-2 text-center text-xs tracking-[0.2em] text-white/60 uppercase">
           {content.brandName} {content.brandSub}
         </p>
+
         <div className="mt-6 space-y-4">
           <div>
             <label className={labelClass} htmlFor="email">
               Email
             </label>
+
             <input
               id="email"
               type="email"
               required
-              autoComplete="off"
+              autoComplete="email"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
-                setError(false);
+                setError("");
               }}
               className={inputClass}
             />
           </div>
+
           <div>
             <label className={labelClass} htmlFor="password">
               Password
             </label>
+
             <input
               id="password"
               type="password"
@@ -151,17 +235,25 @@ function Login({ onLogin }: { onLogin: () => void }) {
               value={password}
               onChange={(e) => {
                 setPassword(e.target.value);
-                setError(false);
+                setError("");
               }}
               className={inputClass}
             />
           </div>
         </div>
+
         {error ? (
-          <p className="mt-4 text-center text-sm text-red-300">Email ama password khaldan.</p>
+          <p className="mt-4 text-center text-sm text-red-300">
+            {error}
+          </p>
         ) : null}
-        <button type="submit" className={cn(btnPrimary, "mt-6 w-full")}>
-          Gal
+
+        <button
+          type="submit"
+          disabled={loading}
+          className={cn(btnPrimary, "mt-6 w-full")}
+        >
+          {loading ? "La galayaa..." : "Gal"}
         </button>
       </form>
     </div>
@@ -186,6 +278,7 @@ function Field({
   return (
     <div className="min-w-0">
       <label className={labelClass}>{label}</label>
+
       {textarea ? (
         <textarea
           rows={rows}
@@ -206,7 +299,11 @@ function Field({
   );
 }
 
-/** Image input: paste a URL or upload a picture straight from the device. */
+/**
+ * Image input:
+ * - Paste a URL
+ * - Upload an image from device
+ */
 function ImageField({
   label,
   value,
@@ -220,18 +317,30 @@ function ImageField({
 }) {
   const onFile = (file: File | undefined) => {
     if (!file) return;
+
     const reader = new FileReader();
-    reader.onload = () => onChange(String(reader.result));
+
+    reader.onload = () => {
+      onChange(String(reader.result));
+    };
+
     reader.readAsDataURL(file);
   };
 
   return (
     <div className="min-w-0">
-      <Field label={label} value={value} onChange={onChange} placeholder={placeholder} />
+      <Field
+        label={label}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+      />
+
       <label className="mt-2 block">
         <span className="text-[0.58rem] tracking-[0.2em] text-white/50 uppercase">
           Ama soo geli sawir device-kaaga
         </span>
+
         <input
           type="file"
           accept="image/*"
@@ -242,8 +351,13 @@ function ImageField({
           )}
         />
       </label>
+
       {value ? (
-        <button type="button" className={cn(btnGhost, "mt-2")} onClick={() => onChange("")}>
+        <button
+          type="button"
+          className={cn(btnGhost, "mt-2")}
+          onClick={() => onChange("")}
+        >
           <Trash2 size={13} /> Tirtir sawirka
         </button>
       ) : null}
@@ -251,12 +365,28 @@ function ImageField({
   );
 }
 
-function Panel({ title, hint, children }: { title: string; hint?: string; children: React.ReactNode }) {
+function Panel({
+  title,
+  hint,
+  children,
+}: {
+  title: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className={cardClass}>
-      <h2 className="font-display text-xl text-white">{title}</h2>
-      {hint ? <p className="mt-1 text-sm text-white/60">{hint}</p> : null}
-      <div className="mt-4 grid gap-4 lg:grid-cols-2">{children}</div>
+      <h2 className="font-display text-xl text-white">
+        {title}
+      </h2>
+
+      {hint ? (
+        <p className="mt-1 text-sm text-white/60">{hint}</p>
+      ) : null}
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-2">
+        {children}
+      </div>
     </div>
   );
 }
@@ -282,27 +412,54 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
     removeHour,
     reset,
   } = useContent();
-  const [section, setSection] = useState<SectionKey>("dashboard");
+
+  const [section, setSection] =
+    useState<SectionKey>("dashboard");
+
   const [query, setQuery] = useState("");
-  const [bookings, setBookings] = useState<Booking[]>(mockBookings);
+
+  const [bookings, setBookings] =
+    useState<Booking[]>(mockBookings);
+
   const [filter, setFilter] = useState(galleryCategoryNames[0]);
 
-  const set = (key: keyof SiteContent) => (v: string) =>
-    update({ [key]: v } as Partial<SiteContent>);
+  const set =
+    (key: keyof SiteContent) =>
+    (v: string) => {
+      update({ [key]: v } as Partial<SiteContent>);
+    };
 
   const filteredGallery = useMemo(
     () =>
       content.gallery.filter(
-        (g) => g.category === filter && g.label.toLowerCase().includes(query.toLowerCase()),
+        (g) =>
+          g.category === filter &&
+          g.label
+            .toLowerCase()
+            .includes(query.toLowerCase()),
       ),
     [content.gallery, query, filter],
   );
 
   const stats = [
-    { label: "Sawirada Gallery", value: String(content.gallery.length) },
-    { label: "Sawiro dhab ah", value: String(content.gallery.filter((g) => g.imageUrl).length) },
-    { label: "Adeegyada", value: String(content.services.length) },
-    { label: "FAQ", value: String(content.faqs.length) },
+    {
+      label: "Sawirada Gallery",
+      value: String(content.gallery.length),
+    },
+    {
+      label: "Sawiro dhab ah",
+      value: String(
+        content.gallery.filter((g) => g.imageUrl).length,
+      ),
+    },
+    {
+      label: "Adeegyada",
+      value: String(content.services.length),
+    },
+    {
+      label: "FAQ",
+      value: String(content.faqs.length),
+    },
   ];
 
   return (
@@ -316,13 +473,18 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             height={44}
             className="h-11 w-11 shrink-0 rounded-full border border-navy-line bg-white object-contain p-0.5"
           />
+
           <div className="min-w-0">
             <p className="truncate font-display text-base tracking-[0.2em] text-white">
               {content.brandName}
             </p>
-            <p className="text-[0.55rem] tracking-[0.34em] text-white/55">ADMIN</p>
+
+            <p className="text-[0.55rem] tracking-[0.34em] text-white/55">
+              ADMIN
+            </p>
           </div>
         </div>
+
         <nav className="no-scrollbar flex gap-1 overflow-x-auto px-2 pb-3 lg:flex-col lg:overflow-visible">
           {sections.map((s) => (
             <button
@@ -330,17 +492,22 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               onClick={() => setSection(s.key)}
               className={cn(
                 "flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2.5 text-left text-[0.68rem] tracking-[0.12em] uppercase transition-colors",
-                section === s.key ? "bg-white text-navy" : "text-white/75 hover:bg-navy-3",
+                section === s.key
+                  ? "bg-white text-navy"
+                  : "text-white/75 hover:bg-navy-3",
               )}
             >
-              <s.icon size={15} /> {s.label}
+              <s.icon size={15} />
+              {s.label}
             </button>
           ))}
+
           <button
             onClick={onLogout}
             className="flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2.5 text-[0.68rem] tracking-[0.12em] text-white/75 uppercase transition-colors hover:bg-navy-3"
           >
-            <LogOut size={15} /> Ka bax
+            <LogOut size={15} />
+            Ka bax
           </button>
         </nav>
       </aside>
@@ -349,14 +516,24 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
         <header className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex sm:justify-between">
           <div className="min-w-0">
             <h1 className="truncate font-display text-2xl text-white sm:text-3xl">
-              {sections.find((s) => s.key === section)?.label}
+              {
+                sections.find(
+                  (s) => s.key === section,
+                )?.label
+              }
             </h1>
+
             <p className="mt-0.5 text-[0.62rem] tracking-[0.18em] text-white/55 uppercase">
               Maamulka websaydka
             </p>
           </div>
+
           <div className="relative shrink-0">
-            <Search size={15} className="absolute top-1/2 left-3 -translate-y-1/2 text-white/60" />
+            <Search
+              size={15}
+              className="absolute top-1/2 left-3 -translate-y-1/2 text-white/60"
+            />
+
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -372,24 +549,49 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             <>
               <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                 {stats.map((s) => (
-                  <li key={s.label} className={cardClass}>
+                  <li
+                    key={s.label}
+                    className={cardClass}
+                  >
                     <p className="text-[0.6rem] tracking-[0.2em] text-white/60 uppercase">
                       {s.label}
                     </p>
-                    <p className="mt-2 font-display text-3xl text-white">{s.value}</p>
+
+                    <p className="mt-2 font-display text-3xl text-white">
+                      {s.value}
+                    </p>
                   </li>
                 ))}
               </ul>
+
               <div className={cardClass}>
-                <h2 className="font-display text-xl">Dalabyada ugu dambeeyay</h2>
-                <BookingsTable bookings={bookings.slice(0, 3)} setBookings={setBookings} />
+                <h2 className="font-display text-xl">
+                  Dalabyada ugu dambeeyay
+                </h2>
+
+                <BookingsTable
+                  bookings={bookings.slice(0, 3)}
+                  setBookings={setBookings}
+                />
               </div>
-              <div className={cn(cardClass, "flex flex-wrap items-center gap-3")}>
+
+              <div
+                className={cn(
+                  cardClass,
+                  "flex flex-wrap items-center gap-3",
+                )}
+              >
                 <p className="min-w-0 text-sm text-white/70">
-                  Dib u celi dhammaan qoraalada iyo sawirada sida asalka ah.
+                  Dib u celi dhammaan qoraalada iyo
+                  sawirada sida asalka ah.
                 </p>
-                <button className={cn(btnGhost, "ml-auto")} onClick={reset}>
-                  <RotateCcw size={13} /> Reset
+
+                <button
+                  className={cn(btnGhost, "ml-auto")}
+                  onClick={reset}
+                >
+                  <RotateCcw size={13} />
+                  Reset
                 </button>
               </div>
             </>
@@ -397,25 +599,71 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
           {section === "brand" ? (
             <>
-              <Panel title="Astaanta & Magaca" hint="Logo-ga iyo magaca websaydka.">
+              <Panel
+                title="Astaanta & Magaca"
+                hint="Logo-ga iyo magaca websaydka."
+              >
                 <ImageField
                   label="Logo"
                   value={content.logoImage}
                   onChange={set("logoImage")}
                   placeholder="/assets/logo.png"
                 />
+
                 <div className="grid gap-4">
-                  <Field label="Magaca weyn" value={content.brandName} onChange={set("brandName")} />
-                  <Field label="Magaca hoose" value={content.brandSub} onChange={set("brandSub")} />
+                  <Field
+                    label="Magaca weyn"
+                    value={content.brandName}
+                    onChange={set("brandName")}
+                  />
+
+                  <Field
+                    label="Magaca hoose"
+                    value={content.brandSub}
+                    onChange={set("brandSub")}
+                  />
                 </div>
               </Panel>
-              <Panel title="Menu (Navigation)" hint="Beddel magacyada menu-ga.">
-                <Field label="Home" value={content.navHome} onChange={set("navHome")} />
-                <Field label="About" value={content.navAbout} onChange={set("navAbout")} />
-                <Field label="Services" value={content.navServices} onChange={set("navServices")} />
-                <Field label="Gallery" value={content.navGallery} onChange={set("navGallery")} />
-                <Field label="Contact" value={content.navContact} onChange={set("navContact")} />
-                <Field label="Badhanka WhatsApp" value={content.navCta} onChange={set("navCta")} />
+
+              <Panel
+                title="Menu (Navigation)"
+                hint="Beddel magacyada menu-ga."
+              >
+                <Field
+                  label="Home"
+                  value={content.navHome}
+                  onChange={set("navHome")}
+                />
+
+                <Field
+                  label="About"
+                  value={content.navAbout}
+                  onChange={set("navAbout")}
+                />
+
+                <Field
+                  label="Services"
+                  value={content.navServices}
+                  onChange={set("navServices")}
+                />
+
+                <Field
+                  label="Gallery"
+                  value={content.navGallery}
+                  onChange={set("navGallery")}
+                />
+
+                <Field
+                  label="Contact"
+                  value={content.navContact}
+                  onChange={set("navContact")}
+                />
+
+                <Field
+                  label="Badhanka WhatsApp"
+                  value={content.navCta}
+                  onChange={set("navCta")}
+                />
               </Panel>
             </>
           ) : null}
@@ -423,18 +671,30 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           {section === "home" ? (
             <>
               <Panel title="Hero (Home)">
-                <Field label="Eyebrow" value={content.heroEyebrow} onChange={set("heroEyebrow")} />
-                <Field label="Cinwaanka" value={content.heroTitle} onChange={set("heroTitle")} />
+                <Field
+                  label="Eyebrow"
+                  value={content.heroEyebrow}
+                  onChange={set("heroEyebrow")}
+                />
+
+                <Field
+                  label="Cinwaanka"
+                  value={content.heroTitle}
+                  onChange={set("heroTitle")}
+                />
+
                 <Field
                   label="Qeybta gold"
                   value={content.heroHighlight}
                   onChange={set("heroHighlight")}
                 />
+
                 <ImageField
                   label="Sawirka background"
                   value={content.heroImage}
                   onChange={set("heroImage")}
                 />
+
                 <div className="lg:col-span-2">
                   <Field
                     label="Qoraalka"
@@ -443,28 +703,33 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                     textarea
                   />
                 </div>
+
                 <Field
                   label="Badhanka 1"
                   value={content.heroCtaPrimary}
                   onChange={set("heroCtaPrimary")}
                 />
+
                 <Field
                   label="Badhanka 2"
                   value={content.heroCtaSecondary}
                   onChange={set("heroCtaSecondary")}
                 />
               </Panel>
+
               <Panel title="Qeybta Sawirrada (Home)">
                 <Field
                   label="Eyebrow"
                   value={content.homeGalleryEyebrow}
                   onChange={set("homeGalleryEyebrow")}
                 />
+
                 <Field
                   label="Cinwaanka"
                   value={content.homeGalleryTitle}
                   onChange={set("homeGalleryTitle")}
                 />
+
                 <Field
                   label="Badhanka"
                   value={content.homeGalleryCta}
@@ -476,8 +741,18 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
           {section === "about" ? (
             <Panel title="About Page">
-              <Field label="Eyebrow" value={content.aboutEyebrow} onChange={set("aboutEyebrow")} />
-              <Field label="Cinwaanka" value={content.aboutTitle} onChange={set("aboutTitle")} />
+              <Field
+                label="Eyebrow"
+                value={content.aboutEyebrow}
+                onChange={set("aboutEyebrow")}
+              />
+
+              <Field
+                label="Cinwaanka"
+                value={content.aboutTitle}
+                onChange={set("aboutTitle")}
+              />
+
               <div className="lg:col-span-2">
                 <Field
                   label="Qoraalka hero"
@@ -487,16 +762,19 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                   rows={2}
                 />
               </div>
+
               <Field
                 label="Sheekada — eyebrow"
                 value={content.aboutStoryEyebrow}
                 onChange={set("aboutStoryEyebrow")}
               />
+
               <Field
                 label="Sheekada — cinwaan"
                 value={content.aboutStoryTitle}
                 onChange={set("aboutStoryTitle")}
               />
+
               <div className="lg:col-span-2">
                 <Field
                   label="Sheekada — qoraal (kala saar sadar cusub)"
@@ -506,6 +784,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                   rows={6}
                 />
               </div>
+
               <ImageField
                 label="Sawirka About"
                 value={content.aboutImage}
@@ -522,26 +801,31 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                   value={content.servicesEyebrow}
                   onChange={set("servicesEyebrow")}
                 />
+
                 <Field
                   label="Cinwaanka"
                   value={content.servicesTitle}
                   onChange={set("servicesTitle")}
                 />
+
                 <Field
                   label="Qoraalka"
                   value={content.servicesText}
                   onChange={set("servicesText")}
                 />
+
                 <Field
                   label="Badhanka dalabka"
                   value={content.serviceOrderCta}
                   onChange={set("serviceOrderCta")}
                 />
+
                 <Field
                   label="Qoraalka Coming Soon"
                   value={content.comingSoonLabel}
                   onChange={set("comingSoonLabel")}
                 />
+
                 <ImageField
                   label="Sawirka Coming Soon"
                   value={content.comingSoonImage}
@@ -552,50 +836,84 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
               <div className={cardClass}>
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h2 className="font-display text-xl">Adeegyada</h2>
-                  <button className={btnPrimary} onClick={addService}>
-                    <Plus size={14} /> Ku dar adeeg
+                  <h2 className="font-display text-xl">
+                    Adeegyada
+                  </h2>
+
+                  <button
+                    className={btnPrimary}
+                    onClick={addService}
+                  >
+                    <Plus size={14} />
+                    Ku dar adeeg
                   </button>
                 </div>
+
                 <ul className="mt-4 space-y-4">
                   {content.services.map((s) => (
-                    <li key={s.id} className="rounded-lg border border-navy-line p-3 sm:p-4">
+                    <li
+                      key={s.id}
+                      className="rounded-lg border border-navy-line p-3 sm:p-4"
+                    >
                       <div className="grid gap-3 lg:grid-cols-2">
                         <Field
                           label="Magaca (key WhatsApp)"
                           value={s.key}
-                          onChange={(v) => updateService(s.id, { key: v })}
+                          onChange={(v) =>
+                            updateService(s.id, {
+                              key: v,
+                            })
+                          }
                         />
+
                         <Field
                           label="Cinwaanka"
                           value={s.title}
-                          onChange={(v) => updateService(s.id, { title: v })}
+                          onChange={(v) =>
+                            updateService(s.id, {
+                              title: v,
+                            })
+                          }
                         />
+
                         <div className="lg:col-span-2">
                           <Field
                             label="Sharaxaad kooban"
                             value={s.short}
-                            onChange={(v) => updateService(s.id, { short: v })}
+                            onChange={(v) =>
+                              updateService(s.id, {
+                                short: v,
+                              })
+                            }
                             textarea
                             rows={2}
                           />
                         </div>
+
                         <div className="lg:col-span-2">
                           <Field
                             label="Sharaxaad dheer"
                             value={s.long}
-                            onChange={(v) => updateService(s.id, { long: v })}
+                            onChange={(v) =>
+                              updateService(s.id, {
+                                long: v,
+                              })
+                            }
                             textarea
                             rows={3}
                           />
                         </div>
                       </div>
+
                       <button
                         className={cn(btnGhost, "mt-3")}
-                        onClick={() => removeService(s.id)}
+                        onClick={() =>
+                          removeService(s.id)
+                        }
                         aria-label={`Tirtir ${s.title}`}
                       >
-                        <Trash2 size={13} /> Tirtir
+                        <Trash2 size={13} />
+                        Tirtir
                       </button>
                     </li>
                   ))}
@@ -612,31 +930,37 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                   value={content.galleryEyebrow}
                   onChange={set("galleryEyebrow")}
                 />
+
                 <Field
                   label="Cinwaanka"
                   value={content.galleryTitle}
                   onChange={set("galleryTitle")}
                 />
+
                 <Field
                   label="Qoraalka"
                   value={content.galleryText}
                   onChange={set("galleryText")}
                 />
+
                 <Field
                   label='Badhanka "Dhammaan"'
                   value={content.galleryAllLabel}
                   onChange={set("galleryAllLabel")}
                 />
+
                 <Field
                   label="Qoraalka kaarka (Daawo)"
                   value={content.galleryViewLabel}
                   onChange={set("galleryViewLabel")}
                 />
+
                 <Field
                   label="Badhanka modal-ka"
                   value={content.galleryModalCta}
                   onChange={set("galleryModalCta")}
                 />
+
                 <div className="lg:col-span-2">
                   <Field
                     label="Qoraalka modal-ka"
@@ -654,7 +978,9 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                     {GALLERY_CATEGORIES.map((c) => (
                       <button
                         key={c.name}
-                        onClick={() => setFilter(c.name)}
+                        onClick={() =>
+                          setFilter(c.name)
+                        }
                         className={cn(
                           "rounded-full border px-3 py-1.5 text-[0.6rem] tracking-[0.16em] uppercase transition-colors",
                           filter === c.name
@@ -662,49 +988,94 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                             : "border-navy-line text-white/75 hover:bg-navy-3",
                         )}
                       >
-                        {c.name} · {content.gallery.filter((g) => g.category === c.name).length}/
-                        {c.count}
+                        {c.name} ·{" "}
+                        {
+                          content.gallery.filter(
+                            (g) =>
+                              g.category ===
+                              c.name,
+                          ).length
+                        }
+                        /{c.count}
                       </button>
                     ))}
                   </div>
-                  <button className={btnPrimary} onClick={() => addItem(filter)}>
-                    <Plus size={14} /> Ku dar sawir
+
+                  <button
+                    className={btnPrimary}
+                    onClick={() =>
+                      addItem(filter)
+                    }
+                  >
+                    <Plus size={14} />
+                    Ku dar sawir
                   </button>
                 </div>
 
                 <ul className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                   {filteredGallery.map((g) => (
-                    <li key={g.id} className="rounded-lg border border-navy-line p-3">
+                    <li
+                      key={g.id}
+                      className="rounded-lg border border-navy-line p-3"
+                    >
                       <img
-                        src={g.imageUrl || content.comingSoonImage}
+                        src={
+                          g.imageUrl ||
+                          content.comingSoonImage
+                        }
                         alt={g.label}
                         loading="lazy"
                         className="aspect-4/3 w-full rounded-md object-cover"
                       />
+
                       <div className="mt-3 space-y-3">
                         <Field
                           label="Magaca"
                           value={g.label}
-                          onChange={(v) => updateItem(g.id, { label: v })}
+                          onChange={(v) =>
+                            updateItem(g.id, {
+                              label: v,
+                            })
+                          }
                         />
+
                         <ImageField
                           label="Sawirka"
                           value={g.imageUrl}
-                          onChange={(v) => updateItem(g.id, { imageUrl: v })}
+                          onChange={(v) =>
+                            updateItem(g.id, {
+                              imageUrl: v,
+                            })
+                          }
                         />
                       </div>
+
                       <div className="mt-3 flex flex-wrap gap-2">
                         <button
                           className={btnGhost}
-                          onClick={() => updateItem(g.id, { visible: !g.visible })}
+                          onClick={() =>
+                            updateItem(g.id, {
+                              visible: !g.visible,
+                            })
+                          }
                         >
-                          {g.visible ? <EyeOff size={13} /> : <Eye size={13} />}
-                          {g.visible ? "Qari" : "Muuji"}
+                          {g.visible ? (
+                            <EyeOff size={13} />
+                          ) : (
+                            <Eye size={13} />
+                          )}
+
+                          {g.visible
+                            ? "Qari"
+                            : "Muuji"}
                         </button>
+
                         <button
                           className={btnGhost}
                           aria-label={`Tirtir ${g.label}`}
-                          onClick={() => removeItem(g.id)}
+                          onClick={() =>
+                            removeItem(g.id)
+                          }
                         >
                           <Trash2 size={13} />
                         </button>
@@ -712,8 +1083,11 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                     </li>
                   ))}
                 </ul>
+
                 {filteredGallery.length === 0 ? (
-                  <p className="mt-4 text-sm text-white/60">Wax natiijo lama helin.</p>
+                  <p className="mt-4 text-sm text-white/60">
+                    Wax natiijo lama helin.
+                  </p>
                 ) : null}
               </div>
             </>
@@ -726,7 +1100,13 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                 value={content.bookingEyebrow}
                 onChange={set("bookingEyebrow")}
               />
-              <Field label="Cinwaanka" value={content.bookingTitle} onChange={set("bookingTitle")} />
+
+              <Field
+                label="Cinwaanka"
+                value={content.bookingTitle}
+                onChange={set("bookingTitle")}
+              />
+
               <div className="lg:col-span-2">
                 <Field
                   label="Qoraalka"
@@ -736,26 +1116,31 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                   rows={2}
                 />
               </div>
+
               <Field
                 label="Label magaca"
                 value={content.bookingNameLabel}
                 onChange={set("bookingNameLabel")}
               />
+
               <Field
                 label="Label taleefanka"
                 value={content.bookingPhoneLabel}
                 onChange={set("bookingPhoneLabel")}
               />
+
               <Field
                 label="Label nooca"
                 value={content.bookingTypeLabel}
                 onChange={set("bookingTypeLabel")}
               />
+
               <Field
                 label="Label faahfaahinta"
                 value={content.bookingNotesLabel}
                 onChange={set("bookingNotesLabel")}
               />
+
               <Field
                 label="Badhanka dirista"
                 value={content.bookingSubmit}
@@ -767,33 +1152,73 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           {section === "faq" ? (
             <>
               <Panel title="Qoraalka FAQ">
-                <Field label="Eyebrow" value={content.faqEyebrow} onChange={set("faqEyebrow")} />
-                <Field label="Cinwaanka" value={content.faqTitle} onChange={set("faqTitle")} />
+                <Field
+                  label="Eyebrow"
+                  value={content.faqEyebrow}
+                  onChange={set("faqEyebrow")}
+                />
+
+                <Field
+                  label="Cinwaanka"
+                  value={content.faqTitle}
+                  onChange={set("faqTitle")}
+                />
               </Panel>
+
               <div className={cardClass}>
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h2 className="font-display text-xl">Su'aalaha</h2>
-                  <button className={btnPrimary} onClick={addFaq}>
-                    <Plus size={14} /> Ku dar su'aal
+                  <h2 className="font-display text-xl">
+                    Su'aalaha
+                  </h2>
+
+                  <button
+                    className={btnPrimary}
+                    onClick={addFaq}
+                  >
+                    <Plus size={14} />
+                    Ku dar su'aal
                   </button>
                 </div>
+
                 <ul className="mt-4 space-y-4">
                   {content.faqs.map((f) => (
-                    <li key={f.id} className="rounded-lg border border-navy-line p-3 sm:p-4">
+                    <li
+                      key={f.id}
+                      className="rounded-lg border border-navy-line p-3 sm:p-4"
+                    >
                       <Field
                         label="Su'aal"
                         value={f.q}
-                        onChange={(v) => updateFaq(f.id, { q: v })}
+                        onChange={(v) =>
+                          updateFaq(f.id, {
+                            q: v,
+                          })
+                        }
                       />
+
                       <Field
                         label="Jawaab"
                         value={f.a}
-                        onChange={(v) => updateFaq(f.id, { a: v })}
+                        onChange={(v) =>
+                          updateFaq(f.id, {
+                            a: v,
+                          })
+                        }
                         textarea
                         rows={3}
                       />
-                      <button className={cn(btnGhost, "mt-3")} onClick={() => removeFaq(f.id)}>
-                        <Trash2 size={13} /> Tirtir su'aashan
+
+                      <button
+                        className={cn(
+                          btnGhost,
+                          "mt-3",
+                        )}
+                        onClick={() =>
+                          removeFaq(f.id)
+                        }
+                      >
+                        <Trash2 size={13} />
+                        Tirtir su'aashan
                       </button>
                     </li>
                   ))}
@@ -810,11 +1235,13 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                   value={content.contactEyebrow}
                   onChange={set("contactEyebrow")}
                 />
+
                 <Field
                   label="Cinwaanka"
                   value={content.contactTitle}
                   onChange={set("contactTitle")}
                 />
+
                 <div className="lg:col-span-2">
                   <Field
                     label="Qoraalka"
@@ -824,26 +1251,31 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                     rows={2}
                   />
                 </div>
+
                 <Field
                   label="Label saacadaha"
                   value={content.contactHoursLabel}
                   onChange={set("contactHoursLabel")}
                 />
+
                 <Field
                   label="CTA cinwaan"
                   value={content.contactCtaTitle}
                   onChange={set("contactCtaTitle")}
                 />
+
                 <Field
                   label="CTA qoraal"
                   value={content.contactCtaText}
                   onChange={set("contactCtaText")}
                 />
+
                 <Field
                   label="CTA badhan"
                   value={content.contactCtaButton}
                   onChange={set("contactCtaButton")}
                 />
+
                 <Field
                   label="Footer qoraal"
                   value={content.footerNote}
@@ -853,11 +1285,19 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 
               <div className={cardClass}>
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <h2 className="font-display text-xl">Saacadaha Furitaanka</h2>
-                  <button className={btnPrimary} onClick={addHour}>
-                    <Plus size={14} /> Ku dar
+                  <h2 className="font-display text-xl">
+                    Saacadaha Furitaanka
+                  </h2>
+
+                  <button
+                    className={btnPrimary}
+                    onClick={addHour}
+                  >
+                    <Plus size={14} />
+                    Ku dar
                   </button>
                 </div>
+
                 <ul className="mt-4 space-y-3">
                   {content.hours.map((h) => (
                     <li
@@ -867,14 +1307,29 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                       <Field
                         label="Maalmaha"
                         value={h.days}
-                        onChange={(v) => updateHour(h.id, { days: v })}
+                        onChange={(v) =>
+                          updateHour(h.id, {
+                            days: v,
+                          })
+                        }
                       />
+
                       <Field
                         label="Saacadaha"
                         value={h.time}
-                        onChange={(v) => updateHour(h.id, { time: v })}
+                        onChange={(v) =>
+                          updateHour(h.id, {
+                            time: v,
+                          })
+                        }
                       />
-                      <button className={btnGhost} onClick={() => removeHour(h.id)}>
+
+                      <button
+                        className={btnGhost}
+                        onClick={() =>
+                          removeHour(h.id)
+                        }
+                      >
                         <Trash2 size={13} />
                       </button>
                     </li>
@@ -885,21 +1340,36 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           ) : null}
 
           {section === "map" ? (
-            <Panel title="Google Maps" hint="Halkan ka beddel goobta dukaanka.">
-              <Field label="Cinwaanka" value={content.mapTitle} onChange={set("mapTitle")} />
-              <Field label="Qoraalka" value={content.mapText} onChange={set("mapText")} />
+            <Panel
+              title="Google Maps"
+              hint="Halkan ka beddel goobta dukaanka."
+            >
+              <Field
+                label="Cinwaanka"
+                value={content.mapTitle}
+                onChange={set("mapTitle")}
+              />
+
+              <Field
+                label="Qoraalka"
+                value={content.mapText}
+                onChange={set("mapText")}
+              />
+
               <Field
                 label="Google Maps link"
                 value={content.mapUrl}
                 onChange={set("mapUrl")}
                 placeholder="https://maps.app.goo.gl/..."
               />
+
               <Field
                 label="Embed URL (ikhtiyaari)"
                 value={content.mapEmbedUrl}
                 onChange={set("mapEmbedUrl")}
                 placeholder="https://www.google.com/maps?q=...&output=embed"
               />
+
               <Field
                 label="Badhanka"
                 value={content.mapButtonLabel}
@@ -909,31 +1379,52 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           ) : null}
 
           {section === "backgrounds" ? (
-            <Panel title="Sawirada Background" hint="URL ama upload device-kaaga.">
-              <ImageField label="Home (hero)" value={content.heroImage} onChange={set("heroImage")} />
-              <ImageField label="About" value={content.aboutImage} onChange={set("aboutImage")} />
+            <Panel
+              title="Sawirada Background"
+              hint="URL ama upload device-kaaga."
+            >
+              <ImageField
+                label="Home (hero)"
+                value={content.heroImage}
+                onChange={set("heroImage")}
+              />
+
+              <ImageField
+                label="About"
+                value={content.aboutImage}
+                onChange={set("aboutImage")}
+              />
+
               <ImageField
                 label="Services"
                 value={content.servicesImage}
                 onChange={set("servicesImage")}
               />
+
               <ImageField
                 label="Gallery"
                 value={content.galleryImage}
                 onChange={set("galleryImage")}
               />
+
               <ImageField
                 label="Contact"
                 value={content.contactImage}
                 onChange={set("contactImage")}
               />
+
               <ImageField
                 label="Coming Soon"
                 value={content.comingSoonImage}
                 onChange={set("comingSoonImage")}
                 placeholder="/assets/coming-soon.png"
               />
-              <ImageField label="Logo" value={content.logoImage} onChange={set("logoImage")} />
+
+              <ImageField
+                label="Logo"
+                value={content.logoImage}
+                onChange={set("logoImage")}
+              />
             </Panel>
           ) : null}
 
@@ -945,10 +1436,31 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                 onChange={set("whatsapp")}
                 placeholder="251940744442"
               />
-              <Field label="Telefoon" value={content.phone} onChange={set("phone")} />
-              <Field label="Iimayl" value={content.email} onChange={set("email")} />
-              <Field label="Facebook" value={content.facebook} onChange={set("facebook")} />
-              <Field label="Instagram" value={content.instagram} onChange={set("instagram")} />
+
+              <Field
+                label="Telefoon"
+                value={content.phone}
+                onChange={set("phone")}
+              />
+
+              <Field
+                label="Iimayl"
+                value={content.email}
+                onChange={set("email")}
+              />
+
+              <Field
+                label="Facebook"
+                value={content.facebook}
+                onChange={set("facebook")}
+              />
+
+              <Field
+                label="Instagram"
+                value={content.instagram}
+                onChange={set("instagram")}
+              />
+
               <div className="lg:col-span-2">
                 <Field
                   label="Fariinta guud"
@@ -958,6 +1470,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                   rows={2}
                 />
               </div>
+
               <div className="lg:col-span-2">
                 <Field
                   label="Fariinta dalabka — isticmaal {item}"
@@ -967,6 +1480,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                   rows={2}
                 />
               </div>
+
               <div className="lg:col-span-2">
                 <Field
                   label="Fariinta foomka ballanta"
@@ -984,8 +1498,16 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               <BookingsTable
                 bookings={bookings.filter(
                   (b) =>
-                    b.name.toLowerCase().includes(query.toLowerCase()) ||
-                    b.type.toLowerCase().includes(query.toLowerCase()),
+                    b.name
+                      .toLowerCase()
+                      .includes(
+                        query.toLowerCase(),
+                      ) ||
+                    b.type
+                      .toLowerCase()
+                      .includes(
+                        query.toLowerCase(),
+                      ),
                 )}
                 setBookings={setBookings}
               />
@@ -995,16 +1517,32 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           {section === "messages" ? (
             <ul className="grid gap-4 sm:grid-cols-2">
               {mockMessages
-                .filter((m) => m.text.toLowerCase().includes(query.toLowerCase()))
+                .filter((m) =>
+                  m.text
+                    .toLowerCase()
+                    .includes(
+                      query.toLowerCase(),
+                    ),
+                )
                 .map((m) => (
-                  <li key={m.id} className={cardClass}>
+                  <li
+                    key={m.id}
+                    className={cardClass}
+                  >
                     <div className="flex items-center justify-between gap-3">
-                      <p className="min-w-0 truncate font-display text-lg">{m.name}</p>
+                      <p className="min-w-0 truncate font-display text-lg">
+                        {m.name}
+                      </p>
+
                       <span className="shrink-0 rounded-full border border-navy-line px-3 py-1 text-[0.55rem] tracking-[0.18em] uppercase">
                         {m.channel}
                       </span>
                     </div>
-                    <p className="mt-2 text-sm text-white/70">{m.text}</p>
+
+                    <p className="mt-2 text-sm text-white/70">
+                      {m.text}
+                    </p>
+
                     <p className="mt-3 text-[0.6rem] tracking-[0.2em] text-white/50 uppercase">
                       {m.date}
                     </p>
@@ -1013,7 +1551,9 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             </ul>
           ) : null}
 
-          {section === "settings" ? <SettingsPanel /> : null}
+          {section === "settings" ? (
+            <SettingsPanel />
+          ) : null}
         </div>
       </div>
 
@@ -1024,13 +1564,31 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             {saveState === "saved"
               ? "Isbeddelada waa la kaydiyay — websaydku wuu cusboonaaday ✓"
               : saveState === "error"
-                ? "Khalad: lama kaydin karin (storage buuxa)."
+                ? "Khalad: lama kaydin karin."
                 : dirty
                   ? "Waxaa jira isbeddel aan la kaydin."
                   : "Dhammaan waa la kaydiyay."}
           </p>
-          <button className={btnPrimary} onClick={save}>
-            {saveState === "saved" ? <Check size={14} /> : <Save size={14} />} Save Changes
+
+          <button
+            className={btnPrimary}
+            onClick={async () => {
+              const success = await save();
+
+              if (!success) {
+                console.error(
+                  "Failed to save website content.",
+                );
+              }
+            }}
+          >
+            {saveState === "saved" ? (
+              <Check size={14} />
+            ) : (
+              <Save size={14} />
+            )}
+
+            Save Changes
           </button>
         </div>
       </div>
@@ -1039,7 +1597,13 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
 }
 
 function SettingsPanel() {
-  const { content, addAdmin, updateAdmin, removeAdmin } = useContent();
+  const {
+    content,
+    addAdmin,
+    updateAdmin,
+    removeAdmin,
+  } = useContent();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [note, setNote] = useState("");
@@ -1047,32 +1611,60 @@ function SettingsPanel() {
   return (
     <div className="space-y-5">
       <div className={cardClass}>
-        <h2 className="font-display text-xl">Admins</h2>
+        <h2 className="font-display text-xl">
+          Admins
+        </h2>
+
         <p className="mt-1 text-sm text-white/60">
-          Beddel iimaylka iyo password-ka. Admin-ka koowaad lama tirtiri karo.
+          Beddel iimaylka iyo password-ka.
+          Admin-ka koowaad lama tirtiri karo.
         </p>
+
         <ul className="mt-4 space-y-4">
           {content.admins.map((a) => (
-            <li key={a.id} className="rounded-lg border border-navy-line p-3 sm:p-4">
+            <li
+              key={a.id}
+              className="rounded-lg border border-navy-line p-3 sm:p-4"
+            >
               <div className="grid gap-3 lg:grid-cols-2">
                 <Field
                   label="Iimayl"
                   value={a.email}
-                  onChange={(v) => updateAdmin(a.id, { email: v })}
+                  onChange={(v) =>
+                    updateAdmin(a.id, {
+                      email: v,
+                    })
+                  }
                 />
+
                 <Field
                   label="Password"
                   value={a.password}
-                  onChange={(v) => updateAdmin(a.id, { password: v })}
+                  onChange={(v) =>
+                    updateAdmin(a.id, {
+                      password: v,
+                    })
+                  }
                 />
               </div>
+
               {a.protected ? (
                 <p className="mt-3 text-[0.6rem] tracking-[0.18em] text-white/55 uppercase">
-                  Admin-ka aasaasiga ah — lama tirtiri karo
+                  Admin-ka aasaasiga ah —
+                  lama tirtiri karo
                 </p>
               ) : (
-                <button className={cn(btnGhost, "mt-3")} onClick={() => removeAdmin(a.id)}>
-                  <Trash2 size={13} /> Tirtir admin-kan
+                <button
+                  className={cn(
+                    btnGhost,
+                    "mt-3",
+                  )}
+                  onClick={() =>
+                    removeAdmin(a.id)
+                  }
+                >
+                  <Trash2 size={13} />
+                  Tirtir admin-kan
                 </button>
               )}
             </li>
@@ -1081,27 +1673,60 @@ function SettingsPanel() {
       </div>
 
       <div className={cardClass}>
-        <h2 className="font-display text-xl">Ku dar admin cusub</h2>
+        <h2 className="font-display text-xl">
+          Ku dar admin cusub
+        </h2>
+
         <div className="mt-4 grid gap-3 lg:grid-cols-2">
-          <Field label="Iimayl" value={email} onChange={setEmail} placeholder="admin@example.com" />
-          <Field label="Password" value={password} onChange={setPassword} placeholder="••••••" />
+          <Field
+            label="Iimayl"
+            value={email}
+            onChange={setEmail}
+            placeholder="admin@example.com"
+          />
+
+          <Field
+            label="Password"
+            value={password}
+            onChange={setPassword}
+            placeholder="••••••"
+          />
         </div>
+
         <button
           className={cn(btnPrimary, "mt-4")}
           onClick={() => {
-            if (!email.trim() || !password.trim()) {
-              setNote("Buuxi iimaylka iyo password-ka.");
+            if (
+              !email.trim() ||
+              !password.trim()
+            ) {
+              setNote(
+                "Buuxi iimaylka iyo password-ka.",
+              );
               return;
             }
-            addAdmin(email.trim(), password);
+
+            addAdmin(
+              email.trim(),
+              password,
+            );
+
             setEmail("");
             setPassword("");
-            setNote("Admin cusub waa la daray ✓");
+            setNote(
+              "Admin cusub waa la daray ✓",
+            );
           }}
         >
-          <UserPlus size={13} /> Ku dar admin
+          <UserPlus size={13} />
+          Ku dar admin
         </button>
-        {note ? <p className="mt-3 text-xs text-white/80">{note}</p> : null}
+
+        {note ? (
+          <p className="mt-3 text-xs text-white/80">
+            {note}
+          </p>
+        ) : null}
       </div>
     </div>
   );
@@ -1112,7 +1737,9 @@ function BookingsTable({
   setBookings,
 }: {
   bookings: Booking[];
-  setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
+  setBookings: React.Dispatch<
+    React.SetStateAction<Booking[]>
+  >;
 }) {
   return (
     <div className="mt-4 overflow-x-auto">
@@ -1127,23 +1754,46 @@ function BookingsTable({
             <th className="pb-3" />
           </tr>
         </thead>
+
         <tbody className="divide-y divide-white/10">
           {bookings.map((b) => (
-            <tr key={b.id} className="text-white/75">
-              <td className="py-3 text-white">{b.name}</td>
-              <td className="py-3">{b.phone}</td>
-              <td className="py-3">{b.type}</td>
+            <tr
+              key={b.id}
+              className="text-white/75"
+            >
+              <td className="py-3 text-white">
+                {b.name}
+              </td>
+
+              <td className="py-3">
+                {b.phone}
+              </td>
+
+              <td className="py-3">
+                {b.type}
+              </td>
+
               <td className="py-3">
                 <span className="rounded-full border border-navy-line px-2.5 py-1 text-[0.55rem] tracking-[0.16em] uppercase">
                   {b.status}
                 </span>
               </td>
-              <td className="py-3">{b.date}</td>
+
+              <td className="py-3">
+                {b.date}
+              </td>
+
               <td className="py-3 text-right">
                 <button
                   className={btnGhost}
                   aria-label={`Tirtir dalabka ${b.name}`}
-                  onClick={() => setBookings((prev) => prev.filter((x) => x.id !== b.id))}
+                  onClick={() =>
+                    setBookings((prev) =>
+                      prev.filter(
+                        (x) => x.id !== b.id,
+                      ),
+                    )
+                  }
                 >
                   <Trash2 size={13} />
                 </button>
@@ -1152,8 +1802,11 @@ function BookingsTable({
           ))}
         </tbody>
       </table>
+
       {bookings.length === 0 ? (
-        <p className="mt-3 text-sm text-white/60">Wax dalab lama helin.</p>
+        <p className="mt-3 text-sm text-white/60">
+          Wax dalab lama helin.
+        </p>
       ) : null}
     </div>
   );
@@ -1161,3 +1814,4 @@ function BookingsTable({
 
 /** Upload helper kept for future use of direct logo uploads. */
 export const _uploadIcon = Upload;
+```
