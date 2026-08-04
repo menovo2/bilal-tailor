@@ -8,7 +8,8 @@ import {
   type ReactNode,
 } from "react";
 import { images } from "@/lib/site";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/supabase/typed";
+import { galleryPhotos, serviceImages } from "@/lib/gallery-photos";
 
 /**
  * Single source of truth for EVERY piece of editable website content.
@@ -24,14 +25,6 @@ export type GalleryItem = {
   visible: boolean;
 };
 
-export type AdminUser = {
-  id: string;
-  email: string;
-  password: string;
-  /** The first admin can never be deleted. */
-  protected?: boolean;
-};
-
 export type ServiceItem = {
   id: string;
   key: string;
@@ -39,20 +32,22 @@ export type ServiceItem = {
   short: string;
   long: string;
   icon: string;
+  /** Optional photo shown on the service card. */
+  image?: string;
 };
 
 export type FaqItem = { id: string; q: string; a: string };
 
 export type HourItem = { id: string; days: string; time: string };
 
-/** Gallery categories with the exact photo counts requested. */
+/** Gallery categories, sized by the real studio photo library. */
 export const GALLERY_CATEGORIES: { name: string; count: number }[] = [
-  { name: "Suits", count: 30 },
-  { name: "Safari Suits", count: 15 },
-  { name: "Safari Normal", count: 10 },
-  { name: "Shaar", count: 20 },
-  { name: "Qamis", count: 15 },
-  { name: "Surwaal", count: 10 },
+  { name: "Suits", count: galleryPhotos["Suits"].length },
+  { name: "Safari Suits", count: galleryPhotos["Safari Suits"].length },
+  { name: "Safari Normal", count: galleryPhotos["Safari Normal"].length },
+  { name: "Shaar", count: galleryPhotos["Shaar"].length },
+  { name: "Qamis", count: galleryPhotos["Qamis"].length },
+  { name: "Surwaal", count: galleryPhotos["Surwaal"].length },
 ];
 
 export const galleryCategoryNames = GALLERY_CATEGORIES.map((c) => c.name);
@@ -158,17 +153,15 @@ export type SiteContent = {
   whatsappMessage: string;
   orderMessage: string;
   bookingMessage: string;
-
-  admins: AdminUser[];
 };
 
 function seedGallery(): GalleryItem[] {
   return GALLERY_CATEGORIES.flatMap((c) =>
-    Array.from({ length: c.count }, (_, i) => ({
+    (galleryPhotos[c.name] ?? []).map((imageUrl, i) => ({
       id: `${c.name.toLowerCase().replace(/\s+/g, "-")}-${i + 1}`,
       category: c.name,
       label: `${c.name} ${i + 1}`,
-      imageUrl: "",
+      imageUrl,
       visible: true,
     })),
   );
@@ -182,6 +175,7 @@ const defaultServices: ServiceItem[] = [
     short: "Suit rasmi ah oo qiyaas gaar ah, maro tayo sare leh.",
     long: "Suit lagu dhisay qiyaas sax ah: maro tayo sare, garab la qaabeeyay iyo tolid adkaysata — ku habboon aroos, shaqo iyo munaasabado rasmi ah.",
     icon: "suit",
+    image: serviceImages["Suits"],
   },
   {
     id: "svc-safari",
@@ -190,6 +184,7 @@ const defaultServices: ServiceItem[] = [
     short: "Safari raaxo leh oo qurux badan, maalin iyo munaasabad.",
     long: "Qaab toosan, jeebab si fiican loo qaabeeyay iyo maro neefsata — dhaqan iyo casriyeyn isku dhafan.",
     icon: "safari",
+    image: serviceImages["Safari Suits"],
   },
   {
     id: "svc-qamiis",
@@ -198,6 +193,7 @@ const defaultServices: ServiceItem[] = [
     short: "Qamiis nadiif ah oo qiyaas gaar ah lagu tolay.",
     long: "Xariiq toosan iyo faahfaahin nadiif ah, iyadoo maro, badhamo iyo qoor-qaabeyn aad dooranayso.",
     icon: "qamiis",
+    image: serviceImages["Qamis"],
   },
   {
     id: "svc-surwaal",
@@ -206,6 +202,7 @@ const defaultServices: ServiceItem[] = [
     short: "Surwaal qiyaas sax ah, dherer iyo qaab gaar ah.",
     long: "Dhererka, ballaca iyo qaabka waxaa loo habeeyaa jirkaaga, iyadoo tolid xoogan la isticmaalayo.",
     icon: "surwaal",
+    image: serviceImages["Surwaal"],
   },
   {
     id: "svc-shaar",
@@ -214,6 +211,7 @@ const defaultServices: ServiceItem[] = [
     short: "Shaar casri ah oo tayo leh, shaqo iyo maalin.",
     long: "Garab sax ah, gacmo cabbir leh iyo maro fudud oo neefsata — faahfaahin yar oo wax weyn beddesha.",
     icon: "shaar",
+    image: serviceImages["Shaar"],
   },
 ];
 
@@ -263,7 +261,7 @@ export const defaultContent: SiteContent = {
   heroHighlight: "Modern Gentlemen",
   heroText:
     "Suit, safari, qamiis, surwaal iyo shaar oo qiyaas sax ah lagu tolay — maro tayo sare iyo farsamo gacan.",
-  heroImage: images.heroTailor,
+  heroImage: images.homeBackground,
   heroCtaPrimary: "Dalbo Hadda",
   heroCtaSecondary: "Daawo Adeegyadeena",
 
@@ -274,7 +272,7 @@ export const defaultContent: SiteContent = {
   aboutEyebrow: "Ku Saabsan",
   aboutTitle: "Sheekada BILAL TAILOR",
   aboutText: "Dukaan tolid oo lagu dhisay tayo, khibrad iyo ixtiraam macmiil.",
-  aboutImage: images.aboutRack,
+  aboutImage: images.aboutBackground,
   aboutStoryEyebrow: "Naga",
   aboutStoryTitle: "Farsamo Gacmeed",
   aboutStoryBody:
@@ -283,20 +281,20 @@ export const defaultContent: SiteContent = {
   servicesEyebrow: "Adeegyada",
   servicesTitle: "Shan adeeg, hal heer tayo",
   servicesText: "Adeeg walba wuxuu ku bilaabmaa qiyaas sax ah.",
-  servicesImage: images.hero,
+  servicesImage: images.servicesBackground,
   serviceOrderCta: "Dalbo",
-  comingSoonLabel: "Coming Soon",
+  comingSoonLabel: "",
   services: defaultServices,
 
   galleryEyebrow: "Gallery",
   galleryTitle: "Shaqadeena iyo Naqshadeena",
   galleryText: "Dooro qayb oo dalbo hadda.",
-  galleryImage: images.aboutRack,
+  galleryImage: images.galleryBackground,
   galleryAllLabel: "Dhammaan",
   galleryViewLabel: "Daawo",
   galleryModalText: "Noo soo dir fariin WhatsApp oo hel qiimo iyo talo bilaash ah.",
   galleryModalCta: "Hadda Dalbo",
-  comingSoonImage: images.comingSoon,
+  comingSoonImage: "",
   gallery: seedGallery(),
 
   bookingEyebrow: "Dalbo",
@@ -315,7 +313,7 @@ export const defaultContent: SiteContent = {
   contactEyebrow: "Xiriir",
   contactTitle: "Nala Soo Xiriir",
   contactText: "Waxaan diyaar u nahay qiyaas, qiimo iyo talo naqshad.",
-  contactImage: images.measureLight,
+  contactImage: images.contactBackground,
   contactHoursLabel: "Saacadaha Furitaanka",
   contactCtaTitle: "Diyaar ma tahay dalabkaaga?",
   contactCtaText: "Nagala hadal WhatsApp oo hel jawaab degdeg ah.",
@@ -341,10 +339,6 @@ export const defaultContent: SiteContent = {
   whatsappMessage: "Salaan, waxaan rabaa inaan dalbado adeeg tolid.",
   orderMessage: "Salaan, waxaan rabaa inaan dalbado adeegga {item}.",
   bookingMessage: "ASC BILAAL TAILOR, waxaan rabaa in aan dalbado:",
-
-  admins: [
-    { id: "root", email: "Billaalyare88@gmail.com", password: "secure#4", protected: true },
-  ],
 };
 
 const uid = (p: string) => `${p}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -370,9 +364,6 @@ type Ctx = {
   updateHour: (id: string, patch: Partial<HourItem>) => void;
   addHour: () => void;
   removeHour: (id: string) => void;
-  addAdmin: (email: string, password: string) => void;
-  updateAdmin: (id: string, patch: Partial<Omit<AdminUser, "id" | "protected">>) => void;
-  removeAdmin: (id: string) => void;
   reset: () => void;
 };
 
@@ -408,7 +399,7 @@ function normalize(saved: Partial<SiteContent>): SiteContent {
             id: `${c.name.toLowerCase().replace(/\s+/g, "-")}-${existing.length + i + 1}`,
             category: c.name,
             label: `${c.name} ${existing.length + i + 1}`,
-            imageUrl: "",
+            imageUrl: (galleryPhotos[c.name] ?? [])[existing.length + i] ?? "",
             visible: true,
           })),
         ];
@@ -426,9 +417,8 @@ function normalize(saved: Partial<SiteContent>): SiteContent {
     ? saved.hours.map((h, i) => ({ ...h, id: h.id || `h-${i}` }))
     : defaultContent.hours;
 
-  // The first admin is always protected and always present.
-  const admins = Array.isArray(saved.admins) && saved.admins.length ? saved.admins : defaultContent.admins;
-  next.admins = admins.map((a, i) => ({ ...a, protected: i === 0 ? true : undefined }));
+  // Admin accounts live in secure authentication, never in shared content.
+  delete (next as Record<string, unknown>)["admins"];
 
   return next;
 }
@@ -444,7 +434,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
 
     const load = async () => {
       try {
-        const { data, error } = await supabase
+        const { data, error } = await db
           .from("site_content")
           .select("content")
           .eq("id", "main")
@@ -470,10 +460,29 @@ export function ContentProvider({ children }: { children: ReactNode }) {
 
     void load();
 
+    // Live sync: every visitor picks up admin changes without a refresh.
+    const channel = db
+      .channel("site-content")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "site_content" },
+        (payload) => {
+          const row = payload.new as { id?: string; content?: unknown } | null;
+          if (!row || row.id !== "main" || !row.content) return;
+          setDirty((isDirty) => {
+            if (!isDirty) setContent(normalize(row.content as Partial<SiteContent>));
+            return isDirty;
+          });
+        },
+      )
+      .subscribe();
+
     return () => {
       cancelled = true;
+      void db.removeChannel(channel);
     };
   }, []);
+
 
   const persist = useCallback((next: SiteContent) => {
     setContent(next);
@@ -493,7 +502,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         try {
           setSaveState("idle");
 
-          const { error } = await supabase
+          const { error } = await db
             .from("site_content")
             .upsert(
               {
@@ -551,12 +560,6 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         patch({ hours: content.hours.map((h) => (h.id === id ? { ...h, ...p } : h)) }),
       addHour: () => patch({ hours: [...content.hours, { id: uid("h"), days: "", time: "" }] }),
       removeHour: (id) => patch({ hours: content.hours.filter((h) => h.id !== id) }),
-      addAdmin: (email, password) =>
-        patch({ admins: [...content.admins, { id: uid("admin"), email, password }] }),
-      updateAdmin: (id, p) =>
-        patch({ admins: content.admins.map((a) => (a.id === id ? { ...a, ...p } : a)) }),
-      removeAdmin: (id) =>
-        patch({ admins: content.admins.filter((a) => a.id !== id || a.protected) }),
       reset: () => persist(normalize(defaultContent)),
     };
   }, [content, persist, dirty, saveState]);

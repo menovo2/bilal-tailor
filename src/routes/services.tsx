@@ -53,11 +53,12 @@ function ServicesPage() {
             >
               <div className="relative overflow-hidden rounded-xl border border-gold/25 shadow-luxe">
                 <img
-                  src={c.comingSoonImage || images.comingSoon}
-                  alt={`${service.title} — ${c.comingSoonLabel}`}
+                  src={service.image || c.galleryImage}
+                  alt={`${service.title} — BILAL TAILOR`}
                   loading="lazy"
                   className="aspect-4/3 w-full object-cover"
                 />
+
                 <span className="absolute inset-x-0 bottom-0 bg-linear-to-t from-background via-background/70 to-transparent p-3 text-center">
                   <span className="block text-[0.58rem] tracking-[0.34em] text-gold uppercase">
                     {service.title}
