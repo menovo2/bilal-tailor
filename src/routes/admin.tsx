@@ -154,11 +154,27 @@ function AdminPage() {
 
 function Login({ onLogin }: { onLogin: () => void }) {
   const { content } = useContent();
+  const checkExists = useServerFn(adminAccountExists);
+  const bootstrap = useServerFn(bootstrapFirstAdmin);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [setupMode, setSetupMode] = useState(false);
+
+  // First run: no admin account exists yet, so offer a one-time secure setup.
+  useEffect(() => {
+    let mounted = true;
+    checkExists({})
+      .then((res) => {
+        if (mounted) setSetupMode(!res.exists);
+      })
+      .catch((err) => console.error(err));
+    return () => {
+      mounted = false;
+    };
+  }, [checkExists]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -167,6 +183,15 @@ function Login({ onLogin }: { onLogin: () => void }) {
     setLoading(true);
 
     try {
+      if (setupMode) {
+        if (password.length < 6) {
+          setError("Password-ka waa inuu ka badan yahay 6 xaraf.");
+          return;
+        }
+        await bootstrap({ data: { email: email.trim(), password } });
+        setSetupMode(false);
+      }
+
       const { error: loginError } =
         await supabase.auth.signInWithPassword({
           email: email.trim(),
@@ -174,7 +199,7 @@ function Login({ onLogin }: { onLogin: () => void }) {
         });
 
       if (loginError) {
-        console.error("Supabase login error:", loginError);
+        console.error("Login error:", loginError);
         setError("Email ama password khaldan.");
         return;
       }
@@ -189,6 +214,7 @@ function Login({ onLogin }: { onLogin: () => void }) {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="grid min-h-screen place-items-center bg-navy px-4 py-12">
