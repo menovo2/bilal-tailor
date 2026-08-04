@@ -8,11 +8,12 @@ import {
   type ReactNode,
 } from "react";
 import { images } from "@/lib/site";
+import { supabase } from "@/integrations/supabase/client";
 
 /**
  * Single source of truth for EVERY piece of editable website content.
  * The admin panel writes here, the public pages read from here, and everything
- * is persisted to localStorage so it survives refreshes with no backend.
+ * is persisted to Supabase so changes are shared across browsers and deployments.
  */
 export type GalleryItem = {
   id: string;
@@ -346,7 +347,6 @@ export const defaultContent: SiteContent = {
   ],
 };
 
-const STORAGE_KEY = "bilal-tailor-content-v1";
 const uid = (p: string) => `${p}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
 type SaveState = "idle" | "saved" | "error";
@@ -355,7 +355,7 @@ type Ctx = {
   content: SiteContent;
   update: (patch: Partial<SiteContent>) => void;
   /** Explicit "Save Changes" — persists and reports success/failure. */
-  save: () => boolean;
+  save: () => Promise<boolean>;
   saveState: SaveState;
   dirty: boolean;
   updateItem: (id: string, patch: Partial<GalleryItem>) => void;
@@ -438,42 +438,79 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [dirty, setDirty] = useState(false);
 
-  // Read persisted content after hydration to avoid SSR mismatches.
+  // Load the shared website content from Supabase after hydration.
   useEffect(() => {
-    try {
-      const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      setContent(normalize(JSON.parse(raw) as Partial<SiteContent>));
-    } catch {
-      /* ignore corrupt storage */
-    }
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("site_content")
+          .select("content")
+          .eq("id", "main")
+          .maybeSingle();
+
+        if (error) throw error;
+        if (cancelled) return;
+
+        if (data?.content) {
+          setContent(normalize(data.content as Partial<SiteContent>));
+          return;
+        }
+
+        // The table may be empty on first run. Keep the bundled defaults
+        // locally until the authenticated Admin saves them to Supabase.
+        setContent(normalize(defaultContent));
+      } catch (error) {
+        console.error("Failed to load website content from Supabase:", error);
+        // Keep the bundled defaults available if Supabase is unavailable.
+        if (!cancelled) setContent(normalize(defaultContent));
+      }
+    };
+
+    void load();
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const persist = useCallback((next: SiteContent) => {
     setContent(next);
     setDirty(true);
     setSaveState("idle");
-    try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {
-      /* storage full/unavailable — explicit Save will report it */
-    }
   }, []);
 
   const value = useMemo<Ctx>(() => {
-    const patch = (p: Partial<SiteContent>) => persist({ ...content, ...p });
+    const patch = (p: Partial<SiteContent>) => persist(normalize({ ...content, ...p }));
+
     return {
       content,
       dirty,
       saveState,
       update: patch,
-      save: () => {
+      save: async () => {
         try {
-          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(content));
+          setSaveState("idle");
+
+          const { error } = await supabase
+            .from("site_content")
+            .upsert(
+              {
+                id: "main",
+                content: normalize(content),
+                updated_at: new Date().toISOString(),
+              },
+              { onConflict: "id" },
+            );
+
+          if (error) throw error;
+
           setSaveState("saved");
           setDirty(false);
           return true;
-        } catch {
+        } catch (error) {
+          console.error("Failed to save website content to Supabase:", error);
           setSaveState("error");
           return false;
         }
@@ -520,7 +557,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         patch({ admins: content.admins.map((a) => (a.id === id ? { ...a, ...p } : a)) }),
       removeAdmin: (id) =>
         patch({ admins: content.admins.filter((a) => a.id !== id || a.protected) }),
-      reset: () => persist(defaultContent),
+      reset: () => persist(normalize(defaultContent)),
     };
   }, [content, persist, dirty, saveState]);
 
