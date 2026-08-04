@@ -8,7 +8,8 @@ import {
   type ReactNode,
 } from "react";
 import { images } from "@/lib/site";
-import { supabase } from "@/integrations/supabase/client";
+import { db } from "@/integrations/supabase/typed";
+import { galleryPhotos, serviceImages } from "@/lib/gallery-photos";
 
 /**
  * Single source of truth for EVERY piece of editable website content.
@@ -45,14 +46,14 @@ export type FaqItem = { id: string; q: string; a: string };
 
 export type HourItem = { id: string; days: string; time: string };
 
-/** Gallery categories with the exact photo counts requested. */
+/** Gallery categories, sized by the real studio photo library. */
 export const GALLERY_CATEGORIES: { name: string; count: number }[] = [
-  { name: "Suits", count: 30 },
-  { name: "Safari Suits", count: 15 },
-  { name: "Safari Normal", count: 10 },
-  { name: "Shaar", count: 20 },
-  { name: "Qamis", count: 15 },
-  { name: "Surwaal", count: 10 },
+  { name: "Suits", count: galleryPhotos["Suits"].length },
+  { name: "Safari Suits", count: galleryPhotos["Safari Suits"].length },
+  { name: "Safari Normal", count: galleryPhotos["Safari Normal"].length },
+  { name: "Shaar", count: galleryPhotos["Shaar"].length },
+  { name: "Qamis", count: galleryPhotos["Qamis"].length },
+  { name: "Surwaal", count: galleryPhotos["Surwaal"].length },
 ];
 
 export const galleryCategoryNames = GALLERY_CATEGORIES.map((c) => c.name);
@@ -164,11 +165,11 @@ export type SiteContent = {
 
 function seedGallery(): GalleryItem[] {
   return GALLERY_CATEGORIES.flatMap((c) =>
-    Array.from({ length: c.count }, (_, i) => ({
+    (galleryPhotos[c.name] ?? []).map((imageUrl, i) => ({
       id: `${c.name.toLowerCase().replace(/\s+/g, "-")}-${i + 1}`,
       category: c.name,
       label: `${c.name} ${i + 1}`,
-      imageUrl: "",
+      imageUrl,
       visible: true,
     })),
   );
