@@ -144,7 +144,7 @@ function CategorySlider({
           <GalleryCard
             key={`${item.id}-${i}`}
             item={item}
-            fallback={fallback}
+            
             viewLabel={viewLabel}
             onOpen={() => onOpen(item)}
           />
