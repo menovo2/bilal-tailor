@@ -460,10 +460,29 @@ export function ContentProvider({ children }: { children: ReactNode }) {
 
     void load();
 
+    // Live sync: every visitor picks up admin changes without a refresh.
+    const channel = db
+      .channel("site-content")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "site_content" },
+        (payload) => {
+          const row = payload.new as { id?: string; content?: unknown } | null;
+          if (!row || row.id !== "main" || !row.content) return;
+          setDirty((isDirty) => {
+            if (!isDirty) setContent(normalize(row.content as Partial<SiteContent>));
+            return isDirty;
+          });
+        },
+      )
+      .subscribe();
+
     return () => {
       cancelled = true;
+      void db.removeChannel(channel);
     };
   }, []);
+
 
   const persist = useCallback((next: SiteContent) => {
     setContent(next);
