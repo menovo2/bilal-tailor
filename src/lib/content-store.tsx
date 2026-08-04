@@ -25,14 +25,6 @@ export type GalleryItem = {
   visible: boolean;
 };
 
-export type AdminUser = {
-  id: string;
-  email: string;
-  password: string;
-  /** The first admin can never be deleted. */
-  protected?: boolean;
-};
-
 export type ServiceItem = {
   id: string;
   key: string;
@@ -161,8 +153,6 @@ export type SiteContent = {
   whatsappMessage: string;
   orderMessage: string;
   bookingMessage: string;
-
-  admins: AdminUser[];
 };
 
 function seedGallery(): GalleryItem[] {
@@ -349,10 +339,6 @@ export const defaultContent: SiteContent = {
   whatsappMessage: "Salaan, waxaan rabaa inaan dalbado adeeg tolid.",
   orderMessage: "Salaan, waxaan rabaa inaan dalbado adeegga {item}.",
   bookingMessage: "ASC BILAAL TAILOR, waxaan rabaa in aan dalbado:",
-
-  admins: [
-    { id: "root", email: "Billaalyare88@gmail.com", password: "secure#4", protected: true },
-  ],
 };
 
 const uid = (p: string) => `${p}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -378,9 +364,6 @@ type Ctx = {
   updateHour: (id: string, patch: Partial<HourItem>) => void;
   addHour: () => void;
   removeHour: (id: string) => void;
-  addAdmin: (email: string, password: string) => void;
-  updateAdmin: (id: string, patch: Partial<Omit<AdminUser, "id" | "protected">>) => void;
-  removeAdmin: (id: string) => void;
   reset: () => void;
 };
 
@@ -416,7 +399,7 @@ function normalize(saved: Partial<SiteContent>): SiteContent {
             id: `${c.name.toLowerCase().replace(/\s+/g, "-")}-${existing.length + i + 1}`,
             category: c.name,
             label: `${c.name} ${existing.length + i + 1}`,
-            imageUrl: "",
+            imageUrl: (galleryPhotos[c.name] ?? [])[existing.length + i] ?? "",
             visible: true,
           })),
         ];
@@ -434,9 +417,8 @@ function normalize(saved: Partial<SiteContent>): SiteContent {
     ? saved.hours.map((h, i) => ({ ...h, id: h.id || `h-${i}` }))
     : defaultContent.hours;
 
-  // The first admin is always protected and always present.
-  const admins = Array.isArray(saved.admins) && saved.admins.length ? saved.admins : defaultContent.admins;
-  next.admins = admins.map((a, i) => ({ ...a, protected: i === 0 ? true : undefined }));
+  // Admin accounts live in secure authentication, never in shared content.
+  delete (next as Record<string, unknown>)["admins"];
 
   return next;
 }
@@ -452,7 +434,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
 
     const load = async () => {
       try {
-        const { data, error } = await supabase
+        const { data, error } = await db
           .from("site_content")
           .select("content")
           .eq("id", "main")
@@ -501,7 +483,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         try {
           setSaveState("idle");
 
-          const { error } = await supabase
+          const { error } = await db
             .from("site_content")
             .upsert(
               {
@@ -559,12 +541,6 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         patch({ hours: content.hours.map((h) => (h.id === id ? { ...h, ...p } : h)) }),
       addHour: () => patch({ hours: [...content.hours, { id: uid("h"), days: "", time: "" }] }),
       removeHour: (id) => patch({ hours: content.hours.filter((h) => h.id !== id) }),
-      addAdmin: (email, password) =>
-        patch({ admins: [...content.admins, { id: uid("admin"), email, password }] }),
-      updateAdmin: (id, p) =>
-        patch({ admins: content.admins.map((a) => (a.id === id ? { ...a, ...p } : a)) }),
-      removeAdmin: (id) =>
-        patch({ admins: content.admins.filter((a) => a.id !== id || a.protected) }),
       reset: () => persist(normalize(defaultContent)),
     };
   }, [content, persist, dirty, saveState]);
