@@ -1,4 +1,3 @@
-```tsx
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -1814,4 +1813,3 @@ function BookingsTable({
 
 /** Upload helper kept for future use of direct logo uploads. */
 export const _uploadIcon = Upload;
-```
