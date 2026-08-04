@@ -231,7 +231,7 @@ function Login({ onLogin }: { onLogin: () => void }) {
         />
 
         <h1 className="mt-5 text-center font-display text-3xl text-white">
-          Admin Panel
+          {setupMode ? "Setup Admin" : "Admin Panel"}
         </h1>
 
         <p className="mt-2 text-center text-xs tracking-[0.2em] text-white/60 uppercase">
@@ -289,7 +289,7 @@ function Login({ onLogin }: { onLogin: () => void }) {
           disabled={loading}
           className={cn(btnPrimary, "mt-6 w-full")}
         >
-          {loading ? "La galayaa..." : "Gal"}
+          {loading ? "La galayaa..." : setupMode ? "Samee admin-ka koowaad" : "Gal"}
         </button>
       </form>
     </div>
