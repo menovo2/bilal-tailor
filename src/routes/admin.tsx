@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   BarChart3,
   CalendarCheck,
@@ -26,7 +26,18 @@ import {
   ImagePlus,
   UserPlus,
 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
 import { cn } from "@/lib/utils";
+import { CropModal } from "@/components/admin/crop-modal";
+import { fileToDataUrl } from "@/lib/image-tools";
+import {
+  adminAccountExists,
+  bootstrapFirstAdmin,
+  createAdminAccount,
+  deleteAdminAccount,
+  listAdminAccounts,
+  updateAdminAccount,
+} from "@/lib/admin-accounts.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { images, site } from "@/lib/site";
 import {
