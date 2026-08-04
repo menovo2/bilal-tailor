@@ -10,14 +10,18 @@ export const site = {
 } as const;
 
 export const images = {
-  logo: "/assets/logo.png",
-  hero: "/assets/suits-rack.jpg",
-  workshop: "/assets/cutting.jpg",
-  detail: "/assets/pinning.jpg",
-  measure: "/assets/tape-dark.jpg",
-  measureLight: "/assets/tape-light.jpg",
-  heroTailor: "/assets/tailor-measuring.png",
-  aboutRack: "/assets/suit-rack-about.jpg",
-  comingSoon: "/assets/coming-soon.png",
+  logo: "/assets/drive/logo/logo.jpg",
+  hero: "/assets/drive/backgrounds/home-background.png",
+  homeBackground: "/assets/drive/backgrounds/home-background.png",
+  aboutBackground: "/assets/drive/backgrounds/about-background.jpg",
+  servicesBackground: "/assets/drive/backgrounds/services-background.jpg",
+  galleryBackground: "/assets/drive/backgrounds/gallery-background.jpg",
+  contactBackground: "/assets/drive/backgrounds/contact-background.jpg",
+  workshop: "/assets/drive/backgrounds/services-background.jpg",
+  detail: "/assets/drive/backgrounds/gallery-background.jpg",
+  measure: "/assets/drive/backgrounds/contact-background.jpg",
+  measureLight: "/assets/drive/backgrounds/contact-background.jpg",
+  heroTailor: "/assets/drive/backgrounds/home-background.png",
+  aboutRack: "/assets/drive/backgrounds/about-background.jpg",
   whatsapp: "/assets/whatsapp-gold.png",
 } as const;
