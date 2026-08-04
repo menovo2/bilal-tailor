@@ -40,6 +40,8 @@ export type ServiceItem = {
   short: string;
   long: string;
   icon: string;
+  /** Optional photo shown on the service card. */
+  image?: string;
 };
 
 export type FaqItem = { id: string; q: string; a: string };
@@ -192,6 +194,7 @@ const defaultServices: ServiceItem[] = [
     short: "Safari raaxo leh oo qurux badan, maalin iyo munaasabad.",
     long: "Qaab toosan, jeebab si fiican loo qaabeeyay iyo maro neefsata — dhaqan iyo casriyeyn isku dhafan.",
     icon: "safari",
+    image: serviceImages["Safari Suits"],
   },
   {
     id: "svc-qamiis",
@@ -200,6 +203,7 @@ const defaultServices: ServiceItem[] = [
     short: "Qamiis nadiif ah oo qiyaas gaar ah lagu tolay.",
     long: "Xariiq toosan iyo faahfaahin nadiif ah, iyadoo maro, badhamo iyo qoor-qaabeyn aad dooranayso.",
     icon: "qamiis",
+    image: serviceImages["Qamis"],
   },
   {
     id: "svc-surwaal",
@@ -208,6 +212,7 @@ const defaultServices: ServiceItem[] = [
     short: "Surwaal qiyaas sax ah, dherer iyo qaab gaar ah.",
     long: "Dhererka, ballaca iyo qaabka waxaa loo habeeyaa jirkaaga, iyadoo tolid xoogan la isticmaalayo.",
     icon: "surwaal",
+    image: serviceImages["Surwaal"],
   },
   {
     id: "svc-shaar",
@@ -216,6 +221,7 @@ const defaultServices: ServiceItem[] = [
     short: "Shaar casri ah oo tayo leh, shaqo iyo maalin.",
     long: "Garab sax ah, gacmo cabbir leh iyo maro fudud oo neefsata — faahfaahin yar oo wax weyn beddesha.",
     icon: "shaar",
+    image: serviceImages["Shaar"],
   },
 ];
 
