@@ -7,16 +7,14 @@ import { cn } from "@/lib/utils";
 /** One gallery card — real photo when set, otherwise the numbered "Coming Soon" photo. */
 function GalleryCard({
   item,
-  fallback,
   viewLabel,
   onOpen,
 }: {
   item: GalleryItem;
-  fallback: string;
   viewLabel: string;
   onOpen: () => void;
 }) {
-  const src = item.imageUrl || fallback;
+  const src = item.imageUrl;
   return (
     <button
       type="button"
@@ -43,13 +41,11 @@ function GalleryCard({
 function CategorySlider({
   category,
   items,
-  fallback,
   viewLabel,
   onOpen,
 }: {
   category: string;
   items: GalleryItem[];
-  fallback: string;
   viewLabel: string;
   onOpen: (item: GalleryItem) => void;
 }) {
@@ -177,7 +173,9 @@ export function GalleryShowcase({
         ? galleryCategoryNames
         : galleryCategoryNames.filter((c) => c === active)
       ).map((category) => {
-        const items = content.gallery.filter((g) => g.category === category && g.visible);
+        const items = content.gallery.filter(
+          (g) => g.category === category && g.visible && g.imageUrl,
+        );
         return { category, items: limitPerCategory ? items.slice(0, limitPerCategory) : items };
       }),
     [withFilter, active, all, content.gallery, limitPerCategory],
@@ -222,7 +220,6 @@ export function GalleryShowcase({
             key={category}
             category={category}
             items={items}
-            fallback={content.comingSoonImage}
             viewLabel={content.galleryViewLabel}
             onOpen={setModal}
           />
@@ -250,7 +247,7 @@ export function GalleryShowcase({
               <X size={18} />
             </button>
             <img
-              src={modal.imageUrl || content.comingSoonImage}
+              src={modal.imageUrl}
               alt={modal.label}
               className="max-h-[58vh] w-full rounded-lg border border-gold/20 object-contain"
             />
