@@ -1595,86 +1595,134 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   );
 }
 
-function SettingsPanel() {
-  const {
-    content,
-    addAdmin,
-    updateAdmin,
-    removeAdmin,
-  } = useContent();
+type AdminAccount = { id: string; email: string; isCurrent: boolean; isFirst: boolean };
 
+function SettingsPanel() {
+  const listAdmins = useServerFn(listAdminAccounts);
+  const createAdmin = useServerFn(createAdminAccount);
+  const updateAdmin = useServerFn(updateAdminAccount);
+  const deleteAdmin = useServerFn(deleteAdminAccount);
+
+  const [admins, setAdmins] = useState<AdminAccount[]>([]);
+  const [drafts, setDrafts] = useState<Record<string, { email: string; password: string }>>({});
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const refresh = useCallback(async () => {
+    try {
+      const res = await listAdmins({});
+      setAdmins(res.admins);
+      setDrafts(
+        Object.fromEntries(res.admins.map((a) => [a.id, { email: a.email, password: "" }])),
+      );
+    } catch (error) {
+      console.error(error);
+      setNote("Liiska admin-yada lama soo saarin.");
+    }
+  }, [listAdmins]);
+
+  useEffect(() => {
+    void refresh();
+  }, [refresh]);
+
+  const run = async (fn: () => Promise<unknown>, ok: string) => {
+    setBusy(true);
+    setNote("");
+    try {
+      await fn();
+      await refresh();
+      setNote(ok);
+    } catch (error) {
+      console.error(error);
+      setNote("Wax khaldan ayaa dhacay. Fadlan mar kale isku day.");
+    } finally {
+      setBusy(false);
+    }
+  };
 
   return (
     <div className="space-y-5">
       <div className={cardClass}>
-        <h2 className="font-display text-xl">
-          Admins
-        </h2>
+        <h2 className="font-display text-xl">Admins</h2>
 
         <p className="mt-1 text-sm text-white/60">
-          Beddel iimaylka iyo password-ka.
-          Admin-ka koowaad lama tirtiri karo.
+          Beddel iimaylka iyo password-ka. Password-yada waxaa lagu kaydiyaa nidaam ammaan ah
+          — qofna kama arki karo websaydka. Admin-ka koowaad lama tirtiri karo.
         </p>
 
         <ul className="mt-4 space-y-4">
-          {content.admins.map((a) => (
-            <li
-              key={a.id}
-              className="rounded-lg border border-navy-line p-3 sm:p-4"
-            >
+          {admins.map((a) => (
+            <li key={a.id} className="rounded-lg border border-navy-line p-3 sm:p-4">
               <div className="grid gap-3 lg:grid-cols-2">
                 <Field
                   label="Iimayl"
-                  value={a.email}
+                  value={drafts[a.id]?.email ?? a.email}
                   onChange={(v) =>
-                    updateAdmin(a.id, {
-                      email: v,
-                    })
+                    setDrafts((d) => ({ ...d, [a.id]: { ...d[a.id], email: v } }))
                   }
                 />
 
                 <Field
-                  label="Password"
-                  value={a.password}
+                  label="Password cusub (haddii aad rabto)"
+                  value={drafts[a.id]?.password ?? ""}
                   onChange={(v) =>
-                    updateAdmin(a.id, {
-                      password: v,
-                    })
+                    setDrafts((d) => ({ ...d, [a.id]: { ...d[a.id], password: v } }))
                   }
+                  placeholder="••••••"
                 />
               </div>
 
-              {a.protected ? (
-                <p className="mt-3 text-[0.6rem] tracking-[0.18em] text-white/55 uppercase">
-                  Admin-ka aasaasiga ah —
-                  lama tirtiri karo
-                </p>
-              ) : (
+              <div className="mt-3 flex flex-wrap gap-2">
                 <button
-                  className={cn(
-                    btnGhost,
-                    "mt-3",
-                  )}
-                  onClick={() =>
-                    removeAdmin(a.id)
-                  }
+                  type="button"
+                  disabled={busy}
+                  className={btnPrimary}
+                  onClick={() => {
+                    const draft = drafts[a.id];
+                    void run(
+                      () =>
+                        updateAdmin({
+                          data: {
+                            id: a.id,
+                            ...(draft?.email && draft.email !== a.email
+                              ? { email: draft.email.trim() }
+                              : {}),
+                            ...(draft?.password ? { password: draft.password } : {}),
+                          },
+                        }),
+                      "Waa la cusboonaysiiyay ✓",
+                    );
+                  }}
                 >
-                  <Trash2 size={13} />
-                  Tirtir admin-kan
+                  <Save size={13} /> Kaydi
                 </button>
-              )}
+
+                {a.isFirst ? (
+                  <p className="self-center text-[0.6rem] tracking-[0.18em] text-white/55 uppercase">
+                    Admin-ka aasaasiga ah — lama tirtiri karo
+                  </p>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={busy}
+                    className={btnGhost}
+                    onClick={() =>
+                      void run(() => deleteAdmin({ data: { id: a.id } }), "Waa la tirtiray ✓")
+                    }
+                  >
+                    <Trash2 size={13} /> Tirtir admin-kan
+                  </button>
+                )}
+              </div>
             </li>
           ))}
         </ul>
       </div>
 
       <div className={cardClass}>
-        <h2 className="font-display text-xl">
-          Ku dar admin cusub
-        </h2>
+        <h2 className="font-display text-xl">Ku dar admin cusub</h2>
 
         <div className="mt-4 grid gap-3 lg:grid-cols-2">
           <Field
@@ -1684,52 +1732,34 @@ function SettingsPanel() {
             placeholder="admin@example.com"
           />
 
-          <Field
-            label="Password"
-            value={password}
-            onChange={setPassword}
-            placeholder="••••••"
-          />
+          <Field label="Password" value={password} onChange={setPassword} placeholder="••••••" />
         </div>
 
         <button
+          type="button"
+          disabled={busy}
           className={cn(btnPrimary, "mt-4")}
           onClick={() => {
-            if (
-              !email.trim() ||
-              !password.trim()
-            ) {
-              setNote(
-                "Buuxi iimaylka iyo password-ka.",
-              );
+            if (!email.trim() || password.length < 6) {
+              setNote("Buuxi iimaylka iyo password ugu yaraan 6 xaraf.");
               return;
             }
-
-            addAdmin(
-              email.trim(),
-              password,
-            );
-
-            setEmail("");
-            setPassword("");
-            setNote(
-              "Admin cusub waa la daray ✓",
-            );
+            void run(async () => {
+              await createAdmin({ data: { email: email.trim(), password } });
+              setEmail("");
+              setPassword("");
+            }, "Admin cusub waa la daray ✓");
           }}
         >
-          <UserPlus size={13} />
-          Ku dar admin
+          <UserPlus size={13} /> Ku dar admin
         </button>
 
-        {note ? (
-          <p className="mt-3 text-xs text-white/80">
-            {note}
-          </p>
-        ) : null}
+        {note ? <p className="mt-3 text-xs text-white/80">{note}</p> : null}
       </div>
     </div>
   );
 }
+
 
 function BookingsTable({
   bookings,
