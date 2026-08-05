@@ -93,7 +93,6 @@ export type SiteContent = {
   servicesText: string;
   servicesImage: string;
   serviceOrderCta: string;
-  comingSoonLabel: string;
   services: ServiceItem[];
 
   /* Gallery */
@@ -105,7 +104,6 @@ export type SiteContent = {
   galleryViewLabel: string;
   galleryModalText: string;
   galleryModalCta: string;
-  comingSoonImage: string;
   gallery: GalleryItem[];
 
   /* Booking */
@@ -283,7 +281,6 @@ export const defaultContent: SiteContent = {
   servicesText: "Adeeg walba wuxuu ku bilaabmaa qiyaas sax ah.",
   servicesImage: images.servicesBackground,
   serviceOrderCta: "Dalbo",
-  comingSoonLabel: "",
   services: defaultServices,
 
   galleryEyebrow: "Gallery",
@@ -294,7 +291,6 @@ export const defaultContent: SiteContent = {
   galleryViewLabel: "Daawo",
   galleryModalText: "Noo soo dir fariin WhatsApp oo hel qiimo iyo talo bilaash ah.",
   galleryModalCta: "Hadda Dalbo",
-  comingSoonImage: "",
   gallery: seedGallery(),
 
   bookingEyebrow: "Dalbo",
