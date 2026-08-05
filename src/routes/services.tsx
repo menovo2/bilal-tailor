@@ -97,7 +97,7 @@ function ServicesPage() {
             description={content.galleryText}
           />
           <div className="mt-5">
-            <GalleryShowcase withFilter limitPerCategory={10} />
+            <GalleryShowcase withFilter />
           </div>
         </div>
       </section>

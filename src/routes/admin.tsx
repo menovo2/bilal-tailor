@@ -856,18 +856,6 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                   onChange={set("serviceOrderCta")}
                 />
 
-                <Field
-                  label="Qoraalka Coming Soon"
-                  value={content.comingSoonLabel}
-                  onChange={set("comingSoonLabel")}
-                />
-
-                <ImageField
-                  label="Sawirka Coming Soon"
-                  value={content.comingSoonImage}
-                  onChange={set("comingSoonImage")}
-                  placeholder="/assets/coming-soon.png"
-                />
               </Panel>
 
               <div className={cardClass}>
@@ -1056,8 +1044,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                     >
                       <img
                         src={
-                          g.imageUrl ||
-                          content.comingSoonImage
+                          g.imageUrl
                         }
                         alt={g.label}
                         loading="lazy"
@@ -1447,13 +1434,6 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                 label="Contact"
                 value={content.contactImage}
                 onChange={set("contactImage")}
-              />
-
-              <ImageField
-                label="Coming Soon"
-                value={content.comingSoonImage}
-                onChange={set("comingSoonImage")}
-                placeholder="/assets/coming-soon.png"
               />
 
               <ImageField

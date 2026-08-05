@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { ContentProvider } from "../lib/content-store";
+import { getSiteContent } from "../lib/site-content.functions";
 
 function NotFoundComponent() {
   return (
@@ -123,11 +124,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
   }),
 
+  // Server-rendered snapshot of the shared content so the first paint on any
+  // deployment (Lovable preview, Netlify) already shows the database values.
+  loader: () => getSiteContent(),
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
+
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
@@ -145,10 +151,11 @@ function RootShell({ children }: { children: ReactNode }) {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const initialContent = Route.useLoaderData();
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ContentProvider>
+      <ContentProvider initialJson={initialContent}>
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
       </ContentProvider>
