@@ -856,13 +856,6 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                   onChange={set("serviceOrderCta")}
                 />
 
-                <Field
-__CS_LBL__
-                />
-
-                <ImageField
-__CS_IMG__
-                />
               </Panel>
 
               <div className={cardClass}>
@@ -1441,10 +1434,6 @@ __CS_IMG__
                 label="Contact"
                 value={content.contactImage}
                 onChange={set("contactImage")}
-              />
-
-              <ImageField
-__CS_IMG2__
               />
 
               <ImageField
