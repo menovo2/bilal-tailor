@@ -423,42 +423,45 @@ function normalize(saved: Partial<SiteContent>): SiteContent {
   return next;
 }
 
-export function ContentProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<SiteContent>(defaultContent);
+export function ContentProvider({
+  children,
+  initialJson = null,
+}: {
+  children: ReactNode;
+  /** Server-rendered snapshot of the database row (JSON string). */
+  initialJson?: string | null;
+}) {
+  const [content, setContent] = useState<SiteContent>(() => {
+    if (initialJson) {
+      try {
+        return normalize(JSON.parse(initialJson) as Partial<SiteContent>);
+      } catch {
+        /* fall through to bundled defaults */
+      }
+    }
+    return defaultContent;
+  });
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [dirty, setDirty] = useState(false);
 
-  // Load the shared website content from Supabase after hydration.
+  // Always re-read the shared content from the database (the single source of
+  // truth). Never reads or writes browser storage.
+  const refresh = useCallback(async () => {
+    const { data, error } = await db
+      .from("site_content")
+      .select("content")
+      .eq("id", "main")
+      .maybeSingle();
+
+    if (error) {
+      console.error("Failed to load website content from the database:", error);
+      return;
+    }
+    if (data?.content) setContent(normalize(data.content as Partial<SiteContent>));
+  }, []);
+
   useEffect(() => {
-    let cancelled = false;
-
-    const load = async () => {
-      try {
-        const { data, error } = await db
-          .from("site_content")
-          .select("content")
-          .eq("id", "main")
-          .maybeSingle();
-
-        if (error) throw error;
-        if (cancelled) return;
-
-        if (data?.content) {
-          setContent(normalize(data.content as Partial<SiteContent>));
-          return;
-        }
-
-        // The table may be empty on first run. Keep the bundled defaults
-        // locally until the authenticated Admin saves them to Supabase.
-        setContent(normalize(defaultContent));
-      } catch (error) {
-        console.error("Failed to load website content from Supabase:", error);
-        // Keep the bundled defaults available if Supabase is unavailable.
-        if (!cancelled) setContent(normalize(defaultContent));
-      }
-    };
-
-    void load();
+    void refresh();
 
     // Live sync: every visitor picks up admin changes without a refresh.
     const channel = db
@@ -477,11 +480,20 @@ export function ContentProvider({ children }: { children: ReactNode }) {
       )
       .subscribe();
 
+    // Pick up changes made on another device when the tab regains focus.
+    const onFocus = () => {
+      setDirty((isDirty) => {
+        if (!isDirty) void refresh();
+        return isDirty;
+      });
+    };
+    window.addEventListener("focus", onFocus);
+
     return () => {
-      cancelled = true;
+      window.removeEventListener("focus", onFocus);
       void db.removeChannel(channel);
     };
-  }, []);
+  }, [refresh]);
 
 
   const persist = useCallback((next: SiteContent) => {
@@ -489,6 +501,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     setDirty(true);
     setSaveState("idle");
   }, []);
+
 
   const value = useMemo<Ctx>(() => {
     const patch = (p: Partial<SiteContent>) => persist(normalize({ ...content, ...p }));
