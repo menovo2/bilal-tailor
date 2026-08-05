@@ -123,11 +123,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
   }),
 
+  // Server-rendered snapshot of the shared content so the first paint on any
+  // deployment (Lovable preview, Netlify) already shows the database values.
+  loader: () => getSiteContent(),
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
   errorComponent: ErrorComponent,
 });
+
 
 function RootShell({ children }: { children: ReactNode }) {
   return (
