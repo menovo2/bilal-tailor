@@ -37,5 +37,5 @@ export const getSiteContent = createServerFn({ method: "GET" }).handler(async ()
     console.error("[site-content] public read failed:", error.message);
     return null;
   }
-  return (data?.content ?? null) as unknown;
+  return (data?.content ?? null) as Record<string, unknown> | null;
 });
