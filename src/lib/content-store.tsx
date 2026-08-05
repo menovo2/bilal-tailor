@@ -513,9 +513,11 @@ export function ContentProvider({
       update: patch,
       save: async () => {
         try {
-          setSaveState("idle");
+          setSaveState("saving");
 
-          const { error } = await db
+          // Write and read the row back in one round-trip: the returned row is
+          // proof the database accepted the change (RLS + admin role included).
+          const { data, error } = await db
             .from("site_content")
             .upsert(
               {
@@ -524,19 +526,26 @@ export function ContentProvider({
                 updated_at: new Date().toISOString(),
               },
               { onConflict: "id" },
-            );
+            )
+            .select("content")
+            .single();
 
           if (error) throw error;
+          if (!data?.content) throw new Error("The database did not confirm the update.");
 
+          // Show exactly what is now stored, so Admin can never display a
+          // value that never reached the database.
+          setContent(normalize(data.content as Partial<SiteContent>));
           setSaveState("saved");
           setDirty(false);
           return true;
         } catch (error) {
-          console.error("Failed to save website content to Supabase:", error);
+          console.error("Failed to save website content to the database:", error);
           setSaveState("error");
           return false;
         }
       },
+
       updateItem: (id, p) =>
         patch({ gallery: content.gallery.map((g) => (g.id === id ? { ...g, ...p } : g)) }),
       addItem: (category) => {
