@@ -343,7 +343,7 @@ export const defaultContent: SiteContent = {
 
 const uid = (p: string) => `${p}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
-type SaveState = "idle" | "saved" | "error";
+type SaveState = "idle" | "saving" | "saved" | "error";
 
 type Ctx = {
   content: SiteContent;
