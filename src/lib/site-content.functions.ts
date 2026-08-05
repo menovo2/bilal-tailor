@@ -37,5 +37,6 @@ export const getSiteContent = createServerFn({ method: "GET" }).handler(async ()
     console.error("[site-content] public read failed:", error.message);
     return null;
   }
-  return (data?.content ?? null) as Record<string, unknown> | null;
+  // Returned as a JSON string: keeps the RPC payload strictly serializable.
+  return data?.content ? JSON.stringify(data.content) : null;
 });
