@@ -857,16 +857,11 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                 />
 
                 <Field
-                  label="Qoraalka Coming Soon"
-                  value={content.comingSoonLabel}
-                  onChange={set("comingSoonLabel")}
+__CS_LBL__
                 />
 
                 <ImageField
-                  label="Sawirka Coming Soon"
-                  value={content.comingSoonImage}
-                  onChange={set("comingSoonImage")}
-                  placeholder="/assets/coming-soon.png"
+__CS_IMG__
                 />
               </Panel>
 
@@ -1056,8 +1051,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
                     >
                       <img
                         src={
-                          g.imageUrl ||
-                          content.comingSoonImage
+                          g.imageUrl
                         }
                         alt={g.label}
                         loading="lazy"
@@ -1450,10 +1444,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
               />
 
               <ImageField
-                label="Coming Soon"
-                value={content.comingSoonImage}
-                onChange={set("comingSoonImage")}
-                placeholder="/assets/coming-soon.png"
+__CS_IMG2__
               />
 
               <ImageField

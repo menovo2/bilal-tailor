@@ -40,7 +40,7 @@ function HomePage() {
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-8 lg:py-10">
         <SectionHeading eyebrow={content.homeGalleryEyebrow} title={content.homeGalleryTitle} />
         <div className="mt-4">
-          <GalleryShowcase limitPerCategory={8} />
+          <GalleryShowcase />
         </div>
         <div className="mt-6 flex justify-center">
           <LuxeButton asChild variant="outline" size="lg">
