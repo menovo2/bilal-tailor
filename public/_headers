@@ -1,0 +1,19 @@
+# Cloudflare Pages / Workers asset headers.
+# Build output under /assets/_build/* is content-hashed -> safe to cache forever.
+# Everything else in /assets (photos, logo, backgrounds) can be replaced from the
+# admin panel, so it must revalidate instead of being pinned for a year.
+
+/assets/drive/*
+  cache-control: public, max-age=300, must-revalidate
+
+/assets/*.png
+  cache-control: public, max-age=300, must-revalidate
+
+/assets/*.jpg
+  cache-control: public, max-age=300, must-revalidate
+
+/favicon.ico
+  cache-control: public, max-age=3600
+
+/robots.txt
+  cache-control: public, max-age=3600
