@@ -22,12 +22,13 @@ function GalleryCard({
       aria-label={`Fur sawirka ${item.label}`}
       className="group relative w-[70vw] max-w-[280px] shrink-0 overflow-hidden rounded-xl border border-gold/25 shadow-luxe transition-all duration-500 hover:border-gold hover:shadow-[0_0_44px_-14px_var(--gold)] sm:w-[240px] lg:w-[280px]"
     >
-      <img
+      <SafeImage
         src={src}
         alt={item.label}
         loading="lazy"
         className="aspect-3/4 w-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
       />
+
       <span className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-linear-to-t from-background via-background/80 to-transparent p-3 text-left">
         <span className="min-w-0 truncate font-display text-base text-foreground">{item.label}</span>
         <span className="shrink-0 text-[0.55rem] tracking-[0.28em] text-gold uppercase">
