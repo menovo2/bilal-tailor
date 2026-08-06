@@ -29,11 +29,13 @@ export function PageHero({
   return (
     <section className="relative isolate flex min-h-[52vh] items-end overflow-hidden sm:min-h-[62vh]">
       <div className="absolute inset-0 z-0">
-        <img
+        <SafeImage
           src={image}
+          fallbackSrc={images.hero}
           alt={title}
           className="animate-hero-zoom h-full w-full object-cover object-center"
         />
+
         <div className="absolute inset-0" style={{ background: "var(--gradient-veil)" }} />
         <div className="absolute inset-0 bg-background/55" />
       </div>
