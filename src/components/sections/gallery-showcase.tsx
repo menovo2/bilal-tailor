@@ -249,11 +249,12 @@ export function GalleryShowcase({
             >
               <X size={18} />
             </button>
-            <img
+            <SafeImage
               src={modal.imageUrl}
               alt={modal.label}
               className="max-h-[58vh] w-full rounded-lg border border-gold/20 object-contain"
             />
+
             <div className="mt-4 flex flex-col items-center gap-3 text-center">
               <h3 className="font-display text-xl sm:text-2xl">{modal.label}</h3>
               <p className="max-w-md text-sm text-muted-foreground">{content.galleryModalText}</p>
