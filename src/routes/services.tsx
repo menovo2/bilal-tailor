@@ -7,6 +7,7 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { images } from "@/lib/site";
 import { useContent, useLinks } from "@/lib/content-store";
 import { cn } from "@/lib/utils";
+import { SafeImage } from "@/components/ui/safe-image";
 
 export const Route = createFileRoute("/services")({
   head: () => ({
@@ -52,8 +53,9 @@ function ServicesPage() {
               )}
             >
               <div className="relative overflow-hidden rounded-xl border border-gold/25 shadow-luxe">
-                <img
+                <SafeImage
                   src={service.image || c.galleryImage}
+                  fallbackSrc={images.workshop}
                   alt={`${service.title} — BILAL TAILOR`}
                   loading="lazy"
                   className="aspect-4/3 w-full object-cover"

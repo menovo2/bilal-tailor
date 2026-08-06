@@ -3,6 +3,7 @@ import { SiteLayout, PageHero } from "@/components/layout/site-layout";
 import { Reveal } from "@/components/ui/reveal";
 import { MapSection } from "@/components/sections/map-section";
 import { images } from "@/lib/site";
+import { SafeImage } from "@/components/ui/safe-image";
 import { useContent } from "@/lib/content-store";
 
 export const Route = createFileRoute("/about")({
@@ -54,8 +55,9 @@ function AboutPage() {
           </Reveal>
 
           <Reveal delay={120} className="relative">
-            <img
+            <SafeImage
               src={content.aboutImage || images.detail}
+              fallbackSrc={images.detail}
               alt={content.aboutTitle}
               loading="lazy"
               className="h-full max-h-96 w-full rounded-xl border border-gold/25 object-cover shadow-luxe"

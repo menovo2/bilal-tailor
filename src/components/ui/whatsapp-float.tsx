@@ -1,4 +1,5 @@
 import { images } from "@/lib/site";
+import { SafeImage } from "@/components/ui/safe-image";
 import { useContent } from "@/lib/content-store";
 
 /** Floating gold WhatsApp button with a soft outer glow. */
@@ -16,7 +17,7 @@ export function WhatsappFloat() {
       aria-label="Nala soo xiriir WhatsApp"
       className="wa-glow fixed right-4 bottom-4 z-90 block h-14 w-14 transition-transform duration-500 hover:scale-110 sm:right-7 sm:bottom-7 sm:h-16 sm:w-16"
     >
-      <img
+      <SafeImage
         src={images.whatsapp}
         alt=""
         loading="lazy"

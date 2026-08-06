@@ -1,5 +1,6 @@
 import { Facebook, Mail, MessageCircle, Phone } from "lucide-react";
 import { images, site } from "@/lib/site";
+import { SafeImage } from "@/components/ui/safe-image";
 import { useContent, useLinks } from "@/lib/content-store";
 
 export function Footer() {
@@ -10,8 +11,9 @@ export function Footer() {
     <footer className="border-t border-gold/20 bg-surface/40">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-5 py-8 sm:px-8 md:flex-row md:justify-between">
         <div className="flex items-center gap-3">
-          <img
+          <SafeImage
             src={content.logoImage || images.logo}
+            fallbackSrc={images.logo}
             alt={`Astaanta ${site.name}`}
             loading="lazy"
             width={64}
