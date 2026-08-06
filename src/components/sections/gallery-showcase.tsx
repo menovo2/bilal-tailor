@@ -3,6 +3,8 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useContent, useLinks, galleryCategoryNames, type GalleryItem } from "@/lib/content-store";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { cn } from "@/lib/utils";
+import { SafeImage } from "@/components/ui/safe-image";
+
 
 /** One gallery card — real photo when set, otherwise the numbered "Coming Soon" photo. */
 function GalleryCard({
