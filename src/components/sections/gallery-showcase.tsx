@@ -218,7 +218,9 @@ export function GalleryShowcase({
       ) : null}
 
       <div className="space-y-6 sm:space-y-8">
-        {shown.map(({ category, items }) => (
+        {shown
+          .filter(({ items }) => items.length > 0)
+          .map(({ category, items }) => (
           <CategorySlider
             key={category}
             category={category}
