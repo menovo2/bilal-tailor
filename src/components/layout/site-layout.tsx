@@ -2,6 +2,9 @@ import type { ReactNode } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { WhatsappFloat } from "@/components/ui/whatsapp-float";
+import { SafeImage } from "@/components/ui/safe-image";
+import { images } from "@/lib/site";
+
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   return (
