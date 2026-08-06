@@ -5,7 +5,6 @@ import { LuxeButton } from "@/components/ui/luxe-button";
 import { cn } from "@/lib/utils";
 import { SafeImage } from "@/components/ui/safe-image";
 
-
 /** One gallery card — real photo when set, otherwise the numbered "Coming Soon" photo. */
 function GalleryCard({
   item,
@@ -32,7 +31,9 @@ function GalleryCard({
       />
 
       <span className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-linear-to-t from-background via-background/80 to-transparent p-3 text-left">
-        <span className="min-w-0 truncate font-display text-base text-foreground">{item.label}</span>
+        <span className="min-w-0 truncate font-display text-base text-foreground">
+          {item.label}
+        </span>
         <span className="shrink-0 text-[0.55rem] tracking-[0.28em] text-gold uppercase">
           {viewLabel}
         </span>
@@ -147,7 +148,7 @@ function CategorySlider({
           <GalleryCard
             key={`${item.id}-${i}`}
             item={item}
-            
+
             viewLabel={viewLabel}
             onOpen={() => onOpen(item)}
           />
@@ -221,14 +222,14 @@ export function GalleryShowcase({
         {shown
           .filter(({ items }) => items.length > 0)
           .map(({ category, items }) => (
-          <CategorySlider
-            key={category}
-            category={category}
-            items={items}
-            viewLabel={content.galleryViewLabel}
-            onOpen={setModal}
-          />
-        ))}
+            <CategorySlider
+              key={category}
+              category={category}
+              items={items}
+              viewLabel={content.galleryViewLabel}
+              onOpen={setModal}
+            />
+          ))}
       </div>
 
       {modal ? (
