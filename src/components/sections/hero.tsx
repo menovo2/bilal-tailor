@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { site } from "@/lib/site";
+import { images, site } from "@/lib/site";
+import { SafeImage } from "@/components/ui/safe-image";
+
 import { useContent, useLinks } from "@/lib/content-store";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { Link } from "@tanstack/react-router";
