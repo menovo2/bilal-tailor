@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
-import { site } from "@/lib/site";
+import { images, site } from "@/lib/site";
+import { SafeImage } from "@/components/ui/safe-image";
+
 import { useContent, useLinks } from "@/lib/content-store";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { Link } from "@tanstack/react-router";
@@ -22,11 +24,13 @@ export function Hero() {
         style={{ transform: `translate3d(0, ${offset * 0.2}px, 0)` }}
         aria-hidden="true"
       >
-        <img
+        <SafeImage
           src={content.heroImage}
+          fallbackSrc={images.hero}
           alt="Tailor-ka oo qiyaasaya jaakad suit gudaha dukaanka BILAL TAILOR"
           className="animate-hero-zoom h-full w-full object-cover object-center sm:h-[112%]"
         />
+
         <div className="absolute inset-0" style={{ background: "var(--gradient-veil)" }} />
         <div className="absolute inset-0 bg-background/55" />
       </div>

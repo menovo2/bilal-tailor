@@ -2,6 +2,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { images, site } from "@/lib/site";
+import { SafeImage } from "@/components/ui/safe-image";
 import { cn } from "@/lib/utils";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { useContent, useLinks, useNavLinks } from "@/lib/content-store";
@@ -34,8 +35,9 @@ export function Navbar() {
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:h-20 sm:px-8">
         <Link to="/" className="flex min-w-0 items-center gap-2 sm:gap-3" aria-label={site.name}>
-          <img
+          <SafeImage
             src={content.logoImage || images.logo}
+            fallbackSrc={images.logo}
             alt={`Astaanta ${site.name}`}
             width={64}
             height={64}

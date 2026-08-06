@@ -2,6 +2,9 @@ import type { ReactNode } from "react";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { WhatsappFloat } from "@/components/ui/whatsapp-float";
+import { SafeImage } from "@/components/ui/safe-image";
+import { images } from "@/lib/site";
+
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   return (
@@ -29,11 +32,13 @@ export function PageHero({
   return (
     <section className="relative isolate flex min-h-[52vh] items-end overflow-hidden sm:min-h-[62vh]">
       <div className="absolute inset-0 z-0">
-        <img
+        <SafeImage
           src={image}
+          fallbackSrc={images.hero}
           alt={title}
           className="animate-hero-zoom h-full w-full object-cover object-center"
         />
+
         <div className="absolute inset-0" style={{ background: "var(--gradient-veil)" }} />
         <div className="absolute inset-0 bg-background/55" />
       </div>

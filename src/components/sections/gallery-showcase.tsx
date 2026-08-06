@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { useContent, useLinks, galleryCategoryNames, type GalleryItem } from "@/lib/content-store";
 import { LuxeButton } from "@/components/ui/luxe-button";
 import { cn } from "@/lib/utils";
+import { SafeImage } from "@/components/ui/safe-image";
 
 /** One gallery card — real photo when set, otherwise the numbered "Coming Soon" photo. */
 function GalleryCard({
@@ -22,14 +23,17 @@ function GalleryCard({
       aria-label={`Fur sawirka ${item.label}`}
       className="group relative w-[70vw] max-w-[280px] shrink-0 overflow-hidden rounded-xl border border-gold/25 shadow-luxe transition-all duration-500 hover:border-gold hover:shadow-[0_0_44px_-14px_var(--gold)] sm:w-[240px] lg:w-[280px]"
     >
-      <img
+      <SafeImage
         src={src}
         alt={item.label}
         loading="lazy"
         className="aspect-3/4 w-full object-cover transition-transform duration-700 group-hover:scale-[1.06]"
       />
+
       <span className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-linear-to-t from-background via-background/80 to-transparent p-3 text-left">
-        <span className="min-w-0 truncate font-display text-base text-foreground">{item.label}</span>
+        <span className="min-w-0 truncate font-display text-base text-foreground">
+          {item.label}
+        </span>
         <span className="shrink-0 text-[0.55rem] tracking-[0.28em] text-gold uppercase">
           {viewLabel}
         </span>
@@ -144,7 +148,7 @@ function CategorySlider({
           <GalleryCard
             key={`${item.id}-${i}`}
             item={item}
-            
+
             viewLabel={viewLabel}
             onOpen={() => onOpen(item)}
           />
@@ -215,15 +219,17 @@ export function GalleryShowcase({
       ) : null}
 
       <div className="space-y-6 sm:space-y-8">
-        {shown.map(({ category, items }) => (
-          <CategorySlider
-            key={category}
-            category={category}
-            items={items}
-            viewLabel={content.galleryViewLabel}
-            onOpen={setModal}
-          />
-        ))}
+        {shown
+          .filter(({ items }) => items.length > 0)
+          .map(({ category, items }) => (
+            <CategorySlider
+              key={category}
+              category={category}
+              items={items}
+              viewLabel={content.galleryViewLabel}
+              onOpen={setModal}
+            />
+          ))}
       </div>
 
       {modal ? (
@@ -246,11 +252,12 @@ export function GalleryShowcase({
             >
               <X size={18} />
             </button>
-            <img
+            <SafeImage
               src={modal.imageUrl}
               alt={modal.label}
               className="max-h-[58vh] w-full rounded-lg border border-gold/20 object-contain"
             />
+
             <div className="mt-4 flex flex-col items-center gap-3 text-center">
               <h3 className="font-display text-xl sm:text-2xl">{modal.label}</h3>
               <p className="max-w-md text-sm text-muted-foreground">{content.galleryModalText}</p>
