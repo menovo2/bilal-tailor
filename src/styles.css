@@ -543,7 +543,15 @@ img.rounded-full {
   header.fixed .grid.h-10 { width: 2.35rem; height: 2.35rem; min-height: 0; }
   main h1 { font-size: clamp(1.8rem, 8vw, 2.5rem); }
   main h2 { font-size: clamp(1.45rem, 6.5vw, 2rem); }
-  main section { padding-left: .9rem; padding-right: .9rem; }
+  main section {
+    padding-left: .9rem;
+    padding-right: .9rem;
+    padding-top: 1.5rem !important;
+    padding-bottom: 1.5rem !important;
+  }
+  main section + section {
+    margin-top: 0 !important;
+  }
   footer { font-size: .88rem; }
   footer .h-14 { width: 2.75rem; height: 2.75rem; }
   footer .text-2xl { font-size: 1.05rem; }
