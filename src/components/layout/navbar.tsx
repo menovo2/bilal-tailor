@@ -85,7 +85,7 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div className="mobile-menu fixed inset-x-0 top-[60px] z-[60] border-t border-gold/10 bg-background/98 shadow-2xl backdrop-blur-2xl sm:top-[68px] lg:hidden">
+        <div className="mobile-menu fixed inset-x-0 top-[60px] z-[60] border-t border-gold/10 bg-background shadow-2xl sm:top-[68px] lg:hidden">
           <nav
             className="mx-auto flex w-full max-w-7xl flex-col px-4 py-1 sm:px-8 sm:py-2"
             aria-label="Navigation mobile"
