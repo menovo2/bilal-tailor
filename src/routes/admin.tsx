@@ -184,8 +184,8 @@ function Login({ onLogin }: { onLogin: () => void }) {
 
     try {
       if (setupMode) {
-        if (password.length < 6) {
-          setError("Password-ka waa inuu ka badan yahay 6 xaraf.");
+        if (password.length < 12) {
+          setError("Password-ka waa inuu ugu yaraan 12 xaraf ahaadaa.");
           return;
         }
         await bootstrap({ data: { email: email.trim(), password } });
@@ -353,6 +353,19 @@ function ImageField({
 }) {
   const onFile = (file: File | undefined) => {
     if (!file) return;
+
+    const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+    const maxBytes = 5 * 1024 * 1024;
+
+    if (!allowedTypes.has(file.type)) {
+      window.alert("Fadlan geli JPG, PNG, WEBP ama GIF oo keliya.");
+      return;
+    }
+
+    if (file.size > maxBytes) {
+      window.alert("Sawirku waa inuu ka yaraadaa 5 MB.");
+      return;
+    }
 
     const reader = new FileReader();
 
@@ -1757,8 +1770,8 @@ function SettingsPanel() {
           disabled={busy}
           className={cn(btnPrimary, "mt-4")}
           onClick={() => {
-            if (!email.trim() || password.length < 6) {
-              setNote("Buuxi iimaylka iyo password ugu yaraan 6 xaraf.");
+            if (!email.trim() || password.length < 12) {
+              setNote("Buuxi iimaylka iyo password ugu yaraan 12 xaraf.");
               return;
             }
             void run(async () => {
