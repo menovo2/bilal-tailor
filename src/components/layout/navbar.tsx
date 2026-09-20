@@ -41,7 +41,7 @@ export function Navbar() {
             alt={`Astaanta ${site.name}`}
             width={64}
             height={64}
-            className="h-12 w-12 shrink-0 rounded-full border border-gold/40 bg-white object-contain p-0.5 sm:h-16 sm:w-16"
+            className="logo-mark h-12 w-12 shrink-0 sm:h-16 sm:w-16"
           />
           <span className="min-w-0">
             <span className="text-gold-gradient text-shadow-luxe block truncate font-display text-xl font-bold tracking-[0.14em] sm:text-3xl">
