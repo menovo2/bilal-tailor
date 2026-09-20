@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { Menu, X } from "lucide-react";
+import { MoreVertical, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { images, site } from "@/lib/site";
 import { SafeImage } from "@/components/ui/safe-image";
@@ -79,7 +79,7 @@ export function Navbar() {
             aria-expanded={open}
             className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-gold/40 text-gold transition-colors hover:bg-gold/10 lg:hidden"
           >
-            {open ? <X size={18} /> : <Menu size={18} />}
+            {open ? <X size={19} /> : <MoreVertical size={20} />}
           </button>
         </div>
       </div>
@@ -87,11 +87,11 @@ export function Navbar() {
       <div
         className={cn(
           "mobile-menu overflow-hidden border-t border-gold/10 bg-background/95 backdrop-blur-2xl lg:hidden",
-          open ? "mobile-menu-open max-h-[72vh] translate-y-0 opacity-100" : "max-h-0 -translate-y-2 opacity-0",
+          open ? "mobile-menu-open max-h-[80vh] translate-y-0 opacity-100" : "max-h-0 -translate-y-1 opacity-0",
         )}
       >
         <nav
-          className="mx-auto flex max-w-7xl flex-col px-4 py-3 sm:px-8 sm:py-4"
+          className="mx-auto flex max-w-7xl flex-col gap-1 px-5 py-4 sm:px-8 sm:py-5"
           aria-label="Navigation mobile"
         >
           {navLinks.map((link) => (
@@ -99,7 +99,7 @@ export function Navbar() {
               key={link.to}
               to={link.to}
               activeOptions={{ exact: link.to === "/" }}
-              className="border-b border-gold/10 py-3 text-xs tracking-[0.26em] text-foreground/75 uppercase transition-colors hover:text-gold data-[status=active]:text-gold"
+              className="flex min-h-12 items-center justify-between rounded-xl border border-transparent px-4 py-3 text-sm font-medium tracking-[0.18em] text-foreground/80 uppercase transition-colors hover:border-gold/20 hover:bg-gold/5 hover:text-gold data-[status=active]:border-gold/20 data-[status=active]:bg-gold/5 data-[status=active]:text-gold"
             >
               {link.label}
             </Link>
@@ -108,7 +108,7 @@ export function Navbar() {
             href={waGeneral()}
             target="_blank"
             rel="noreferrer"
-            className="py-3 text-xs tracking-[0.26em] text-gold uppercase"
+            className="mt-1 flex min-h-12 items-center justify-center rounded-xl border border-gold/35 bg-gold/10 px-4 py-3 text-sm font-medium tracking-[0.18em] text-gold uppercase transition-colors hover:bg-gold/15"
           >
             {content.navCta}
           </a>
