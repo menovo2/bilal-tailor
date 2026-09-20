@@ -67,6 +67,23 @@ export function Footer() {
         </ul>
       </div>
 
+      <div className="border-t border-gold/10 px-5 py-5 text-center sm:px-8">
+        <a
+          className="menovo-credit text-xs font-semibold tracking-[0.18em] uppercase"
+          href="https://menovo.agency/?utm_source=bilal.shop&utm_medium=website&utm_campaign=powered_by"
+          target="_blank"
+          rel="noreferrer"
+          aria-label="Powered By MENOVO"
+        >
+          <img
+            src="https://drive.google.com/uc?export=view&id=11a0mefRTW4l38LRxqQRJ8mwwRbC4zesO"
+            alt="MENOVO logo"
+            loading="lazy"
+          />
+          <span>Powered By MENOVO</span>
+        </a>
+      </div>
+
       <div className="border-t border-gold/10 px-5 py-4 text-center sm:px-8">
         <p className="text-[0.62rem] tracking-[0.2em] text-muted-foreground uppercase">
           © {new Date().getFullYear()} {site.name} — Dhammaan xuquuqda way dhowran yihiin.
