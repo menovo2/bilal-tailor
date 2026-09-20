@@ -85,9 +85,9 @@ export function Navbar() {
       </div>
 
       {open && (
-        <div className="mobile-menu border-t border-gold/10 bg-background/95 backdrop-blur-2xl lg:hidden">
+        <div className="mobile-menu fixed inset-x-0 top-[60px] z-[60] border-t border-gold/10 bg-background/98 shadow-2xl backdrop-blur-2xl sm:top-[68px] lg:hidden">
           <nav
-            className="mx-auto flex max-w-7xl flex-col px-4 py-1 sm:px-8 sm:py-2"
+            className="mx-auto flex w-full max-w-7xl flex-col px-4 py-1 sm:px-8 sm:py-2"
             aria-label="Navigation mobile"
           >
             {navLinks.map((link) => (
@@ -95,7 +95,7 @@ export function Navbar() {
                 key={link.to}
                 to={link.to}
                 activeOptions={{ exact: link.to === "/" }}
-                className="border-b border-gold/10 py-3 text-xs tracking-[0.26em] text-foreground/75 uppercase transition-colors hover:text-gold data-[status=active]:text-gold"
+                className="block w-full border-b border-gold/10 py-3 text-xs tracking-[0.26em] text-foreground/75 uppercase transition-colors hover:text-gold data-[status=active]:text-gold"
               >
                 {link.label}
               </Link>
@@ -104,7 +104,7 @@ export function Navbar() {
               href={waGeneral()}
               target="_blank"
               rel="noreferrer"
-              className="py-3 text-xs tracking-[0.26em] text-gold uppercase"
+              className="block w-full py-3 text-xs tracking-[0.26em] text-gold uppercase"
             >
               {content.navCta}
             </a>
