@@ -4,8 +4,8 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
 const credentials = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+  email: z.string().trim().email().max(254),
+  password: z.string().min(12).max(128),
 });
 
 /** Does at least one admin account already exist? Used to gate first-time setup. */
