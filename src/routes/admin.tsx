@@ -507,7 +507,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
             alt=""
             width={44}
             height={44}
-            className="h-11 w-11 shrink-0 rounded-full border border-navy-line bg-white object-contain p-0.5"
+            className="logo-mark h-11 w-11"
           />
 
           <div className="min-w-0">
@@ -521,7 +521,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
           </div>
         </div>
 
-        <nav className="no-scrollbar flex gap-1 overflow-x-auto px-2 pb-3 lg:flex-col lg:overflow-visible">
+        <nav className="admin-scroll-nav no-scrollbar flex gap-1 overflow-x-auto px-2 pb-3 lg:flex-col lg:overflow-y-auto lg:overflow-x-hidden">
           {sections.map((s) => (
             <button
               key={s.key}
