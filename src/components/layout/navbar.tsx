@@ -95,7 +95,7 @@ export function Navbar() {
                 key={link.to}
                 to={link.to}
                 activeOptions={{ exact: link.to === "/" }}
-                className="block w-full border-b border-gold/10 py-3 text-xs tracking-[0.26em] text-foreground/75 uppercase transition-colors hover:text-gold data-[status=active]:text-gold"
+                className="block w-full border-b border-gold/10 py-2 text-xs tracking-[0.26em] text-foreground/75 uppercase transition-colors hover:text-gold data-[status=active]:text-gold"
               >
                 {link.label}
               </Link>
@@ -104,7 +104,7 @@ export function Navbar() {
               href={waGeneral()}
               target="_blank"
               rel="noreferrer"
-              className="block w-full py-3 text-xs tracking-[0.26em] text-gold uppercase"
+              className="block w-full py-2 text-xs tracking-[0.26em] text-gold uppercase"
             >
               {content.navCta}
             </a>
