@@ -86,12 +86,12 @@ export function Navbar() {
 
       <div
         className={cn(
-          "overflow-hidden border-t border-gold/10 bg-background/95 transition-[max-height,opacity] duration-500 lg:hidden",
-          open ? "max-h-96 opacity-100" : "max-h-0 opacity-0",
+          "overflow-hidden border-t border-gold/10 bg-background/95 backdrop-blur-2xl lg:hidden",
+          open ? "max-h-[72vh] translate-y-0 opacity-100" : "max-h-0 -translate-y-2 opacity-0",
         )}
       >
         <nav
-          className="mx-auto flex max-w-7xl flex-col px-4 py-2 sm:px-8"
+          className="mx-auto flex max-w-7xl flex-col px-4 py-3 sm:px-8 sm:py-4"
           aria-label="Navigation mobile"
         >
           {navLinks.map((link) => (
