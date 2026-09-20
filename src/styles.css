@@ -516,8 +516,9 @@ img.rounded-full {
   object-position: center;
   border-radius: 9999px;
   overflow: hidden;
-  background: #fff;
-  padding: 3px;
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none;
 }
 .admin-scroll-nav {
   scrollbar-width: thin;
@@ -535,7 +536,7 @@ img.rounded-full {
 
 @media (max-width: 640px) {
   header.fixed > div { height: 60px; min-height: 60px; }
-  header.fixed .logo-mark { width: 2.45rem; height: 2.45rem; padding: 2px; }
+  header.fixed .logo-mark { width: 2.45rem; height: 2.45rem; padding: 0 !important; }
   header.fixed .text-gold-gradient { font-size: 1.05rem; letter-spacing: .1em; }
   header.fixed .text-gold-soft { font-size: .46rem; letter-spacing: .28em; }
   header.fixed .max-w-7xl { padding-inline: .8rem; }
@@ -545,10 +546,12 @@ img.rounded-full {
   main section { padding-left: .9rem; padding-right: .9rem; }
   footer { font-size: .88rem; }
   footer .h-14 { width: 2.75rem; height: 2.75rem; }
-  footer .text-2xl { font-size: 1.2rem; }
-  footer .text-sm { font-size: .75rem; }
-  .menovo-credit { font-size: .55rem; letter-spacing: .14em; }
-  .menovo-credit img { width: 20px; height: 20px; }
+  footer .text-2xl { font-size: 1.05rem; }
+  footer .text-sm { font-size: .68rem; }
+  footer .text-[0.62rem] { font-size: .52rem; }
+  footer .text-[0.62rem].tracking-\[0\.2em\] { font-size: .48rem; }
+  .menovo-credit { font-size: .82rem; letter-spacing: .16em; }
+  .menovo-credit img { width: 30px; height: 30px; }
 }
 
 @media (min-width: 1024px) {
@@ -565,4 +568,24 @@ img.rounded-full {
     overflow-y: auto;
     overflow-x: hidden;
   }
+}
+
+
+/* Mobile menu — taller, smoother, and easier to use without changing navigation. */
+@media (max-width: 1023px) {
+  header.fixed > div { transition: min-height var(--motion-smooth); }
+  header.fixed > div + div {
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: max-height 560ms cubic-bezier(0.22, 1, 0.36, 1), opacity 320ms ease, transform 560ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: max-height, opacity, transform;
+  }
+  header.fixed > div + div[class*="max-h-96"] {
+    max-height: min(72vh, 620px);
+    opacity: 1;
+    transform: translateY(0);
+  }
+  header.fixed > div + div nav { padding-top: .6rem; padding-bottom: 1rem; }
+  header.fixed > div + div nav a { padding-top: .85rem; padding-bottom: .85rem; }
 }
