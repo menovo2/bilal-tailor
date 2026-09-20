@@ -365,6 +365,28 @@ type Ctx = {
 
 const ContentContext = createContext<Ctx | null>(null);
 
+function safeHttpUrl(value: unknown, fallback = ""): string {
+  if (typeof value !== "string") return fallback;
+  const trimmed = value.trim();
+  if (!trimmed) return fallback;
+  if (trimmed.startsWith("/")) return trimmed;
+  try {
+    const url = new URL(trimmed);
+    return url.protocol === "https:" || url.protocol === "http:" ? trimmed : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function safeImageUrl(value: unknown, fallback = ""): string {
+  if (typeof value !== "string") return fallback;
+  const trimmed = value.trim();
+  if (!trimmed) return fallback;
+  if (trimmed.startsWith("/")) return trimmed;
+  if (/^data:image\/(?:jpeg|png|webp|gif);base64,/i.test(trimmed)) return trimmed;
+  return safeHttpUrl(trimmed, fallback);
+}
+
 /** Migrate saved content so new editable fields and gallery categories exist. */
 function normalize(saved: Partial<SiteContent>): SiteContent {
   const next: SiteContent = { ...defaultContent, ...saved };
@@ -412,6 +434,26 @@ function normalize(saved: Partial<SiteContent>): SiteContent {
   next.hours = Array.isArray(saved.hours) && saved.hours.length
     ? saved.hours.map((h, i) => ({ ...h, id: h.id || `h-${i}` }))
     : defaultContent.hours;
+
+  // Validate all admin-controlled URL fields before they reach href/src/iframe sinks.
+  next.logoImage = safeImageUrl(next.logoImage, defaultContent.logoImage);
+  next.heroImage = safeImageUrl(next.heroImage, defaultContent.heroImage);
+  next.aboutImage = safeImageUrl(next.aboutImage, defaultContent.aboutImage);
+  next.servicesImage = safeImageUrl(next.servicesImage, defaultContent.servicesImage);
+  next.galleryImage = safeImageUrl(next.galleryImage, defaultContent.galleryImage);
+  next.contactImage = safeImageUrl(next.contactImage, defaultContent.contactImage);
+  next.mapUrl = safeHttpUrl(next.mapUrl, defaultContent.mapUrl);
+  next.mapEmbedUrl = safeHttpUrl(next.mapEmbedUrl, "");
+  next.facebook = safeHttpUrl(next.facebook, "");
+  next.instagram = safeHttpUrl(next.instagram, "");
+  next.services = next.services.map((s) => ({
+    ...s,
+    image: s.image ? safeImageUrl(s.image, "") : s.image,
+  }));
+  next.gallery = next.gallery.map((g) => ({
+    ...g,
+    imageUrl: safeImageUrl(g.imageUrl, ""),
+  }));
 
   // Admin accounts live in secure authentication, never in shared content.
   delete (next as Record<string, unknown>)["admins"];
