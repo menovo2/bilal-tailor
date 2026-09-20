@@ -21,17 +21,17 @@ export function Footer() {
             className="logo-mark h-14 w-14"
           />
           <div>
-            <p className="font-display text-2xl font-bold tracking-[0.16em] text-gold-gradient">
+            <p className="font-display text-lg font-bold tracking-[0.14em] text-gold-gradient">
               BILAAL
             </p>
-            <p className="text-[0.62rem] font-semibold tracking-[0.44em] text-gold-soft">TAILOR</p>
+            <p className="text-[0.5rem] font-semibold tracking-[0.34em] text-gold-soft">TAILOR</p>
           </div>
         </div>
 
-        <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-sm text-muted-foreground">
+        <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-xs text-muted-foreground">
           <li>
             <a href={`tel:${content.phone}`} className="flex items-center gap-2 hover:text-gold">
-              <Phone size={15} className="text-gold" /> {content.phone}
+              <Phone size={13} className="text-gold" /> {content.phone}
             </a>
           </li>
           <li>
@@ -41,7 +41,7 @@ export function Footer() {
               rel="noreferrer"
               className="flex items-center gap-2 hover:text-gold"
             >
-              <MessageCircle size={15} className="text-gold" /> WhatsApp
+              <MessageCircle size={13} className="text-gold" /> WhatsApp
             </a>
           </li>
           <li>
@@ -49,7 +49,7 @@ export function Footer() {
               href={`mailto:${content.email}`}
               className="flex items-center gap-2 break-all hover:text-gold"
             >
-              <Mail size={15} className="shrink-0 text-gold" /> {content.email}
+              <Mail size={13} className="shrink-0 text-gold" /> {content.email}
             </a>
           </li>
           {content.facebook ? (
@@ -60,7 +60,7 @@ export function Footer() {
                 rel="noreferrer"
                 className="flex items-center gap-2 hover:text-gold"
               >
-                <Facebook size={15} className="text-gold" /> Facebook
+                <Facebook size={13} className="text-gold" /> Facebook
               </a>
             </li>
           ) : null}
