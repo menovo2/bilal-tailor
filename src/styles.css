@@ -497,3 +497,72 @@ a:active {
   object-fit: contain;
   background: white;
 }
+
+
+/* Mobile-first polish + robust circular brand marks */
+img.rounded-full {
+  object-fit: contain !important;
+  object-position: center !important;
+  overflow: hidden;
+  background: #fff;
+}
+.logo-mark {
+  display: block;
+  flex: 0 0 auto;
+  width: 3rem;
+  height: 3rem;
+  aspect-ratio: 1;
+  object-fit: contain !important;
+  object-position: center;
+  border-radius: 9999px;
+  overflow: hidden;
+  background: #fff;
+  padding: 3px;
+}
+.admin-scroll-nav {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.78 0.09 84 / 42%) transparent;
+}
+.admin-scroll-nav::-webkit-scrollbar { width: 7px; }
+.admin-scroll-nav::-webkit-scrollbar-track { background: transparent; }
+.admin-scroll-nav::-webkit-scrollbar-thumb {
+  background: oklch(0.78 0.09 84 / 38%);
+  border-radius: 999px;
+}
+.admin-scroll-nav::-webkit-scrollbar-thumb:hover {
+  background: oklch(0.78 0.09 84 / 60%);
+}
+
+@media (max-width: 640px) {
+  header.fixed > div { height: 60px; min-height: 60px; }
+  header.fixed .logo-mark { width: 2.45rem; height: 2.45rem; padding: 2px; }
+  header.fixed .text-gold-gradient { font-size: 1.05rem; letter-spacing: .1em; }
+  header.fixed .text-gold-soft { font-size: .46rem; letter-spacing: .28em; }
+  header.fixed .max-w-7xl { padding-inline: .8rem; }
+  header.fixed .grid.h-10 { width: 2.35rem; height: 2.35rem; min-height: 0; }
+  main h1 { font-size: clamp(1.8rem, 8vw, 2.5rem); }
+  main h2 { font-size: clamp(1.45rem, 6.5vw, 2rem); }
+  main section { padding-left: .9rem; padding-right: .9rem; }
+  footer { font-size: .88rem; }
+  footer .h-14 { width: 2.75rem; height: 2.75rem; }
+  footer .text-2xl { font-size: 1.2rem; }
+  footer .text-sm { font-size: .75rem; }
+  .menovo-credit { font-size: .55rem; letter-spacing: .14em; }
+  .menovo-credit img { width: 20px; height: 20px; }
+}
+
+@media (min-width: 1024px) {
+  .admin-shell > aside {
+    height: 100vh;
+    max-height: 100vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    position: sticky;
+    top: 0;
+  }
+  .admin-shell > aside nav {
+    max-height: calc(100vh - 92px);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
