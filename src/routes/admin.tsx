@@ -132,7 +132,7 @@ function AdminPage() {
 
   if (checking) {
     return (
-      <div className="grid min-h-screen place-items-center bg-navy text-white">
+      <div className="admin-shell grid min-h-screen place-items-center bg-navy text-white">
         <p className="text-sm tracking-[0.2em] uppercase">
           Loading...
         </p>
@@ -217,7 +217,7 @@ function Login({ onLogin }: { onLogin: () => void }) {
 
 
   return (
-    <div className="grid min-h-screen place-items-center bg-navy px-4 py-12">
+    <div className="admin-shell grid min-h-screen place-items-center bg-navy px-4 py-12">
       <form
         onSubmit={handleLogin}
         className={cn(cardClass, "w-full max-w-md")}
@@ -499,7 +499,7 @@ function Dashboard({ onLogout }: { onLogout: () => void }) {
   ];
 
   return (
-    <div className="min-h-screen bg-navy text-white lg:grid lg:grid-cols-[240px_1fr]">
+    <div className="admin-shell min-h-screen bg-navy text-white lg:grid lg:grid-cols-[240px_1fr]">
       <aside className="border-b border-navy-line bg-navy-2 lg:border-r lg:border-b-0">
         <div className="flex items-center gap-3 px-4 py-4">
           <img
