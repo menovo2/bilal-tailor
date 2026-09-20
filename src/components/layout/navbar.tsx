@@ -86,8 +86,8 @@ export function Navbar() {
 
       <div
         className={cn(
-          "overflow-hidden border-t border-gold/10 bg-background/95 backdrop-blur-2xl lg:hidden",
-          open ? "max-h-[72vh] translate-y-0 opacity-100" : "max-h-0 -translate-y-2 opacity-0",
+          "mobile-menu overflow-hidden border-t border-gold/10 bg-background/95 backdrop-blur-2xl lg:hidden",
+          open ? "mobile-menu-open max-h-[72vh] translate-y-0 opacity-100" : "max-h-0 -translate-y-2 opacity-0",
         )}
       >
         <nav
