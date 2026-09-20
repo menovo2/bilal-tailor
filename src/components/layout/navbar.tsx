@@ -84,36 +84,33 @@ export function Navbar() {
         </div>
       </div>
 
-      <div
-        className={cn(
-          "mobile-menu overflow-hidden border-t border-gold/10 bg-background/95 backdrop-blur-2xl lg:hidden",
-          open ? "mobile-menu-open max-h-[72vh] translate-y-0 opacity-100" : "max-h-0 -translate-y-2 opacity-0",
-        )}
-      >
-        <nav
-          className="mx-auto flex max-w-7xl flex-col px-4 py-3 sm:px-8 sm:py-4"
-          aria-label="Navigation mobile"
-        >
-          {navLinks.map((link) => (
-            <Link
-              key={link.to}
-              to={link.to}
-              activeOptions={{ exact: link.to === "/" }}
-              className="border-b border-gold/10 py-3 text-xs tracking-[0.26em] text-foreground/75 uppercase transition-colors hover:text-gold data-[status=active]:text-gold"
-            >
-              {link.label}
-            </Link>
-          ))}
-          <a
-            href={waGeneral()}
-            target="_blank"
-            rel="noreferrer"
-            className="py-3 text-xs tracking-[0.26em] text-gold uppercase"
+      {open && (
+        <div className="mobile-menu border-t border-gold/10 bg-background/95 backdrop-blur-2xl lg:hidden">
+          <nav
+            className="mx-auto flex max-w-7xl flex-col px-4 py-1 sm:px-8 sm:py-2"
+            aria-label="Navigation mobile"
           >
-            {content.navCta}
-          </a>
-        </nav>
-      </div>
+            {navLinks.map((link) => (
+              <Link
+                key={link.to}
+                to={link.to}
+                activeOptions={{ exact: link.to === "/" }}
+                className="border-b border-gold/10 py-3 text-xs tracking-[0.26em] text-foreground/75 uppercase transition-colors hover:text-gold data-[status=active]:text-gold"
+              >
+                {link.label}
+              </Link>
+            ))}
+            <a
+              href={waGeneral()}
+              target="_blank"
+              rel="noreferrer"
+              className="py-3 text-xs tracking-[0.26em] text-gold uppercase"
+            >
+              {content.navCta}
+            </a>
+          </nav>
+        </div>
+      )}
     </header>
   );
 }
