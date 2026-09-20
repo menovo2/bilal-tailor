@@ -18,7 +18,7 @@ export function Footer() {
             loading="lazy"
             width={64}
             height={64}
-            className="h-14 w-14 rounded-full border border-gold/40 bg-white object-contain p-0.5"
+            className="logo-mark h-14 w-14"
           />
           <div>
             <p className="font-display text-2xl font-bold tracking-[0.16em] text-gold-gradient">
@@ -76,9 +76,11 @@ export function Footer() {
           aria-label="Powered By MENOVO"
         >
           <img
-            src="https://drive.google.com/uc?export=view&id=11a0mefRTW4l38LRxqQRJ8mwwRbC4zesO"
+            src="https://drive.google.com/thumbnail?id=11a0mefRTW4l38LRxqQRJ8mwwRbC4zesO&sz=w200"
             alt="MENOVO logo"
             loading="lazy"
+            referrerPolicy="no-referrer"
+            onError={(e) => { e.currentTarget.style.display = "none"; }}
           />
           <span>Powered By MENOVO</span>
         </a>
